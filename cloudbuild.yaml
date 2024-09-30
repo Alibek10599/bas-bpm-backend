@@ -1,0 +1,33 @@
+
+# Auth
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    [
+      'build',
+      '-t',
+      'southamerica-east1-docker.pkg.dev/slepper-api/auth/prodution',
+      '-f',
+      'apps/auth/Dockerfile',
+      '.',
+    ]
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    ['push', 'southamerica-east1-docker.pkg.dev/slepper-api/auth/prodution']
+
+# Notifications
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    [
+      'build',
+      '-t',
+      'southamerica-east1-docker.pkg.dev/slepper-api/notifications/prodution',
+      '-f',
+      'apps/notifications/Dockerfile',
+      '.',
+    ]
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    [
+      'push',
+      'southamerica-east1-docker.pkg.dev/slepper-api/notifications/prodution',
+    ]
