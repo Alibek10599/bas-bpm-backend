@@ -1,21 +1,17 @@
+import { AbstractRepository } from '@app/common';
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserEntity } from '@app/common';
+import { UserDocument } from './models/user.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
-export class UsersRepository {
+export class UsersRepository extends AbstractRepository<UserDocument> {
   protected readonly logger = new Logger(UsersRepository.name);
 
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-  ) {}
-
-  async createUser(email: string, password: string): Promise<UserEntity> {
-    const user = this.userRepository.create({ email, password });
-    return this.userRepository.save(user);
+    @InjectModel(UserDocument.collectionName)
+    userModel: Model<UserDocument>,
+  ) {
+    super(userModel);
   }
-
-  // Add any other repository methods here (find, update, delete, etc.)
 }

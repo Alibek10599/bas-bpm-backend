@@ -5,11 +5,11 @@ import {
   Get,
   Post,
   Query,
-  Param,
   UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
+import { FilterQuery } from 'mongoose';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
 @Controller('users')
@@ -23,12 +23,12 @@ export class UsersController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getUser(@Query() query: any) {
-    return this.service.findAll(query); // Adjust findAll to work with query params
+  getUser(@Query() filterQuery: FilterQuery<any>) {
+    return this.service.findAll(filterQuery);
   }
 
-  @Delete(':id')
-  async delete(@Param('id') id: string) {
-    return this.service.remove(id);
+  @Delete()
+  delete(_id: string) {
+    return this.service.remove(_id);
   }
 }

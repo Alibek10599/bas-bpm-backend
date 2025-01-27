@@ -5,43 +5,34 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
+import { FilterQuery } from 'mongoose';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcryptjs';
-import { UserEntity } from '@app/common';
-import { FindOneOptions, FindOptionsWhere } from 'typeorm';
+import { UserDocument } from './models/user.schema';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly repository: UsersRepository) {}
 
-  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
+  async create(createUserDto: CreateUserDto) {
     await this.validateCreateUserDto(createUserDto);
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-
-    const user = this.repository.create({
+    return this.repository.create({
       ...createUserDto,
-      password: hashedPassword,
+      password: await bcrypt.hash(createUserDto.password, 10),
     });
-
-    return this.repository.save(user);
   }
 
-  private async validateCreateUserDto(createUserDto: CreateUserDto): Promise<void> {
-    const existingUser = await this.repository.findOne({
-      where: { email: createUserDto.email },
-    });
-    
-    if (existingUser) {
-      throw new UnprocessableEntityException('Email already exists.');
+  private async validateCreateUserDto(createUserDto: CreateUserDto) {
+    try {
+      await this.repository.findOne({ email: createUserDto.email });
+    } catch (err) {
+      return;
     }
+    throw new UnprocessableEntityException('Email already exists.');
   }
 
-  async verifyUser(email: string, password: string): Promise<UserEntity> {
-    const user = await this.repository.findOne({ where: { email } });
-
-    if (!user) {
-      throw new UnauthorizedException('Credentials are not valid');
-    }
+  async verifyUser(email: string, password: string): Promise<UserDocument> {
+    const user = await this.repository.findOne({ email });
 
     const passwordIsValid = await bcrypt.compare(password, user.password);
     if (!passwordIsValid) {
@@ -51,27 +42,19 @@ export class UsersService {
     return user;
   }
 
-  async findAll(query: any): Promise<UserEntity[]> {
-    return this.repository.find({ where: query });
+  findAll(filterQuery: FilterQuery<any>) {
+    return this.repository.find(filterQuery);
   }
 
-  async findOne(id: string): Promise<UserEntity> {
-    return this.repository.findOne({ where: { id } });
+  findOne(_id: string) {
+    return this.repository.findOne({ _id });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<void> {
-    const result = await this.repository.update(id, updateUserDto);
-
-    if (result.affected === 0) {
-      throw new UnprocessableEntityException('User not found');
-    }
+  update(_id: string, updateUserDto: UpdateUserDto) {
+    return this.repository.findOneAndUpdate({ _id }, { $set: updateUserDto });
   }
 
-  async remove(id: string): Promise<void> {
-    const result = await this.repository.delete(id);
-
-    if (result.affected === 0) {
-      throw new UnprocessableEntityException('User not found');
-    }
+  remove(_id: string) {
+    return this.repository.findOneAndDelete({ _id });
   }
 }
