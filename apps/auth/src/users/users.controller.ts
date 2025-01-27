@@ -16,19 +16,19 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 export class UsersController {
   constructor(private readonly service: UsersService) {}
 
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    return this.service.create(createUserDto);
-  }
+  // @Post()
+  // async create(@Body() createUserDto: CreateUserDto) {
+  //   return this.service.create(createUserDto);
+  // }
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  getUser(@Query() filterQuery: FilterQuery<any>) {
-    return this.service.findAll(filterQuery);
-  }
+  // @Get()
+  // @UseGuards(JwtAuthGuard)
+  // getUser(@Query() filterQuery: FilterQuery<any>) {
+  //   return this.service.findAll(filterQuery);
+  // }
 
-  @Delete()
-  delete(_id: string) {
-    return this.service.remove(_id);
-  }
+  // @Delete()
+  // delete(_id: string) {
+  //   return this.service.remove(_id);
+  // }
 }

@@ -7,8 +7,8 @@ import { UsersRepository } from './users.repository';
 
 @Module({
   imports: [
-    DatabaseModule,
-    DatabaseModule.forFeature([UserDocument]),
+    // DatabaseModule,
+    // DatabaseModule.forFeature([UserDocument]),
     LoggerModule,
   ],
   controllers: [UsersController],

@@ -8,10 +8,10 @@ import { Model } from 'mongoose';
 export class notificationsRepository extends AbstractRepository<NotificationDocument> {
   protected readonly logger = new Logger(notificationsRepository.name);
 
-  constructor(
-    @InjectModel(NotificationDocument.collectionName)
-    NotificationModel: Model<NotificationDocument>,
-  ) {
-    super(NotificationModel);
-  }
+  // constructor(
+  //   @InjectModel(NotificationDocument.collectionName)
+  //   NotificationModel: Model<NotificationDocument>,
+  // ) {
+  //   super(NotificationModel);
+  // }
 }

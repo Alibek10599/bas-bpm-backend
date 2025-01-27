@@ -11,8 +11,8 @@ import { AUTH_SERVICE } from '@app/common/constants/services';
 
 @Module({
   imports: [
-    DatabaseModule,
-    DatabaseModule.forFeature([NotificationDocument]),
+    // DatabaseModule,
+    // DatabaseModule.forFeature([NotificationDocument]),
     LoggerModule,
     ConfigModule.forRoot({
       isGlobal: true,

@@ -12,49 +12,49 @@ import { UserDocument } from './models/user.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly repository: UsersRepository) {}
+  // constructor(private readonly repository: UsersRepository) {}
 
-  async create(createUserDto: CreateUserDto) {
-    await this.validateCreateUserDto(createUserDto);
-    return this.repository.create({
-      ...createUserDto,
-      password: await bcrypt.hash(createUserDto.password, 10),
-    });
-  }
+  // async create(createUserDto: CreateUserDto) {
+  //   await this.validateCreateUserDto(createUserDto);
+  //   return this.repository.create({
+  //     ...createUserDto,
+  //     password: await bcrypt.hash(createUserDto.password, 10),
+  //   });
+  // }
 
-  private async validateCreateUserDto(createUserDto: CreateUserDto) {
-    try {
-      await this.repository.findOne({ email: createUserDto.email });
-    } catch (err) {
-      return;
-    }
-    throw new UnprocessableEntityException('Email already exists.');
-  }
+  // private async validateCreateUserDto(createUserDto: CreateUserDto) {
+  //   try {
+  //     await this.repository.findOne({ email: createUserDto.email });
+  //   } catch (err) {
+  //     return;
+  //   }
+  //   throw new UnprocessableEntityException('Email already exists.');
+  // }
 
-  async verifyUser(email: string, password: string): Promise<UserDocument> {
-    const user = await this.repository.findOne({ email });
+  // async verifyUser(email: string, password: string): Promise<UserDocument> {
+  //   const user = await this.repository.findOne({ email });
 
-    const passwordIsValid = await bcrypt.compare(password, user.password);
-    if (!passwordIsValid) {
-      throw new UnauthorizedException('Credentials are not valid');
-    }
+  //   const passwordIsValid = await bcrypt.compare(password, user.password);
+  //   if (!passwordIsValid) {
+  //     throw new UnauthorizedException('Credentials are not valid');
+  //   }
 
-    return user;
-  }
+  //   return user;
+  // }
 
-  findAll(filterQuery: FilterQuery<any>) {
-    return this.repository.find(filterQuery);
-  }
+  // findAll(filterQuery: FilterQuery<any>) {
+  //   return this.repository.find(filterQuery);
+  // }
 
-  findOne(_id: string) {
-    return this.repository.findOne({ _id });
-  }
+  // findOne(_id: string) {
+  //   return this.repository.findOne({ _id });
+  // }
 
-  update(_id: string, updateUserDto: UpdateUserDto) {
-    return this.repository.findOneAndUpdate({ _id }, { $set: updateUserDto });
-  }
+  // update(_id: string, updateUserDto: UpdateUserDto) {
+  //   return this.repository.findOneAndUpdate({ _id }, { $set: updateUserDto });
+  // }
 
-  remove(_id: string) {
-    return this.repository.findOneAndDelete({ _id });
-  }
+  // remove(_id: string) {
+  //   return this.repository.findOneAndDelete({ _id });
+  // }
 }

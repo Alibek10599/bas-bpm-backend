@@ -9,11 +9,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super({ usernameField: 'email' });
   }
 
-  async validate(email: string, password: string) {
-    try {
-      return this.userService.verifyUser(email, password);
-    } catch (err) {
-      throw new UnauthorizedException(err);
-    }
-  }
+  // async validate(email: string, password: string) {
+  //   try {
+  //     return this.userService.verifyUser(email, password);
+  //   } catch (err) {
+  //     throw new UnauthorizedException(err);
+  //   }
+  // }
 }

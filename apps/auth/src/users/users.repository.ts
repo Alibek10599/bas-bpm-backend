@@ -8,10 +8,10 @@ import { Model } from 'mongoose';
 export class UsersRepository extends AbstractRepository<UserDocument> {
   protected readonly logger = new Logger(UsersRepository.name);
 
-  constructor(
-    @InjectModel(UserDocument.collectionName)
-    userModel: Model<UserDocument>,
-  ) {
-    super(userModel);
-  }
+  // constructor(
+  //   @InjectModel(UserDocument.collectionName)
+  //   userModel: Model<UserDocument>,
+  // ) {
+  //   super(userModel);
+  // }
 }
