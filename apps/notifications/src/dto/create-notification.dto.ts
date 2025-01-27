@@ -1,8 +1,8 @@
-import { ReservationDocument } from '../models/reservation.schema';
+import { NotificationDocument } from '../models/notification.schema';
 import { IsDate, IsString, IsNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class CreateReservationDto extends ReservationDocument {
+export class CreateNotificationDto extends NotificationDocument {
   @IsDate()
   @Type(() => Date)
   startDate: Date;

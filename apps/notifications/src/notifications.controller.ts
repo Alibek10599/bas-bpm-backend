@@ -9,23 +9,23 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ReservationsService } from './reservations.service';
-import { CreateReservationDto } from './dto/create-reservation.dto';
-import { UpdateReservationDto } from './dto/update-reservation.dto';
+import { notificationsService } from './notifications.service';
+import { CreateNotificationDto } from './dto/create-notification.dto';
+import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { FilterQuery } from 'mongoose';
 import { CurrentUser, JwtAuthGuard, UserDto } from '@app/common';
 
-@Controller('reservations')
-export class ReservationsController {
-  constructor(private readonly service: ReservationsService) {}
+@Controller('notifications')
+export class notificationsController {
+  constructor(private readonly service: notificationsService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
   create(
-    @Body() createReservationDto: CreateReservationDto,
+    @Body() createNotificationDto: CreateNotificationDto,
     @CurrentUser() user: UserDto,
   ) {
-    return this.service.create(createReservationDto, user._id);
+    return this.service.create(createNotificationDto, user._id);
   }
 
   @Get()
@@ -47,9 +47,9 @@ export class ReservationsController {
   @UseGuards(JwtAuthGuard)
   update(
     @Param('id') id: string,
-    @Body() updateReservationDto: UpdateReservationDto,
+    @Body() updateNotificationDto: UpdateNotificationDto,
   ) {
-    return this.service.update(id, updateReservationDto);
+    return this.service.update(id, updateNotificationDto);
   }
 
   @Delete(':id')

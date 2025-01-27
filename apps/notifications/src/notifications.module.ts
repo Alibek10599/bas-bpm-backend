@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ReservationsService } from './reservations.service';
-import { ReservationsController } from './reservations.controller';
+import { notificationsService } from './notifications.service';
+import { notificationsController } from './notifications.controller';
 import { DatabaseModule, LoggerModule } from '@app/common';
-import { ReservationsRepository } from './reservations.repository';
-import { ReservationDocument } from './models/reservation.schema';
+import { notificationsRepository } from './notifications.repository';
+import { NotificationDocument } from './models/notification.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { ClientsModule, Transport } from '@nestjs/microservices';
@@ -12,7 +12,7 @@ import { AUTH_SERVICE } from '@app/common/constants/services';
 @Module({
   imports: [
     DatabaseModule,
-    DatabaseModule.forFeature([ReservationDocument]),
+    DatabaseModule.forFeature([NotificationDocument]),
     LoggerModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -37,7 +37,7 @@ import { AUTH_SERVICE } from '@app/common/constants/services';
       },
     ]),
   ],
-  controllers: [ReservationsController],
-  providers: [ReservationsService, ReservationsRepository],
+  controllers: [notificationsController],
+  providers: [notificationsService, notificationsRepository],
 })
-export class ReservationsModule {}
+export class notificationsModule {}
