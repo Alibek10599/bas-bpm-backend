@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { HealthModule, LoggerModule } from '@app/common';
+import { LoggerModule } from '@app/common';
 import * as Joi from 'joi';
 import { LocalStrategy } from './strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
@@ -15,17 +15,12 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     UsersModule,
     LoggerModule,
     PassportModule,
-    HealthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        DB_HOST: Joi.string().required(),
-        DB_PORT: Joi.number().required(),
-        DB_USERNAME: Joi.string().required(),
-        DB_PASSWORD: Joi.string().required(),
-        DB_NAME: Joi.string().required(),
-        JWT_SECRET: Joi.string().required(),
-        JWT_EXPIRATION_TIME: Joi.string().required(),
+        MONGODB_URI: Joi.string(),
+        JWT_SECRET: Joi.string(),
+        JWT_EXPIRATION_TIME: Joi.string(),
         HTTP_PORT: Joi.number(),
         TCP_PORT: Joi.number(),
       }),
