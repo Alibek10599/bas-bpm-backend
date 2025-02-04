@@ -15,42 +15,29 @@ spec:
         app: auth
     spec:
       containers:
-        - image: southamerica-east1-docker.pkg.dev/slepper-api/auth/production
-          name: auth
-          env:
-            - name: HTTP_PORT
-              value: '3003'
-            - name: TCP_PORT
-              value: '3002'
-            - name: JWT_EXPIRATION_TIME
-              value: '3600'
-            - name: POSTGRES_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
-                  key: host
-            - name: POSTGRES_PORT
-              value: '5432'
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
-                  key: username
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
-                  key: password
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
-                  key: database
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: jwt
-                  key: jwtSecret
-          ports:
-            - containerPort: 3003
-            - containerPort: 3002
+      - env:
+        - name: HTTP_PORT
+          value: '3003'
+        - name: TCP_PORT
+          value: '3000'
+        - name: JWT_EXPIRATION_TIME
+          value: '3600'
+        - name: POSTGRES_HOST
+          value: 'host'
+        - name: POSTGRES_PORT
+          value: '5432'
+        - name: POSTGRES_USER
+          value: 'username'
+        - name: POSTGRES_PASSWORD
+          value: 'password'
+        - name: POSTGRES_DB
+          value: 'database'
+        - name: JWT_SECRET
+          value: 'jwtSecret'
+        image: gitregistry.bas.kz/bas-dev/bas-bpm/bas-bpm-auth:latest
+        name: auth
+        ports:
+          - containerPort: 3003
+          - containerPort: 3000
+      imagePullSecrets:
+      - name: bas-gitregistry-robot

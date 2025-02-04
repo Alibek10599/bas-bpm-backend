@@ -1,5 +1,6 @@
 services:
   auth:
+    image: gitregistry.bas.kz/bas-dev/bas-bpm/bas-bpm-auth:latest
     build:
       context: .
       dockerfile: ./apps/auth/Dockerfile
@@ -7,12 +8,12 @@ services:
     command: pnpm run start:dev auth
     env_file:
       - ./apps/auth/.env
-
     ports:
-      - '3001:3001'
+      - '3001:3000'
     volumes:
       - .:/usr/src/app
   notifications:
+    image: gitregistry.bas.kz/bas-dev/bas-bpm/bas-bpm-notifications:latest
     build:
       context: .
       dockerfile: ./apps/notifications/Dockerfile
@@ -22,12 +23,3 @@ services:
       - ./apps/notifications/.env
     volumes:
       - .:/usr/src/app
-  postgres:
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - '5432:5432'
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data/

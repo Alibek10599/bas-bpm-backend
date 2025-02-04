@@ -1,0 +1,13 @@
+services:
+  auth:
+    image: gitregistry.bas.kz/bas-dev/bas-bpm/bas-bpm-auth:latest
+    command: pnpm run start:dev auth
+    env_file:
+      - ./apps/auth/.env
+    ports:
+      - '3001:3000'
+  notifications:
+    image: gitregistry.bas.kz/bas-dev/bas-bpm/bas-bpm-notifications:latest
+    command: pnpm run start:dev notifications
+    env_file:
+      - ./apps/notifications/.env
