@@ -15,5 +15,6 @@ async function bootstrap() {
 
   await app.startAllMicroservices();
   await app.listen(configService.get('HTTP_PORT'));
+  console.log('Hello notifications BAS BPM DEV!');
 }
 bootstrap();
