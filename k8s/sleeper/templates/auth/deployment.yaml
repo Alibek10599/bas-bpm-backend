@@ -34,7 +34,7 @@ spec:
           value: 'database'
         - name: JWT_SECRET
           value: 'jwtSecret'
-        image: gitregistry.bas.kz/bas-dev/bas-bpm/bas-bpm-auth:latest
+        image: gitregistry.bas.kz/bas-bpm/bas-bpm-backend/bas-bpm-auth:latest
         name: auth
         ports:
           - containerPort: 3003

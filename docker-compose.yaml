@@ -1,6 +1,6 @@
 services:
   auth:
-    image: gitregistry.bas.kz/bas-dev/bas-bpm/bas-bpm-auth:latest
+    image: gitregistry.bas.kz/bas-bpm/bas-bpm-backend/bas-bpm-auth:latest
     build:
       context: .
       dockerfile: ./apps/auth/Dockerfile
@@ -13,7 +13,7 @@ services:
     volumes:
       - .:/usr/src/app
   notifications:
-    image: gitregistry.bas.kz/bas-dev/bas-bpm/bas-bpm-notifications:latest
+    image: gitregistry.bas.kz/bas-bpm/bas-bpm-backend/bas-bpm-notifications:latest
     build:
       context: .
       dockerfile: ./apps/notifications/Dockerfile

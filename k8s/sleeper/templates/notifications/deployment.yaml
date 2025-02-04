@@ -26,7 +26,7 @@ spec:
           value: 'clientSecret'
         - name: GOOGLE_OAUTH_REFRESH_TOKEN
           value: 'refreshToken'
-        image: gitregistry.bas.kz/bas-dev/bas-bpm/bas-bpm-notifications:latest
+        image: gitregistry.bas.kz/bas-bpm/bas-bpm-backend/bas-bpm-notifications:latest
         name: notifications
         ports:
           - containerPort: 3000
