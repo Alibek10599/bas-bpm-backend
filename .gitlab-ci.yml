@@ -20,6 +20,7 @@ build:
     - docker info
   script:
     - ls -l
+    - echo "Should failed"
     - echo $notifications_env > apps/notifications/.env
     - docker compose build
     - docker compose images
