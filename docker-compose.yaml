@@ -1,25 +1,46 @@
 services:
-  auth:
-    image: gitregistry.bas.kz/bas-bpm/bas-bpm-backend/bas-bpm-auth:latest
-    build:
-      context: .
-      dockerfile: ./apps/auth/Dockerfile
-      target: development
-    command: pnpm run start:dev auth
-    env_file:
-      - ./apps/auth/.env
+  # auth:
+  #   image: gitregistry.bas.kz/bas-bpm/bas-bpm-backend/bas-bpm-auth:latest
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/auth/Dockerfile
+  #     target: development
+  #   command: pnpm run start:dev auth
+  #   env_file:
+  #     - ./apps/auth/.env
+  #   ports:
+  #     - '3001:3000'
+  #   volumes:
+  #     - .:/usr/src/app
+  # notifications:
+  #   image: gitregistry.bas.kz/bas-bpm/bas-bpm-backend/bas-bpm-notifications:latest
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/notifications/Dockerfile
+  #     target: development
+  #   command: pnpm run start:dev notifications
+  #   env_file:
+  #     - ./apps/notifications/.env
+  #   volumes:
+  #     - .:/usr/src/app
+
+  db:
+    image: postgres:latest
+    restart: always
     ports:
-      - '3001:3000'
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - .:/usr/src/app
-  notifications:
-    image: gitregistry.bas.kz/bas-bpm/bas-bpm-backend/bas-bpm-notifications:latest
-    build:
-      context: .
-      dockerfile: ./apps/notifications/Dockerfile
-      target: development
-    command: pnpm run start:dev notifications
-    env_file:
-      - ./apps/notifications/.env
-    volumes:
-      - .:/usr/src/app
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bas_network
+
+networks:
+  bas_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
