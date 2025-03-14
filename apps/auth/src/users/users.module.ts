@@ -1,16 +1,13 @@
 import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { UserDocument } from './models/user.schema';
-import { DatabaseModule, LoggerModule } from '@app/common';
+import { DatabaseModule } from '@app/common';
 import { UsersRepository } from './users.repository';
+import { User } from './user.entity';
+import { LoggerModule } from 'nestjs-pino';
 
 @Module({
-  imports: [
-    // DatabaseModule,
-    // DatabaseModule.forFeature([UserDocument]),
-    LoggerModule,
-  ],
+  imports: [DatabaseModule.forFeature([User]), LoggerModule],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository],
   exports: [UsersService],

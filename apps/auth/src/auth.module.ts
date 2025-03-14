@@ -4,26 +4,23 @@ import { AuthService } from './auth.service';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { LoggerModule } from '@app/common';
-import * as Joi from 'joi';
-import { LocalStrategy } from './strategies/local.strategy';
+import { DatabaseModule, LoggerModule } from '@app/common';
 import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersService } from './users/users.service';
+import { User } from './users/user.entity';
+import { UsersRepository } from './users/users.repository';
 
 @Module({
   imports: [
+    DatabaseModule,
     UsersModule,
     LoggerModule,
     PassportModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      validationSchema: Joi.object({
-        MONGODB_URI: Joi.string(),
-        JWT_SECRET: Joi.string(),
-        JWT_EXPIRATION_TIME: Joi.string(),
-        HTTP_PORT: Joi.number(),
-        TCP_PORT: Joi.number(),
-      }),
     }),
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
@@ -34,8 +31,16 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       }),
       inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature([User]), // Register User entity
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    UsersService,
+    UsersRepository,
+  ],
+  exports: [AuthService],
 })
 export class AuthModule {}

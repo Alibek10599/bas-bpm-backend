@@ -1,60 +1,47 @@
 import {
   Injectable,
+  ConflictException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
+import { User } from './user.entity';
 import { UsersRepository } from './users.repository';
 import { FilterQuery } from 'mongoose';
 import { UpdateUserDto } from './dto/update-user.dto';
-import * as bcrypt from 'bcryptjs';
-import { UserDocument } from './models/user.schema';
 
 @Injectable()
 export class UsersService {
-  // constructor(private readonly repository: UsersRepository) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
-  // async create(createUserDto: CreateUserDto) {
-  //   await this.validateCreateUserDto(createUserDto);
-  //   return this.repository.create({
-  //     ...createUserDto,
-  //     password: await bcrypt.hash(createUserDto.password, 10),
-  //   });
-  // }
+  async create(createUserDto: CreateUserDto) {
+    const existingUser = await this.findByUsername(createUserDto.username);
+    if (existingUser) {
+      throw new ConflictException('Username already exists');
+    }
 
-  // private async validateCreateUserDto(createUserDto: CreateUserDto) {
-  //   try {
-  //     await this.repository.findOne({ email: createUserDto.email });
-  //   } catch (err) {
-  //     return;
-  //   }
-  //   throw new UnprocessableEntityException('Email already exists.');
-  // }
+    return this.usersRepository.create(createUserDto);
+  }
 
-  // async verifyUser(email: string, password: string): Promise<UserDocument> {
-  //   const user = await this.repository.findOne({ email });
+  async findByUsername(username: string) {
+    return this.usersRepository.findOne({ username });
+  }
 
-  //   const passwordIsValid = await bcrypt.compare(password, user.password);
-  //   if (!passwordIsValid) {
-  //     throw new UnauthorizedException('Credentials are not valid');
-  //   }
+  async findById(id: string) {
+    return this.usersRepository.findOne({ id });
+  }
 
-  //   return user;
-  // }
+  async validateUser(username: string, password: string): Promise<User | null> {
+    const user = await this.findByUsername(username);
+    if (!user) {
+      return null;
+    }
 
-  // findAll(filterQuery: FilterQuery<any>) {
-  //   return this.repository.find(filterQuery);
-  // }
+    const isPasswordValid = await user.validatePassword(password);
+    if (!isPasswordValid) {
+      return null;
+    }
 
-  // findOne(_id: string) {
-  //   return this.repository.findOne({ _id });
-  // }
-
-  // update(_id: string, updateUserDto: UpdateUserDto) {
-  //   return this.repository.findOneAndUpdate({ _id }, { $set: updateUserDto });
-  // }
-
-  // remove(_id: string) {
-  //   return this.repository.findOneAndDelete({ _id });
-  // }
+    return user;
+  }
 }

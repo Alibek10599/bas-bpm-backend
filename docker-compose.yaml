@@ -23,3 +23,24 @@ services:
       - ./apps/notifications/.env
     volumes:
       - .:/usr/src/app
+
+  db:
+    image: postgres:latest
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bas_network
+
+networks:
+  bas_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
