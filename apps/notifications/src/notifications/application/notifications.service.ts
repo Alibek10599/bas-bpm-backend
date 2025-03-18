@@ -18,10 +18,10 @@ export class NotificationsService {
     input: SendNotificationInput,
   ): Promise<SendNotificationOutput> {
     const template = await this.templateService.findOne(input.templateId);
-    return await this.sendEmailByStrategy(input, template);
+    return await this.sendNotificationByStrategy(input, template);
   }
 
-  private async sendEmailByStrategy(
+  private async sendNotificationByStrategy(
     input: SendNotificationInput,
     template: TemplateDocument,
   ): Promise<SendEmailOutput> {
