@@ -4,7 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import { Logger } from 'nestjs-pino';
 import { ReservationsModule } from './reservations.module';
-import { grpcMsrvCfg } from '@app/common/grpc/grpc.msrv.cfg';
+import { grpcMsrvCfg } from '@app/common/grpc';
 import { join } from 'path';
 
 async function bootstrap() {
