@@ -3,8 +3,8 @@ import { ReflectionService } from '@grpc/reflection';
 
 export const grpcMsrvCfg = (
   url: string,
-  grpcPackage: string,
-  protoPath: string[],
+  grpcPackage: string | string[],
+  protoPath: string | string[],
 ) => ({
   transport: Transport.GRPC,
   options: {

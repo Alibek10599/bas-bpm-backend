@@ -5,7 +5,6 @@ import { Transport } from '@nestjs/microservices';
 import * as cookieParser from 'cookie-parser';
 import { Logger } from 'nestjs-pino';
 import { AuthModule } from './auth.module';
-import { grpcMsrvCfg } from '@app/common/grpc/grpc.msrv.cfg';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
@@ -18,14 +17,6 @@ async function bootstrap() {
       port: configService.get('TCP_PORT'),
     },
   });
-
-  app.connectMicroservice(
-    grpcMsrvCfg(
-      configService.get('GRPC_URL'),
-      configService.get('GRPC_PACKAGE'),
-      configService.get('GRPC_PROTO_PATH'),
-    ),
-  );
 
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
