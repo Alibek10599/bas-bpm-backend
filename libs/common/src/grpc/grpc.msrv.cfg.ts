@@ -1,11 +1,11 @@
-import { Transport } from '@nestjs/microservices';
+import { GrpcOptions, Transport } from '@nestjs/microservices';
 import { ReflectionService } from '@grpc/reflection';
 
 export const grpcMsrvCfg = (
   url: string,
   grpcPackage: string | string[],
   protoPath: string | string[],
-) => ({
+): GrpcOptions => ({
   transport: Transport.GRPC,
   options: {
     package: grpcPackage,

@@ -1,0 +1,1 @@
+export const GRPC_SERVICE_TOKEN = 'GRPC_SERVICE';
