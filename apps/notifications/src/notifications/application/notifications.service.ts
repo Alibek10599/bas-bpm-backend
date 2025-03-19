@@ -3,10 +3,11 @@ import { SendNotificationInput } from './types/send-notification.input';
 import { SendNotificationOutput } from './types/send-notification.output';
 import { NotificationStrategy } from './enums/notification-strategies.enum';
 import { TemplatesService } from '../../templates/application/templates.service';
-import { TemplateDocument } from '../../templates/domain/models/template.schema';
 import { EmailProvider } from './strategies/emain/interfaces/email-provider';
-import { SendEmailOutput } from './strategies/emain/types/send-email.output';
 import { EMAIL_PROVIDER_TOKEN } from '../providers/email.provider.token';
+import { Languages } from '../../shared/languages/languages.enum';
+import { EmailOptions } from './types/email.options';
+import { SmsOptions } from './types/sms.options';
 
 @Injectable()
 export class NotificationsService {
@@ -18,29 +19,45 @@ export class NotificationsService {
   async sendNotification(
     input: SendNotificationInput,
   ): Promise<SendNotificationOutput> {
-    const template = await this.templateService.findOne(input.templateId);
-    return await this.sendNotificationByStrategy(input, template);
-  }
-
-  private async sendNotificationByStrategy(
-    input: SendNotificationInput,
-    template: TemplateDocument,
-  ): Promise<SendEmailOutput> {
     switch (input.strategy) {
       case NotificationStrategy.Email:
-        return await this.sendEmailNotification(input.receiver, template);
+        return await this.sendEmailNotification(
+          input.languages,
+          input.options as EmailOptions,
+        );
+      case NotificationStrategy.Sms:
+        return await this.sendSmsNotification(
+          input.languages,
+          input.options as SmsOptions,
+        );
     }
   }
 
   private async sendEmailNotification(
-    receiver: string,
-    template: TemplateDocument,
+    lang: Languages,
+    options: EmailOptions,
   ): Promise<SendNotificationOutput> {
+    const template = this.templateService.findEmailTemplate(
+      options.templateId,
+      lang,
+    );
+    const templateWithVariables = this.templateService.applyVariables(
+      template,
+      options.variables,
+    );
     await this.emailProvider.send({
-      receiver: receiver,
-      subject: template.title,
-      html: template.text,
+      receiver: options.receiverEmail,
+      subject: template.subject,
+      html: template.html,
     });
+    return { status: 'OK' };
+  }
+
+  private async sendSmsNotification(
+    lang: Languages,
+    options: SmsOptions,
+  ): Promise<SendNotificationOutput> {
+    console.log('Message might be sending', lang, options);
     return { status: 'OK' };
   }
 }

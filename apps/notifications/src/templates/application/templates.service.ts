@@ -1,23 +1,77 @@
 import { Injectable } from '@nestjs/common';
-import { TemplateDocument } from '../domain/models/template.schema';
-import { plainToInstance } from 'class-transformer';
+import { EmailTemplatesEnum } from '../shared/enums/email.templates.enum';
+import { Languages } from '../../shared/languages/languages.enum';
+import { Template } from '../infrastructure/email/types/template';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 @Injectable()
 export class TemplatesService {
-  async findOne(id: string) {
-    return plainToInstance(TemplateDocument, {
-      _id: '21123-213123-12312-421-4',
-      name: 'Hello-world',
-      title: 'Hello-world',
-      text: `<table>
-                <thead>
-                    <tr><td>Курьер</td><td>Кол-во доставок</td></tr>
-                </thead>
-                <tbody>
-                    <tr><td>Руслан</td><td>10</td></tr>
-                </tbody>
-             </table>`,
-      userId: '',
-    });
+  findEmailTemplate(template: EmailTemplatesEnum, lang: Languages): Template {
+    switch (template) {
+      case EmailTemplatesEnum.WELCOME:
+        return this.getEmailWelcomeTemplate(lang);
+      case EmailTemplatesEnum.FORGOT_PASSWORD:
+        return this.getEmailForgotPasswordTemplate(lang);
+    }
+  }
+
+  private getEmailWelcomeTemplate(lang: Languages) {
+    return {
+      subject: lang === 'en' ? 'Welcome!' : 'Добро пожаловать!',
+      html:
+        lang === 'en'
+          ? readFileSync(
+              join(
+                __dirname,
+                'templates/infrastructure/email/templates/welcome.en.html',
+              ),
+            ).toString()
+          : readFileSync(
+              join(
+                __dirname,
+                'templates/infrastructure/email/templates/welcome.ru.html',
+              ),
+            ).toString(),
+    };
+  }
+
+  private getEmailForgotPasswordTemplate(lang: Languages) {
+    return {
+      subject: lang === 'en' ? 'Password recovery!' : 'Восстановление пароля!',
+      html:
+        lang === 'en'
+          ? readFileSync(
+              join(
+                __dirname,
+                'templates/infrastructure/email/templates/forgot-password.en.html',
+              ),
+            ).toString()
+          : readFileSync(
+              join(
+                __dirname,
+                'templates/infrastructure/email/templates/forgot-password.ru.html',
+              ),
+            ).toString(),
+    };
+  }
+
+  applyVariables(
+    template: Template,
+    vars: Record<string, string | number>,
+  ): Template {
+    template.subject = this.fillVariables(template.subject, vars);
+    template.html = this.fillVariables(template.html, vars);
+    return template;
+  }
+
+  private fillVariables(
+    text: string,
+    vars: Record<string, string | number>,
+  ): string {
+    for (const key in vars) {
+      text = text.replace(new RegExp(`{{${key}}}`), `${vars[key]}`);
+    }
+    return text;
   }
 }

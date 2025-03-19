@@ -1,13 +1,22 @@
 import { NotificationStrategy } from '../../../application/enums/notification-strategies.enum';
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum, ValidateNested } from 'class-validator';
+import { Languages } from '../../../../shared/languages/languages.enum';
+import { EmailOptions } from '../../../application/types/email.options';
+import { Type } from 'class-transformer';
+import { SmsOptions } from '../../../application/types/sms.options';
 
 export class SendNotificationDto {
   @IsEnum(NotificationStrategy)
   strategy: NotificationStrategy;
 
-  @IsString()
-  templateId: string;
+  @IsEnum(Languages)
+  languages: Languages;
 
-  @IsString()
-  receiver: string;
+  @ValidateNested()
+  @Type((d) =>
+    d.object.strategy === NotificationStrategy.Email
+      ? EmailOptions
+      : SmsOptions,
+  )
+  options: EmailOptions;
 }

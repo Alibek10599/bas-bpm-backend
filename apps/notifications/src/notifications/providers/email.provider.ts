@@ -7,7 +7,6 @@ import { EMAIL_PROVIDER_TOKEN } from './email.provider.token';
 export const emailProvider: Provider = {
   provide: EMAIL_PROVIDER_TOKEN,
   useFactory: (configService: ConfigService) => {
-    console.log('emailProvider factory called');
     return new EmailNotificationStrategy(new TestProvider());
   },
   inject: [ConfigService],
