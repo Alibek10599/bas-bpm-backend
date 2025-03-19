@@ -14,9 +14,7 @@ export class SendNotificationDto {
 
   @ValidateNested()
   @Type((d) =>
-    d.object.strategy === NotificationStrategy.Email
-      ? EmailOptions
-      : SmsOptions,
+    d.object.strategy === NotificationStrategy.Sms ? SmsOptions : EmailOptions,
   )
   options: EmailOptions;
 }

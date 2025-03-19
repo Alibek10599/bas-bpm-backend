@@ -6,7 +6,7 @@ import { SendNotificationDto } from './dto/send-notification.dto';
 export class HttpNotificationController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
-  @Post('/send')
+  @Post('send')
   sendNotification(
     @Body()
     data: SendNotificationDto,
