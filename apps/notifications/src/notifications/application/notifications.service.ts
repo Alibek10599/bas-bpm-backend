@@ -6,11 +6,12 @@ import { TemplatesService } from '../../templates/application/templates.service'
 import { TemplateDocument } from '../../templates/domain/models/template.schema';
 import { EmailProvider } from './strategies/emain/interfaces/email-provider';
 import { SendEmailOutput } from './strategies/emain/types/send-email.output';
+import { EMAIL_PROVIDER_TOKEN } from '../providers/email.provider.token';
 
 @Injectable()
 export class NotificationsService {
   constructor(
-    @Inject('EMAIL_PROVIDER') private readonly emailProvider: EmailProvider,
+    @Inject(EMAIL_PROVIDER_TOKEN) private readonly emailProvider: EmailProvider,
     private readonly templateService: TemplatesService,
   ) {}
 

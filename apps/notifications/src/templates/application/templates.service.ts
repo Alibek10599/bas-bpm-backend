@@ -8,7 +8,15 @@ export class TemplatesService {
     return plainToInstance(TemplateDocument, {
       _id: '21123-213123-12312-421-4',
       name: 'Hello-world',
-      text: '',
+      title: 'Hello-world',
+      text: `<table>
+                <thead>
+                    <tr><td>Курьер</td><td>Кол-во доставок</td></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Руслан</td><td>10</td></tr>
+                </tbody>
+             </table>`,
       userId: '',
     });
   }

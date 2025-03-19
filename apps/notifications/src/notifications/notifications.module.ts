@@ -5,14 +5,15 @@ import { RmqNotificationController } from './interface/rmq/rmq.notification.cont
 import { NotificationsService } from './application/notifications.service';
 import { TemplatesModule } from '../templates/templates.module';
 import { emailProvider } from './providers/email.provider';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [TemplatesModule],
+  imports: [ConfigModule.forRoot(), TemplatesModule],
+  providers: [emailProvider, NotificationsService],
   controllers: [
     GrpcNotificationController,
     HttpNotificationController,
     RmqNotificationController,
   ],
-  providers: [...emailProvider, NotificationsService],
 })
 export class NotificationsModule {}

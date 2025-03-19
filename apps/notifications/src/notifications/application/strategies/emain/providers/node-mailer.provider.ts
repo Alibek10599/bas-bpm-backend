@@ -11,7 +11,6 @@ export class NodeMailerProvider implements EmailProvider {
       to: input.receiver,
       subject: input.subject,
       html: input.html,
-      text: input.text,
     });
     return { status: 'OK' };
   }

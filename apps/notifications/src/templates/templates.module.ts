@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TemplatesService } from './application/templates.service';
-import { HttpNotificationController } from '../notifications/interface/http/http.notification.controller';
 import { GrpcTemplatesController } from './interface/grpc/grpc.templates.controller';
-import { RmqNotificationController } from '../notifications/interface/rmq/rmq.notification.controller';
+import { HttpTemplatesController } from './interface/http/http.templates.controller';
+import { RmqTemplatesController } from './interface/rmq/rmq.templates.controller';
 
 @Module({
   controllers: [
-    HttpNotificationController,
+    HttpTemplatesController,
     GrpcTemplatesController,
-    RmqNotificationController,
+    RmqTemplatesController,
   ],
   providers: [TemplatesService],
+  exports: [TemplatesService],
 })
 export class TemplatesModule {}
