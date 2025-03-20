@@ -1,7 +1,7 @@
 import { GrpcOptions, Transport } from '@nestjs/microservices';
 import { ReflectionService } from '@grpc/reflection';
 
-export const grpcMsrvCfg = (
+export const grpcCfg = (
   url: string,
   grpcPackage: string | string[],
   protoPath: string | string[],
