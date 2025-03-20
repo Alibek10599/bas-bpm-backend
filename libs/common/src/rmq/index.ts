@@ -1,2 +1,3 @@
-export * from './rmq.module';
-export * from './rmq.msrv.cfg';
+export * from './rabbitmq.module';
+export * from './rabbitmq.cfg';
+export * from './rabbitmq-token.const';

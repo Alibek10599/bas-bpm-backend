@@ -1,15 +1,18 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsProviderAsyncOptions, Transport } from '@nestjs/microservices';
-import { RmqTokenConst } from './rmq-token.const';
+import { RabbitmqTokenConst } from './rabbitmq-token.const';
 
-export const rmqClientCfg = (queue: string): ClientsProviderAsyncOptions => ({
-  name: RmqTokenConst,
+export const rabbitmqClientCfg = (
+  queue: string,
+  urls: string[],
+): ClientsProviderAsyncOptions => ({
+  name: RabbitmqTokenConst,
   imports: [ConfigModule],
   useFactory: (configService: ConfigService) => ({
     transport: Transport.RMQ,
     options: {
       noAck: true,
-      urls: configService.getOrThrow<string>('RMQ_URLS').split(','),
+      urls: urls,
       queue: queue + ':request',
       replyQueue: queue + ':response',
       queueOptions: {
