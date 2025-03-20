@@ -14,6 +14,7 @@ import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { FilterQuery } from 'mongoose';
 import { CurrentUser, JwtAuthGuard, UserDto } from '@app/common';
+import { GrpcMethod, Payload } from '@nestjs/microservices';
 
 @Controller('reservations')
 export class ReservationsController {
@@ -56,5 +57,12 @@ export class ReservationsController {
   @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
     return this.service.remove(id);
+  }
+
+  @GrpcMethod('ReservationsService', 'CreateReservation')
+  createReservationByGrpc(
+    @Payload() createReservationDto: CreateReservationDto,
+  ) {
+    console.log('smth', createReservationDto);
   }
 }

@@ -6,7 +6,7 @@
     "deleteOutDir": true,
     "webpack": true,
     "tsConfigPath": "apps/notifications/tsconfig.app.json",
-    "assets": ["**/*.html"]
+    "assets": ["**/*.html", "**/*.proto"]
   },
   "projects": {
     "common": {
