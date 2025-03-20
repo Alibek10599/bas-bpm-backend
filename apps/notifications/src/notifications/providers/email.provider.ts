@@ -1,0 +1,31 @@
+import { EmailNotificationStrategy } from '../application/strategies/emain/email-notification.strategy';
+import { ConfigService } from '@nestjs/config';
+import { TestProvider } from '../application/strategies/emain/providers/test.provider';
+import { Provider } from '@nestjs/common';
+import { EMAIL_PROVIDER_TOKEN } from './email.provider.token';
+import { PinoLogger } from 'nestjs-pino';
+
+export const emailProvider: Provider = {
+  provide: EMAIL_PROVIDER_TOKEN,
+  useFactory: (configService: ConfigService, logger: PinoLogger) => {
+    return new EmailNotificationStrategy(new TestProvider(logger));
+  },
+  inject: [ConfigService, PinoLogger],
+};
+
+//import { NodeMailerProvider } from '../application/strategies/emain/providers/node-mailer.provider';
+//import { createTransport } from 'nodemailer';
+// new NodeMailerProvider(
+//   createTransport({
+//     host: configService.get<string>('NODEMAILER_HOST'),
+//     port: configService.get<number>('NODEMAILER_PORT'),
+//     secure: configService.get<boolean>('NODEMAILER_SECURE'),
+//     auth: {
+//       user: configService.get<string>('NODEMAILER_USER'),
+//       pass: configService.get<string>('NODEMAILER_PASS'),
+//     },
+//     tls: {
+//       rejectUnauthorized: false,
+//     },
+//   }),
+// ),

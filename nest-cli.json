@@ -1,12 +1,12 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/reservations/src",
+  "sourceRoot": "apps/notifications/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/reservations/tsconfig.app.json",
-    "assets": ["**/*.proto"]
+    "tsConfigPath": "apps/notifications/tsconfig.app.json",
+    "assets": ["**/*.html", "**/*.proto"]
   },
   "projects": {
     "common": {
@@ -27,6 +27,15 @@
         "tsConfigPath": "apps/reservations/tsconfig.app.json"
       }
     },
+    "notifications": {
+      "type": "application",
+      "root": "apps/notifications",
+      "entryFile": "main",
+      "sourceRoot": "apps/notifications/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/notifications/tsconfig.app.json"
+      }
+    },
     "auth": {
       "type": "application",
       "root": "apps/auth",
@@ -38,5 +47,5 @@
     }
   },
   "monorepo": true,
-  "root": "apps/reservations"
+  "root": "apps/notifications"
 }
