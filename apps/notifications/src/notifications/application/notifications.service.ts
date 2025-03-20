@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { SendNotificationInput } from './types/send-notification.input';
 import { SendNotificationOutput } from './types/send-notification.output';
 import { NotificationStrategy } from './enums/notification-strategies.enum';
@@ -8,12 +8,14 @@ import { EMAIL_PROVIDER_TOKEN } from '../providers/email.provider.token';
 import { Languages } from '../../shared/languages/languages.enum';
 import { EmailOptions } from './types/email.options';
 import { SmsOptions } from './types/sms.options';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class NotificationsService {
   constructor(
     @Inject(EMAIL_PROVIDER_TOKEN) private readonly emailProvider: EmailProvider,
     private readonly templateService: TemplatesService,
+    private readonly logger: PinoLogger,
   ) {}
 
   async sendNotification(
@@ -47,8 +49,8 @@ export class NotificationsService {
     );
     await this.emailProvider.send({
       receiver: options.receiverEmail,
-      subject: template.subject,
-      html: template.html,
+      subject: templateWithVariables.subject,
+      html: templateWithVariables.html,
     });
     return { status: 'OK' };
   }
@@ -57,7 +59,7 @@ export class NotificationsService {
     lang: Languages,
     options: SmsOptions,
   ): Promise<SendNotificationOutput> {
-    console.log('Message might be sending', lang, options);
+    this.logger.info('Message might be sending', lang, options);
     return { status: 'OK' };
   }
 }

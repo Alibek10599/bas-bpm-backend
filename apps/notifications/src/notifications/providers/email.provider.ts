@@ -3,13 +3,14 @@ import { ConfigService } from '@nestjs/config';
 import { TestProvider } from '../application/strategies/emain/providers/test.provider';
 import { Provider } from '@nestjs/common';
 import { EMAIL_PROVIDER_TOKEN } from './email.provider.token';
+import { PinoLogger } from 'nestjs-pino';
 
 export const emailProvider: Provider = {
   provide: EMAIL_PROVIDER_TOKEN,
-  useFactory: (configService: ConfigService) => {
-    return new EmailNotificationStrategy(new TestProvider());
+  useFactory: (configService: ConfigService, logger: PinoLogger) => {
+    return new EmailNotificationStrategy(new TestProvider(logger));
   },
-  inject: [ConfigService],
+  inject: [ConfigService, PinoLogger],
 };
 
 //import { NodeMailerProvider } from '../application/strategies/emain/providers/node-mailer.provider';
