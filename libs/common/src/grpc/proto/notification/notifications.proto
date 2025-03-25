@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package notifications;
+
+service NotificationService {
+  rpc SendNotification (SendNotification) returns (SendNotificationResult);
+}
+
+message SendNotification {
+  NotificationStrategies strategy = 1;
+  Languages language = 2;
+  SendNotificationOptions options = 3;
+}
+
+enum NotificationStrategies {
+  NOTIFICATION_STRATEGY_UNSPECIFIED = 0;
+  EMAIL = 1;
+  SMS = 2;
+}
+
+enum Languages {
+  UNDEFINED_LANGUAGE = 0;
+  EN = 1;
+  RU = 2;
+}
+
+message SendNotificationOptions {
+  NotificationTemplates templateId = 1;
+  oneof contact {
+    string receiverEmail = 2;
+    string phone = 3;
+  }
+  map<string, string> variables = 4;
+}
+
+enum NotificationTemplates {
+  NOTIFICATION_TEMPLATE_UNSPECIFIED = 0;
+  WELCOME = 1;
+  FORGOT_PASSWORD = 2;
+}
+
+message SendNotificationResult {
+  string status = 1;
+  string message = 2;
+}

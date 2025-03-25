@@ -6,7 +6,7 @@ import { SmsOptions } from './sms.options';
 export class SendNotificationInput {
   strategy: NotificationStrategy;
 
-  languages: Languages;
+  language: Languages;
 
   options: EmailOptions | SmsOptions;
 }
