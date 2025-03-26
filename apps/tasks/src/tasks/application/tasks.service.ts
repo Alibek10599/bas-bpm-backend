@@ -1,26 +1,80 @@
-import { Injectable } from '@nestjs/common';
-import { CreateTaskDto } from '../interface/http/dto/create-task.dto';
-import { UpdateTaskDto } from '../interface/http/dto/update-task.dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { TaskRepository } from '../domain/repository/task.repository';
+import { FindAllTasksFilter } from '../domain/repository/types/find-all-tasks-filter';
+import { TASK_REPOSITORY_TOKEN } from '../domain/repository/task.repository.token';
+import { CreateTask } from '../domain/repository/types/create-task';
+import { UpdateTask } from '../domain/repository/types/update-task';
+import { TaskStatuses } from '../infrastructure/enums/task-statuses.enum';
 
 @Injectable()
 export class TasksService {
-  create(createTaskDto: CreateTaskDto) {
-    return 'This action adds a new task';
+  constructor(
+    @Inject(TASK_REPOSITORY_TOKEN)
+    private readonly taskRepository: TaskRepository,
+  ) {}
+
+  async create(createTask: CreateTask) {
+    const task = await this.taskRepository.createTask(createTask);
+    return {
+      taskId: task.id,
+      message: 'Task created successfully',
+    };
   }
 
-  findAll() {
-    return `This action returns all tasks`;
+  findAll(filter: FindAllTasksFilter) {
+    return this.taskRepository.findAll(filter);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  findAllPaginated(filter: FindAllTasksFilter) {
+    return this.taskRepository.findAllPaginated(filter);
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  findOne(id: string) {
+    return this.taskRepository.findOneById(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  async findOneTaskStatus(id: string) {
+    const task = await this.taskRepository.findOneById(id);
+    return {
+      taskId: task.id,
+      status: task.status,
+      message: 'Task status retrieved successfully',
+    };
+  }
+
+  async update(id: string, updateTask: UpdateTask) {
+    const task = await this.taskRepository.updateTask(id, updateTask);
+    return {
+      taskId: task.id,
+      message: 'Task updated successfully',
+    };
+  }
+
+  async assignTask(id: string, assignTo: string, userId: string) {
+    const assignedTask = await this.taskRepository.assignTask(
+      id,
+      assignTo,
+      userId,
+    );
+
+    return {
+      taskId: assignedTask.id,
+      status: assignedTask.assigned_to,
+      message: 'Task assigned successfully',
+    };
+  }
+
+  async completeTask(id: string, userId: string) {
+    const completedTask = await this.taskRepository.completeTask(
+      id,
+      TaskStatuses.COMPLETED,
+      userId,
+    );
+
+    return {
+      taskId: completedTask.id,
+      status: completedTask.status,
+      message: 'Task completed successfully',
+    };
   }
 }

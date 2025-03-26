@@ -5,6 +5,9 @@ import * as Joi from 'joi';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AUTH_SERVICE } from '@app/common/constants/services';
 import { TasksModule } from './tasks/tasks.module';
+import { TasksVersionsModule } from './tasks-versions/tasks-versions.module';
+import { TasksDelegationsModule } from './tasks-delegations/tasks-delegations.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
@@ -31,7 +34,10 @@ import { TasksModule } from './tasks/tasks.module';
         inject: [ConfigService],
       },
     ]),
+    DatabaseModule,
     TasksModule,
+    TasksVersionsModule,
+    TasksDelegationsModule,
   ],
   controllers: [],
   providers: [],
