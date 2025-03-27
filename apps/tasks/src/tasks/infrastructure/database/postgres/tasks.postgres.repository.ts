@@ -7,8 +7,6 @@ import { UpdateTask } from '../../../domain/repository/types/update-task';
 import { TaskEntity } from './entities/task.entity';
 import { DataSource, Repository } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
-import { TaskStatuses } from '../../enums/task-statuses.enum';
-import { TaskVersion } from '../../../../tasks-versions/infrastructure/database/postgres/entities/task-version.entity';
 
 @Injectable()
 export class TasksPostgresRepository implements TaskRepository {

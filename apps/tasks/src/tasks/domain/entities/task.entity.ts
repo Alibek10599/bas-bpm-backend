@@ -4,7 +4,7 @@ import { TaskType } from '../../infrastructure/enums/task-types.enum';
 export class Task {
   id: string;
 
-  workflow_instance_id?: string;
+  workflowInstanceId?: string;
 
   name: string;
 
@@ -14,17 +14,17 @@ export class Task {
 
   type: TaskType;
 
-  assigned_to?: string;
+  assignedTo?: string;
 
-  delegated_to?: string;
+  delegatedTo?: string;
 
   metadata: any;
 
-  user_id?: string;
+  userId?: string;
 
-  tenant_id?: string;
+  tenantId?: string;
 
-  created_at: string;
+  createdAt: string;
 
-  updated_at: string;
+  updatedAt: string;
 }
