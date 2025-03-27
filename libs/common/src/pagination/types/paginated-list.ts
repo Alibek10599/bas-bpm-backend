@@ -1,4 +1,4 @@
-export class PaginatedList<TItem> {
+export class PaginatedList<TItem, TInfo = { count: number }> {
   items: TItem[];
-  count: number;
+  info: TInfo;
 }

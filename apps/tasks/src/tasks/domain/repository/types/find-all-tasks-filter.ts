@@ -1,1 +1,5 @@
-export class FindAllTasksFilter {}
+export class FindAllTasksFilter {
+  search?: string;
+  take?: number;
+  skip?: number;
+}

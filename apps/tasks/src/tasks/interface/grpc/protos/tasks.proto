@@ -3,10 +3,14 @@ syntax = "proto3";
 package tasks;
 
 service TaskService {
-  rpc CreateTask (CreateTask) returns (CreateTaskResult);
-  rpc CompleteTask (CompleteTask) returns (CompleteTaskResult);
-  rpc AssignTask (AssignTask) returns (AssignTaskResult);
-  rpc GetTaskStatus (GetTaskStatus) returns (GetTaskStatusResult);
+  rpc CreateTask (CreateTaskWrapper) returns (CreateTaskResult);
+  rpc UpdateTask (UpdateTaskWrapper) returns (UpdateTaskResult);
+  rpc CompleteTask (CompleteTaskWrapper) returns (CompleteTaskResult);
+  rpc AssignTask (AssignTaskWrapper) returns (AssignTaskResult);
+  rpc GetTaskById (GetTaskByIdWrapper) returns (Task);
+  rpc GetTaskList (FindAllTasksFilter) returns (TaskList);
+  rpc GetTaskPaginated (FindAllTasksFilter) returns (PaginatedTaskList);
+  rpc GetTaskStatus (GetTaskStatusWrapper) returns (GetTaskStatusResult);
 }
 
 message CreateTask {
@@ -17,6 +21,14 @@ message CreateTask {
   string assignedTo = 5;
   TaskType taskType  = 6;
   CreateTaskMetadata metadata = 7;
+}
+
+message UpdateTask {
+  string taskId = 1;
+  string workflowInstanceId = 2;
+  string name = 3;
+  string description = 4;
+  TaskType taskType = 5;
 }
 
 enum TaskType {
@@ -30,6 +42,11 @@ message CreateTaskMetadata {
 }
 
 message CreateTaskResult {
+  string taskId = 1;
+  string message = 2;
+}
+
+message UpdateTaskResult {
   string taskId = 1;
   string message = 2;
 }
@@ -63,4 +80,69 @@ message GetTaskStatusResult {
   string taskId = 1;
   string status = 2;
   string message = 3;
+}
+
+message GetTaskById {
+  string taskId = 1;
+}
+
+message FindAllTasksFilter {
+  string search = 1;
+  int32 take = 2;
+  int32 skip = 3;
+}
+
+message Task {
+  string id = 1;
+  string workflowInstanceId = 2;
+  string name = 3;
+  string description = 4;
+  string status = 5;
+  string type = 6;
+  string assignedTo = 7;
+  string delegatedTo = 8;
+  map<string, string> metadata = 9;
+  string userId = 10;
+  string tenantId = 11;
+  string createdAt = 12;
+  string updatedAt = 13;
+}
+
+message TaskList {
+  repeated Task items = 1;
+}
+
+message PaginatedTaskList {
+  repeated Task items = 1;
+  int32 count = 2;
+}
+
+message CreateTaskWrapper {
+  CreateTask body = 1;
+  map<string, string> metadata = 2;
+}
+
+message UpdateTaskWrapper {
+  UpdateTask body = 1;
+  map<string, string> metadata = 2;
+}
+
+message CompleteTaskWrapper {
+  CompleteTask body = 1;
+  map<string, string> metadata = 2;
+}
+
+message AssignTaskWrapper {
+  AssignTask body = 1;
+  map<string, string> metadata = 2;
+}
+
+message GetTaskStatusWrapper {
+  GetTaskStatus body = 1;
+  map<string, string> metadata = 2;
+}
+
+message GetTaskByIdWrapper {
+  GetTaskById body = 1;
+  map<string, string> metadata = 2;
 }

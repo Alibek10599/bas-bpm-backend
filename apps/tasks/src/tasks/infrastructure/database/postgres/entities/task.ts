@@ -12,7 +12,7 @@ import { TaskType } from '../../../enums/task-types.enum';
 import { TaskTypeTransformer } from '../mappers/task-type.transformer';
 
 @Entity('tasks')
-export class TaskEntity {
+export class Task {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

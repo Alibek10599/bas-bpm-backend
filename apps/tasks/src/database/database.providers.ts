@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DATABASE_PROVIDER_TOKEN } from './database-provider-token.const';
 import { join } from 'path';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-import { TaskEntity } from '../tasks/infrastructure/database/postgres/entities/task.entity';
+import { Task } from '../tasks/infrastructure/database/postgres/entities/task';
 import { TaskVersion } from '../tasks-versions/infrastructure/database/postgres/entities/task-version.entity';
 import { TaskDelegation } from '../tasks-delegations/infrastructure/database/postgres/entities/task-delegation';
 
@@ -16,7 +16,7 @@ export const databaseProviders = [
       return new DataSource({
         type: 'postgres',
         url: cfg.get('POSTGRES_URL'),
-        entities: [TaskEntity, TaskVersion, TaskDelegation],
+        entities: [Task, TaskVersion, TaskDelegation],
         synchronize: true,
         logging: true,
       } as PostgresConnectionOptions).initialize();

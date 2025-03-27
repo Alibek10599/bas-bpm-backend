@@ -6,7 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { TaskEntity } from '../../../../../tasks/infrastructure/database/postgres/entities/task.entity';
+import { Task } from '../../../../../tasks/infrastructure/database/postgres/entities/task';
 
 @Entity('task_delegations')
 export class TaskDelegation {
@@ -14,9 +14,9 @@ export class TaskDelegation {
   id: string;
 
   //(UUID, FK -> `tasks.id`): Идентификатор задачи.
-  @ManyToOne(() => TaskEntity, (task) => task.id)
+  @ManyToOne(() => Task, (task) => task.id)
   @JoinColumn({ name: 'task_id' })
-  task: TaskEntity;
+  task: Task;
 
   //(UUID, FK -> `users.id`): От кого делегирована.
   @Column({ type: 'varchar', default: null })

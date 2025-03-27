@@ -11,8 +11,6 @@ export class CreateTask {
 
   assignedTo: string;
 
-  metadata: any;
-
   userId: string;
 
   tenantId: string;

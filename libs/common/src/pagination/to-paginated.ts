@@ -6,6 +6,8 @@ export const toPaginated = <TItem>(
 ): PaginatedList<TItem> => {
   return {
     items: items,
-    count: count,
+    info: {
+      count: count,
+    },
   };
 };

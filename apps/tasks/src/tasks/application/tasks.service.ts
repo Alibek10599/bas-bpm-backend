@@ -5,10 +5,16 @@ import { TASK_REPOSITORY_TOKEN } from '../domain/repository/task.repository.toke
 import { CreateTask } from '../domain/repository/types/create-task';
 import { UpdateTask } from '../domain/repository/types/update-task';
 import { TaskStatuses } from '../infrastructure/enums/task-statuses.enum';
-import { TaskEntity } from '../infrastructure/database/postgres/entities/task.entity';
+import { Task } from '../infrastructure/database/postgres/entities/task';
 import { TaskVersion } from '../../tasks-versions/infrastructure/database/postgres/entities/task-version.entity';
 import { DataSource } from 'typeorm';
 import { DATABASE_PROVIDER_TOKEN } from '../../database/database-provider-token.const';
+import { CreateTaskResponseDto } from '../interface/dto/create-task-response.dto';
+import { PaginatedList } from '@app/common/pagination';
+import { TaskStatusResponseDto } from '../interface/dto/task-status-response.dto';
+import { UpdateTaskResponseDto } from '../interface/dto/update-task-response.dto';
+import { AssignTaskResponseDto } from '../interface/dto/assign-task-response.dto';
+import { CompleteTaskResponseDto } from '../interface/dto/complete-task-response.dto';
 
 @Injectable()
 export class TasksService {
@@ -19,7 +25,7 @@ export class TasksService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async create(createTask: CreateTask) {
+  async create(createTask: CreateTask): Promise<CreateTaskResponseDto> {
     const task = await this.taskRepository.createTask(createTask);
     return {
       taskId: task.id,
@@ -27,19 +33,19 @@ export class TasksService {
     };
   }
 
-  findAll(filter: FindAllTasksFilter) {
+  findAll(filter: FindAllTasksFilter): Promise<Task[]> {
     return this.taskRepository.findAll(filter);
   }
 
-  findAllPaginated(filter: FindAllTasksFilter) {
+  findAllPaginated(filter: FindAllTasksFilter): Promise<PaginatedList<Task>> {
     return this.taskRepository.findAllPaginated(filter);
   }
 
-  findOne(id: string) {
+  findOne(id: string): Promise<Task> {
     return this.taskRepository.findOneById(id);
   }
 
-  async findOneTaskStatus(id: string) {
+  async findOneTaskStatus(id: string): Promise<TaskStatusResponseDto> {
     const task = await this.taskRepository.findOneById(id);
     return {
       taskId: task.id,
@@ -48,7 +54,10 @@ export class TasksService {
     };
   }
 
-  async update(id: string, updateTask: UpdateTask) {
+  async update(
+    id: string,
+    updateTask: UpdateTask,
+  ): Promise<UpdateTaskResponseDto> {
     const task = await this.taskRepository.updateTask(id, updateTask);
     return {
       taskId: task.id,
@@ -56,9 +65,13 @@ export class TasksService {
     };
   }
 
-  async assignTask(id: string, assignTo: string, userId: string) {
+  async assignTask(
+    id: string,
+    assignTo: string,
+    userId: string,
+  ): Promise<AssignTaskResponseDto> {
     return await this.dataSource.transaction('REPEATABLE READ', async (em) => {
-      const taskRepo = em.getRepository(TaskEntity);
+      const taskRepo = em.getRepository(Task);
       const versionRepo = em.getRepository(TaskVersion);
 
       const currentTask = await taskRepo.findOneBy({ id });
@@ -91,11 +104,12 @@ export class TasksService {
     });
   }
 
-  async completeTask(id: string, userId: string) {
+  async completeTask(
+    id: string,
+    userId: string,
+  ): Promise<CompleteTaskResponseDto> {
     return await this.dataSource.transaction('REPEATABLE READ', async (em) => {
-      const currentTask = await em
-        .getRepository(TaskEntity)
-        .findOneByOrFail({ id });
+      const currentTask = await em.getRepository(Task).findOneByOrFail({ id });
       const currentTaskVersion = await em
         .getRepository(TaskVersion)
         .findOne({ where: { task: currentTask }, order: { id: 'desc' } });
@@ -104,7 +118,7 @@ export class TasksService {
 
       currentTask.status = TaskStatuses.COMPLETED;
 
-      const task = await em.getRepository(TaskEntity).save(currentTask);
+      const task = await em.getRepository(Task).save(currentTask);
 
       await em.getRepository(TaskVersion).save({
         task,

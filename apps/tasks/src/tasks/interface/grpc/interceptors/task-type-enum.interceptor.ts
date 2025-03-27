@@ -16,12 +16,12 @@ export class TaskTypeEnumInterceptor implements NestInterceptor {
   ): Observable<any> {
     const call = context.switchToRpc().getData();
 
-    call.type = this.mapStrategy(call.type);
+    call.type = this.mapTaskType(call.type);
 
     return next.handle();
   }
 
-  private mapStrategy(type: any): TaskType {
+  private mapTaskType(type: any): TaskType {
     switch (type) {
       case 1:
         return TaskType.WORKFLOW;

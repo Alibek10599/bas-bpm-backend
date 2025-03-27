@@ -9,12 +9,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TasksService } from '../../application/tasks.service';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { CreateTaskDto } from '../dto/create-task.dto';
+import { UpdateTaskHttpDto } from './dto/update-task-http.dto';
 import { FindAllTasksFilter } from '../../domain/repository/types/find-all-tasks-filter';
 import { CurrentUser } from '@app/common';
 import { JwtAuthGuard } from '../../../../../auth/src/guards/jwt-auth.guard';
-import { AssignTaskDto } from './dto/assign-task.dto';
+import { AssignTaskHttpDto } from './dto/assign-task-http.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -30,7 +30,6 @@ export class TasksController {
       type: createTaskDto.taskType,
       assignedTo: createTaskDto.assignedTo,
       tenantId: user.tenantId,
-      metadata: createTaskDto.metadata,
       userId: user.userId,
       workflowInstanceId: createTaskDto.workflowInstanceId,
     });
@@ -60,11 +59,11 @@ export class TasksController {
   assignTask(
     @CurrentUser() user: any,
     @Param('id') id: string,
-    @Body() assignTaskDto: AssignTaskDto,
+    @Body() assignTaskDto: AssignTaskHttpDto,
   ) {
     return this.tasksService.assignTask(
       id,
-      assignTaskDto.assignTo,
+      assignTaskDto.assignedTo,
       user.userId,
     );
   }
@@ -78,12 +77,11 @@ export class TasksController {
   update(
     @CurrentUser() user: any,
     @Param('id') id: string,
-    @Body() updateTaskDto: UpdateTaskDto,
+    @Body() updateTaskDto: UpdateTaskHttpDto,
   ) {
     return this.tasksService.update(id, {
       name: updateTaskDto.name,
       description: updateTaskDto.description,
-      metadata: updateTaskDto.metadata,
       type: updateTaskDto.taskType,
       workflowInstanceId: updateTaskDto.workflowInstanceId,
     });
