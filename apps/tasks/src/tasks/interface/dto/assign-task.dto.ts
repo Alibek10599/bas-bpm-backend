@@ -1,4 +1,4 @@
 export class AssignTaskDto {
-  id: string;
+  taskId: string;
   assignedTo: string;
 }

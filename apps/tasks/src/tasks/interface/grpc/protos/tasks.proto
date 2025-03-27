@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package tasks;
+
+service TaskService {
+  rpc CreateTask (CreateTask) returns (CreateTaskResult);
+  rpc CompleteTask (CompleteTask) returns (CompleteTaskResult);
+  rpc AssignTask (AssignTask) returns (AssignTaskResult);
+  rpc GetTaskStatus (GetTaskStatus) returns (GetTaskStatusResult);
+}
+
+message CreateTask {
+  string workflowInstanceId = 1;
+  string name = 2;
+  string description = 3;
+  string status = 4;
+  string assignedTo = 5;
+  TaskType taskType  = 6;
+  CreateTaskMetadata metadata = 7;
+}
+
+enum TaskType {
+  UNDEFINED_TASK_TYPE = 0;
+  WORKFLOW = 1;
+  GENERAL = 2;
+}
+
+message CreateTaskMetadata {
+  string priority = 1;
+}
+
+message CreateTaskResult {
+  string taskId = 1;
+  string message = 2;
+}
+
+message CompleteTask {
+  string taskId = 1;
+}
+
+message CompleteTaskResult {
+  string taskId = 1;
+  string status = 2;
+  string message = 3;
+}
+
+message AssignTask {
+  string taskId = 1;
+  string assignedTo = 2;
+}
+
+message AssignTaskResult {
+  string taskId = 1;
+  string status = 2;
+  string message = 3;
+}
+
+message GetTaskStatus {
+  string taskId = 1;
+}
+
+message GetTaskStatusResult {
+  string taskId = 1;
+  string status = 2;
+  string message = 3;
+}

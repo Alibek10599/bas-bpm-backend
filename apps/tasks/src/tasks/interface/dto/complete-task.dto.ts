@@ -1,3 +1,3 @@
 export class CompleteTaskDto {
-  id: string;
+  taskId: string;
 }

@@ -1,16 +1,18 @@
 import { TasksService } from '../../application/tasks.service';
-import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { Controller, UseInterceptors } from '@nestjs/common';
+import { GrpcMethod, Payload } from '@nestjs/microservices';
 import { CreateTaskDto } from '../http/dto/create-task.dto';
-import { AssignTaskDto } from '../dto/assign-task.dto';
 import { CompleteTaskDto } from '../dto/complete-task.dto';
+import { AssignTaskDto } from '../dto/assign-task.dto';
 import { GetTaskStatusDto } from '../dto/get-task-status.dto';
+import { TaskTypeEnumInterceptor } from './interceptors/task-type-enum.interceptor';
 
 @Controller()
-export class RmqTasksController {
+export class GrpcTasksController {
   constructor(private readonly tasksService: TasksService) {}
 
-  @MessagePattern('task.create')
+  @UseInterceptors(TaskTypeEnumInterceptor)
+  @GrpcMethod('TasksService', 'CreateTask')
   async createTask(
     @Payload('metadata') metadata: any,
     @Payload() createTaskDto: CreateTaskDto,
@@ -28,7 +30,7 @@ export class RmqTasksController {
     });
   }
 
-  @MessagePattern('task.complete')
+  @GrpcMethod('TasksService', 'CompleteTask')
   async completeTask(
     @Payload('metadata') metadata: any,
     @Payload() completeTaskDto: CompleteTaskDto,
@@ -39,7 +41,7 @@ export class RmqTasksController {
     );
   }
 
-  @MessagePattern('task.assign')
+  @GrpcMethod('TasksService', 'AssignTask')
   async assignTask(
     @Payload('metadata') metadata: any,
     @Payload() assignTaskDto: AssignTaskDto,
@@ -51,7 +53,7 @@ export class RmqTasksController {
     );
   }
 
-  @MessagePattern('task.status')
+  @GrpcMethod('TasksService', 'GetTaskStatus')
   async getTaskStatus(@Payload() getTaskStatusDto: GetTaskStatusDto) {
     return await this.tasksService.findOneTaskStatus(getTaskStatusDto.taskId);
   }
