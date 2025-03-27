@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TaskRepository } from '../domain/repository/task.repository';
 import { FindAllTasksFilter } from '../domain/repository/types/find-all-tasks-filter';
 import { TASK_REPOSITORY_TOKEN } from '../domain/repository/task.repository.token';
@@ -41,8 +41,12 @@ export class TasksService {
     return this.taskRepository.findAllPaginated(filter);
   }
 
-  findOne(id: string): Promise<Task> {
-    return this.taskRepository.findOneById(id);
+  async findOne(id: string): Promise<Task> {
+    const task = await this.taskRepository.findOneById(id);
+    if (!task) {
+      throw new NotFoundException('Task does not exist');
+    }
+    return task;
   }
 
   async findOneTaskStatus(id: string): Promise<TaskStatusResponseDto> {
@@ -57,12 +61,50 @@ export class TasksService {
   async update(
     id: string,
     updateTask: UpdateTask,
+    userId: string,
   ): Promise<UpdateTaskResponseDto> {
-    const task = await this.taskRepository.updateTask(id, updateTask);
-    return {
-      taskId: task.id,
-      message: 'Task updated successfully',
-    };
+    return await this.dataSource.transaction('REPEATABLE READ', async (em) => {
+      const taskRepo = em.getRepository(Task);
+      const versionRepo = em.getRepository(TaskVersion);
+
+      const task = await taskRepo.findOneBy({ id });
+
+      if (!task) {
+        throw new Error(`Task with id ${id} not found`);
+      }
+
+      const currentTaskVersion = await versionRepo.findOne({
+        where: { task: { id } },
+        order: { id: 'desc' },
+      });
+
+      const updatedTask = await this.taskRepository.updateTask(id, updateTask);
+
+      await versionRepo.save({
+        task: updatedTask,
+        changed_data: this.getTaskChanges(task, updateTask),
+        version: (currentTaskVersion?.version ?? 0) + 1,
+        user_id: userId,
+      });
+
+      return {
+        taskId: task.id,
+        message: 'Task updated successfully',
+      };
+    });
+  }
+
+  private getTaskChanges(task: Task, updateTask: UpdateTask) {
+    const changes = {};
+    for (const key in updateTask) {
+      if (task[key] && updateTask[key] && updateTask[key] !== task[key]) {
+        changes[key] = {
+          old: task[key],
+          new: updateTask[key],
+        };
+      }
+    }
+    return changes;
   }
 
   async assignTask(
@@ -79,8 +121,10 @@ export class TasksService {
         throw new Error(`Task with id ${id} not found`);
       }
 
+      const oldAssignedTo = currentTask.assignedTo;
+
       const currentTaskVersion = await versionRepo.findOne({
-        where: { task: currentTask },
+        where: { task: { id } },
         order: { id: 'desc' },
       });
 
@@ -90,7 +134,7 @@ export class TasksService {
       await versionRepo.save({
         task: updatedTask,
         changed_data: {
-          assigned_to: { old: currentTask.assignedTo, new: assignTo },
+          assignedTo: { old: oldAssignedTo, new: assignTo },
         },
         version: (currentTaskVersion?.version ?? 0) + 1,
         user_id: userId,
@@ -112,7 +156,7 @@ export class TasksService {
       const currentTask = await em.getRepository(Task).findOneByOrFail({ id });
       const currentTaskVersion = await em
         .getRepository(TaskVersion)
-        .findOne({ where: { task: currentTask }, order: { id: 'desc' } });
+        .findOne({ where: { task: { id } }, order: { id: 'desc' } });
 
       const oldStatus = currentTask.status;
 

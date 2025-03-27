@@ -22,14 +22,9 @@ export class GrpcTasksController {
     @Payload('body') createTaskDto: CreateTaskDto,
   ) {
     return this.tasksService.create({
-      name: createTaskDto.name,
-      description: createTaskDto.description,
-      status: createTaskDto.status,
-      type: createTaskDto.taskType,
-      assignedTo: createTaskDto.assignedTo,
+      ...createTaskDto,
       userId: metadata.userId,
       tenantId: metadata.tenantId,
-      workflowInstanceId: createTaskDto.workflowInstanceId,
     });
   }
 
@@ -38,12 +33,11 @@ export class GrpcTasksController {
     @Payload('metadata') metadata: RequestMetadata,
     @Payload('body') updateTaskDto: UpdateTaskDto,
   ) {
-    return this.tasksService.update(updateTaskDto.taskId, {
-      name: updateTaskDto.name,
-      description: updateTaskDto.description,
-      type: updateTaskDto.taskType,
-      workflowInstanceId: updateTaskDto.workflowInstanceId,
-    });
+    return this.tasksService.update(
+      updateTaskDto.taskId,
+      updateTaskDto,
+      metadata.userId,
+    );
   }
 
   @GrpcMethod('TasksService', 'GetTaskPaginated')

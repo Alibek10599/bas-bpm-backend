@@ -1,9 +1,8 @@
-import { Task } from '../entities/task.entity';
 import { CreateTask } from './types/create-task';
 import { UpdateTask } from './types/update-task';
 import { FindAllTasksFilter } from './types/find-all-tasks-filter';
 import { PaginatedList } from '@app/common/pagination';
-import { TaskStatuses } from '../../infrastructure/enums/task-statuses.enum';
+import { Task } from '../../infrastructure/database/postgres/entities/task';
 
 export interface TaskRepository {
   findOneById(id: string): Promise<Task>;

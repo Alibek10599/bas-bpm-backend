@@ -5,15 +5,12 @@ import { FindAllTasksFilter } from '../../../domain/repository/types/find-all-ta
 import { PaginatedList, toPaginated } from '@app/common/pagination';
 import { UpdateTask } from '../../../domain/repository/types/update-task';
 import { Task } from './entities/task';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class TasksPostgresRepository implements TaskRepository {
-  constructor(
-    private readonly taskRepository: Repository<Task>,
-    private readonly dataSource: DataSource,
-  ) {}
+  constructor(private readonly taskRepository: Repository<Task>) {}
 
   async createTask(createTask: CreateTask): Promise<Task> {
     return this.taskRepository.save(plainToInstance(Task, createTask));

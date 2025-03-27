@@ -9,7 +9,9 @@ export class CreateTask {
 
   type: string;
 
-  assignedTo: string;
+  assignedTo?: string;
+
+  metadata?: any;
 
   userId: string;
 

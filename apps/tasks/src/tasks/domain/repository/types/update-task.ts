@@ -6,6 +6,7 @@ export class UpdateTask {
   description?: string;
   status?: string;
   assignedTo?: string;
+  metadata?: any;
   type?: TaskType;
   tenantId?: string;
 }
