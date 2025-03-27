@@ -79,11 +79,15 @@ export class TasksController {
     @Param('id') id: string,
     @Body() updateTaskDto: UpdateTaskHttpDto,
   ) {
-    return this.tasksService.update(id, {
-      name: updateTaskDto.name,
-      description: updateTaskDto.description,
-      type: updateTaskDto.taskType,
-      workflowInstanceId: updateTaskDto.workflowInstanceId,
-    });
+    return this.tasksService.update(
+      id,
+      {
+        name: updateTaskDto.name,
+        description: updateTaskDto.description,
+        type: updateTaskDto.taskType,
+        workflowInstanceId: updateTaskDto.workflowInstanceId,
+      },
+      user.userId,
+    );
   }
 }

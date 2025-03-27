@@ -38,12 +38,16 @@ export class GrpcTasksController {
     @Payload('metadata') metadata: RequestMetadata,
     @Payload('body') updateTaskDto: UpdateTaskDto,
   ) {
-    return this.tasksService.update(updateTaskDto.taskId, {
-      name: updateTaskDto.name,
-      description: updateTaskDto.description,
-      type: updateTaskDto.taskType,
-      workflowInstanceId: updateTaskDto.workflowInstanceId,
-    });
+    return this.tasksService.update(
+      updateTaskDto.taskId,
+      {
+        name: updateTaskDto.name,
+        description: updateTaskDto.description,
+        type: updateTaskDto.taskType,
+        workflowInstanceId: updateTaskDto.workflowInstanceId,
+      },
+      metadata.userId,
+    );
   }
 
   @GrpcMethod('TasksService', 'GetTaskPaginated')

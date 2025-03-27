@@ -57,12 +57,49 @@ export class TasksService {
   async update(
     id: string,
     updateTask: UpdateTask,
+    userId: string,
   ): Promise<UpdateTaskResponseDto> {
-    const task = await this.taskRepository.updateTask(id, updateTask);
-    return {
-      taskId: task.id,
-      message: 'Task updated successfully',
-    };
+    return await this.dataSource.transaction('REPEATABLE READ', async (em) => {
+      const taskRepo = em.getRepository(Task);
+      const versionRepo = em.getRepository(TaskVersion);
+
+      const task = await taskRepo.findOneBy({ id });
+      const currentTaskVersion = await versionRepo.findOne({
+        where: { task: task },
+        order: { id: 'desc' },
+      });
+
+      if (!task) {
+        throw new Error(`Task with id ${id} not found`);
+      }
+
+      const updatedTask = await this.taskRepository.updateTask(id, updateTask);
+
+      await versionRepo.save({
+        task: updatedTask,
+        changed_data: this.getTaskChanges(task, updateTask),
+        version: (currentTaskVersion?.version ?? 0) + 1,
+        user_id: userId,
+      });
+
+      return {
+        taskId: task.id,
+        message: 'Task updated successfully',
+      };
+    });
+  }
+
+  private getTaskChanges(task: Task, updateTask: UpdateTask) {
+    const changes = {};
+    for (const key in updateTask) {
+      if (updateTask[key] !== task[key]) {
+        changes[key] = {
+          old: task[key],
+          new: updateTask[key],
+        };
+      }
+    }
+    return changes;
   }
 
   async assignTask(
@@ -79,6 +116,8 @@ export class TasksService {
         throw new Error(`Task with id ${id} not found`);
       }
 
+      const oldAssignedTo = currentTask.assignedTo;
+
       const currentTaskVersion = await versionRepo.findOne({
         where: { task: currentTask },
         order: { id: 'desc' },
@@ -90,7 +129,7 @@ export class TasksService {
       await versionRepo.save({
         task: updatedTask,
         changed_data: {
-          assigned_to: { old: currentTask.assignedTo, new: assignTo },
+          assignedTo: { old: oldAssignedTo, new: assignTo },
         },
         version: (currentTaskVersion?.version ?? 0) + 1,
         user_id: userId,
