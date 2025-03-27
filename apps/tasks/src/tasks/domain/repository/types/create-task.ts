@@ -1,5 +1,5 @@
 export class CreateTask {
-  workflow_instance_id?: string;
+  workflowInstanceId?: string;
 
   name: string;
 
@@ -9,11 +9,11 @@ export class CreateTask {
 
   type: string;
 
-  assigned_to: string;
+  assignedTo: string;
 
   metadata: any;
 
-  user_id: string;
+  userId: string;
 
-  tenant_id: string;
+  tenantId: string;
 }

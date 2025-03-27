@@ -20,11 +20,11 @@ export class RmqTasksController {
       description: createTaskDto.description,
       status: createTaskDto.status,
       type: createTaskDto.taskType,
-      assigned_to: createTaskDto.assignedTo,
+      assignedTo: createTaskDto.assignedTo,
       metadata: createTaskDto.metadata,
-      user_id: metadata.userId,
-      tenant_id: metadata.tenantId,
-      workflow_instance_id: createTaskDto.workflowInstanceId,
+      userId: metadata.userId,
+      tenantId: metadata.tenantId,
+      workflowInstanceId: createTaskDto.workflowInstanceId,
     });
   }
 

@@ -1,12 +1,12 @@
 import { TaskType } from '../../../infrastructure/enums/task-types.enum';
 
 export class UpdateTask {
-  workflow_instance_id?: string;
+  workflowInstanceId?: string;
   name?: string;
   description?: string;
   status?: string;
-  assigned_to?: string;
+  assignedTo?: string;
   type?: TaskType;
   metadata?: any;
-  tenant_id?: string;
+  tenantId?: string;
 }

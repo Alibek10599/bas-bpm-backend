@@ -17,8 +17,8 @@ export class TaskEntity {
   id: string;
 
   //(UUID, FK -> `workflow_instances.id`, nullable): Идентификатор экземпляра процесса.
-  @Column({ default: null })
-  workflow_instance_id?: string;
+  @Column({ default: null, name: 'workflow_instance_id' })
+  workflowInstanceId?: string;
 
   //(VARCHAR): Название задачи.
   @Column({ type: 'varchar' })
@@ -50,15 +50,17 @@ export class TaskEntity {
   @Column({
     type: 'varchar',
     default: null,
+    name: 'assigned_to',
   })
-  assigned_to?: string;
+  assignedTo?: string;
 
   //(UUID, FK -> `users.id`, nullable): Пользователь, которому делегирована задача.
   @Column({
     type: 'varchar',
     default: null,
+    name: 'delegated_to',
   })
-  delegated_to?: string;
+  delegatedTo?: string;
 
   //(JSON, nullable): Дополнительные данные.
   @Column({
@@ -71,21 +73,23 @@ export class TaskEntity {
   @Column({
     type: 'varchar',
     default: null,
+    name: 'user_id',
   })
-  user_id?: string;
+  userId?: string;
 
   //(UUID, FK -> `tenants.id`): Идентификатор тенанта.
   @Column({
     type: 'varchar',
     default: null,
+    name: 'tenant_id',
   })
-  tenant_id?: string;
+  tenantId?: string;
 
   //(TIMESTAMP): Дата создания.
-  @CreateDateColumn({ type: 'timestamp' })
-  created_at: string;
+  @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
+  createdAt: string;
 
   //(TIMESTAMP): Дата обновления.
-  @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: string;
+  @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
+  updatedAt: string;
 }

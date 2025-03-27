@@ -11,14 +11,4 @@ export interface TaskRepository {
   findAllPaginated(filter: FindAllTasksFilter): Promise<PaginatedList<Task>>;
   createTask(createTask: CreateTask): Promise<Task>;
   updateTask(id: string, updateTask: UpdateTask): Promise<Task>;
-  assignTask(
-    id: string,
-    assignTo: string,
-    userId: string,
-  ): Promise<{ id: string; assigned_to: string }>;
-  completeTask(
-    id: string,
-    taskStatus: TaskStatuses,
-    userId: string,
-  ): Promise<{ id: string; status: TaskStatuses }>;
 }

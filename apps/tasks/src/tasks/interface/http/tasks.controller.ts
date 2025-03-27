@@ -28,11 +28,11 @@ export class TasksController {
       description: createTaskDto.description,
       status: createTaskDto.status,
       type: createTaskDto.taskType,
-      assigned_to: createTaskDto.assignedTo,
-      tenant_id: user.tenantId,
+      assignedTo: createTaskDto.assignedTo,
+      tenantId: user.tenantId,
       metadata: createTaskDto.metadata,
-      user_id: user.userId,
-      workflow_instance_id: createTaskDto.workflowInstanceId,
+      userId: user.userId,
+      workflowInstanceId: createTaskDto.workflowInstanceId,
     });
   }
 
@@ -85,7 +85,7 @@ export class TasksController {
       description: updateTaskDto.description,
       metadata: updateTaskDto.metadata,
       type: updateTaskDto.taskType,
-      workflow_instance_id: updateTaskDto.workflowInstanceId,
+      workflowInstanceId: updateTaskDto.workflowInstanceId,
     });
   }
 }
