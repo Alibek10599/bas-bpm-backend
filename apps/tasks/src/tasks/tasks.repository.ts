@@ -7,6 +7,6 @@ import { DATABASE_PROVIDER_TOKEN } from '../database/database-provider-token.con
 export const tasksRepository = {
   inject: [DATABASE_PROVIDER_TOKEN],
   useFactory: (dataSource: DataSource) =>
-    new TasksPostgresRepository(dataSource.getRepository(Task), dataSource),
+    new TasksPostgresRepository(dataSource.getRepository(Task)),
   provide: TASK_REPOSITORY_TOKEN,
 };
