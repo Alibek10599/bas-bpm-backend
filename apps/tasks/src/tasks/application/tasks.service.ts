@@ -156,7 +156,7 @@ export class TasksService {
       const currentTask = await em.getRepository(Task).findOneByOrFail({ id });
       const currentTaskVersion = await em
         .getRepository(TaskVersion)
-        .findOne({ where: { task: { id } }, order: { id: 'desc' } });
+        .findOne({ where: { task: currentTask }, order: { id: 'desc' } });
 
       const oldStatus = currentTask.status;
 
