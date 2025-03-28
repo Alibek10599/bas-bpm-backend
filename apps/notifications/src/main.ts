@@ -29,12 +29,7 @@ async function bootstrap() {
     grpcCfg(
       grpcUrl,
       ['notifications'],
-      [
-        join(
-          __dirname,
-          '/notifications/interface/grpc/protos/notifications.proto',
-        ),
-      ],
+      [join(__dirname, './notifications.proto')],
     ),
   );
 
