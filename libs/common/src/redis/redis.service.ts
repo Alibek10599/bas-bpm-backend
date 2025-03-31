@@ -9,6 +9,10 @@ export class RedisService {
     private readonly redisProvider: Redis,
   ) {}
 
+  async getClient(): Promise<Redis> {
+    return this.redisProvider;
+  }
+
   async get<TValue extends object>(key: string): Promise<TValue> {
     const value = await this.redisProvider.get(key);
     return JSON.parse(value) as TValue;
