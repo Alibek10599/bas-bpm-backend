@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from '@app/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
+import { BpmnModule } from './modules/bpmn/bpmn.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import * as Joi from 'joi';
         HTTP_PORT: Joi.number(),
       }),
     }),
+    BpmnModule,
   ],
   controllers: [],
   providers: [],
