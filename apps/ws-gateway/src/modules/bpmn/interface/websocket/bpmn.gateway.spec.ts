@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BpmnGateway } from './bpmn.gateway';
-import { BpmnService } from './bpmn.service';
+import { BpmnService } from '../../application/bpmn.service';
 
 describe('BpmnGateway', () => {
   let gateway: BpmnGateway;

@@ -3,15 +3,21 @@ import {
   SubscribeMessage,
   MessageBody,
   ConnectedSocket,
+  WebSocketServer,
 } from '@nestjs/websockets';
-import { BpmnService } from './bpmn.service';
-import { UpdateBpmnDto } from './dto/update-bpmn.dto';
-import { OnUpdateSubscriptionDto } from './dto/on-update-subscription.dto';
-import { Socket } from 'socket.io';
+import { BpmnService } from '../../application/bpmn.service';
+import { UpdateBpmnDto } from '../dto/update-bpmn.dto';
+import { OnUpdateSubscriptionDto } from '../dto/on-update-subscription.dto';
+import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway()
 export class BpmnGateway {
-  constructor(private readonly bpmnService: BpmnService) {}
+  @WebSocketServer()
+  private server: Server;
+
+  constructor(private readonly bpmnService: BpmnService) {
+    this.bpmnService.setServer(this.server);
+  }
 
   @SubscribeMessage('update')
   update(
