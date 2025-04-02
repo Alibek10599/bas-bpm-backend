@@ -19,8 +19,16 @@ export class ReferencesService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async create(createReferenceDto: CreateReferenceDto): Promise<Reference> {
-    return this.referencesRepository.create(createReferenceDto);
+  async create(
+    createReferenceDto: CreateReferenceDto,
+    userId: string,
+    tenantId: string,
+  ): Promise<Reference> {
+    return this.referencesRepository.create({
+      ...createReferenceDto,
+      user_id: userId,
+      tenant_id: tenantId,
+    });
   }
 
   async findOne(id: string): Promise<Reference> {
@@ -54,17 +62,20 @@ export class ReferencesService {
             order: { id: 'desc' },
           });
 
+        const newVersion = (currentReferenceVersion?.version ?? 0) + 1;
+
         const updatedReference = await referenceRepository.save(
           plainToInstance(Reference, {
             id,
+            version: newVersion,
             ...updateReferenceDto,
           }),
         );
 
         await referenceVersionsRepository.save({
-          task: updatedReference,
-          changed_data: this.getReferenceChanges(reference, updateReferenceDto),
-          version: (currentReferenceVersion?.version ?? 0) + 1,
+          reference: updatedReference,
+          data: this.getReferenceChanges(reference, updateReferenceDto),
+          version: newVersion,
           user_id: userId,
         });
 

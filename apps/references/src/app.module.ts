@@ -3,6 +3,7 @@ import { LoggerModule } from '@app/common';
 import { ConfigModule } from '@nestjs/config';
 import { ReferencesModule } from './references/references.module';
 import * as Joi from 'joi';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import * as Joi from 'joi';
         HTTP_PORT: Joi.number(),
       }),
     }),
+    DatabaseModule,
     ReferencesModule,
   ],
   controllers: [],

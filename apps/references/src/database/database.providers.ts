@@ -4,7 +4,7 @@ import { DATABASE_PROVIDER_TOKEN } from './database-provider-token.const';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { Reference } from '../references/infrastructure/database/postgres/entities/reference.entity';
 import { ReferenceData } from '../references/infrastructure/database/postgres/entities/reference-data.entity';
-import { ReferenceDataVersions } from '../references/infrastructure/database/postgres/entities/reference-version.entity';
+import { ReferenceVersions } from '../references/infrastructure/database/postgres/entities/reference-version.entity';
 
 export const databaseProviders = [
   {
@@ -15,7 +15,7 @@ export const databaseProviders = [
       return new DataSource({
         type: 'postgres',
         url: cfg.get('POSTGRES_URL'),
-        entities: [Reference, ReferenceData, ReferenceDataVersions],
+        entities: [Reference, ReferenceData, ReferenceVersions],
         synchronize: true,
         logging: true,
       } as PostgresConnectionOptions).initialize();

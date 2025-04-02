@@ -8,5 +8,5 @@ export class CreateReferenceDto {
 
   @ValidateNested({ each: true })
   @Type(() => CreateReferenceDataDto)
-  referenceData: CreateReferenceDataDto;
+  referenceData: CreateReferenceDataDto[];
 }

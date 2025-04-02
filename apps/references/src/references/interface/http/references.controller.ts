@@ -9,8 +9,15 @@ export class ReferencesController {
   constructor(private readonly referencesService: ReferencesService) {}
 
   @Post()
-  create(@Body() createReferenceDto: CreateReferenceDto) {
-    return this.referencesService.create(createReferenceDto);
+  create(
+    @CurrentUser() user: any,
+    @Body() createReferenceDto: CreateReferenceDto,
+  ) {
+    return this.referencesService.create(
+      createReferenceDto,
+      user?.userId ?? '',
+      user?.tenantId ?? '',
+    );
   }
 
   @Get()
@@ -29,6 +36,10 @@ export class ReferencesController {
     @Param('id') id: string,
     @Body() updateReferenceDto: UpdateReferenceDto,
   ) {
-    return this.referencesService.update(id, updateReferenceDto, user.userId);
+    return this.referencesService.update(
+      id,
+      updateReferenceDto,
+      user?.userId ?? '',
+    );
   }
 }

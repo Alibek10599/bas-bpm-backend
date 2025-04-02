@@ -4,6 +4,7 @@ import { ReferencesController } from './interface/http/references.controller';
 import { GrpcReferencesController } from './interface/grpc/grpc.references.controller';
 import { RmqReferencesController } from './interface/rmq/rmq.references.controller';
 import { DatabaseModule } from '../database/database.module';
+import { referencesRepository } from './references.repository';
 
 @Module({
   imports: [DatabaseModule],
@@ -12,6 +13,6 @@ import { DatabaseModule } from '../database/database.module';
     GrpcReferencesController,
     RmqReferencesController,
   ],
-  providers: [ReferencesService],
+  providers: [referencesRepository, ReferencesService],
 })
 export class ReferencesModule {}

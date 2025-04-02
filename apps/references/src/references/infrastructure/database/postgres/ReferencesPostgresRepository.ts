@@ -2,8 +2,8 @@ import { ReferencesRepository } from '../../../domain/repository/references.repo
 import { Injectable } from '@nestjs/common';
 import { Reference } from './entities/reference.entity';
 import { Repository } from 'typeorm';
-import { CreateReferenceDto } from '../../../interface/dto/create-reference.dto';
-import { UpdateReferenceDto } from '../../../interface/dto/update-reference.dto';
+import { CreateReference } from '../../../domain/repository/types/create-reference';
+import { UpdateReference } from '../../../domain/repository/types/update-reference';
 
 @Injectable()
 export class ReferencesPostgresRepository implements ReferencesRepository {
@@ -15,7 +15,7 @@ export class ReferencesPostgresRepository implements ReferencesRepository {
     });
   }
 
-  create(data: CreateReferenceDto): Promise<Reference> {
+  create(data: CreateReference): Promise<Reference> {
     return this.referenceRepository.save(data);
   }
 
@@ -23,10 +23,7 @@ export class ReferencesPostgresRepository implements ReferencesRepository {
     return this.referenceRepository.find();
   }
 
-  update(
-    id: string,
-    updateReferenceDto: UpdateReferenceDto,
-  ): Promise<Reference> {
-    return this.referenceRepository.save({ id, ...updateReferenceDto });
+  update(id: string, updateReference: UpdateReference): Promise<Reference> {
+    return this.referenceRepository.save({ id, ...updateReference });
   }
 }
