@@ -4,7 +4,6 @@ import { RabbitmqTokenConst } from './rabbitmq-token.const';
 
 export const rabbitmqClientCfg = (
   queue: string,
-  urls: string[],
 ): ClientsProviderAsyncOptions => ({
   name: RabbitmqTokenConst,
   imports: [ConfigModule],
@@ -12,7 +11,7 @@ export const rabbitmqClientCfg = (
     transport: Transport.RMQ,
     options: {
       noAck: true,
-      urls: urls,
+      urls: configService.getOrThrow<string>('RMQ_URLS').split(','),
       queue: queue + ':request',
       replyQueue: queue + ':response',
       queueOptions: {
