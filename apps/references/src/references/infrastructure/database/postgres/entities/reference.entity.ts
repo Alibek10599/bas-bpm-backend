@@ -29,6 +29,8 @@ export class Reference {
   @CreateDateColumn()
   created_at: Date;
 
-  @OneToMany(() => ReferenceData, (rd) => rd.reference)
+  @OneToMany(() => ReferenceData, (rd) => rd.reference, {
+    cascade: true,
+  })
   referenceData: ReferenceData[];
 }
