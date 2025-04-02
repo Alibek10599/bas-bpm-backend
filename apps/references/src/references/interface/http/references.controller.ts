@@ -1,15 +1,8 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { ReferencesService } from '../../application/references.service';
 import { CreateReferenceDto } from '../dto/create-reference.dto';
 import { UpdateReferenceDto } from '../dto/update-reference.dto';
+import { CurrentUser } from '@app/common';
 
 @Controller('references')
 export class ReferencesController {
@@ -27,19 +20,15 @@ export class ReferencesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.referencesService.findOne(+id);
+    return this.referencesService.findOne(id);
   }
 
   @Patch(':id')
   update(
+    @CurrentUser() user: any,
     @Param('id') id: string,
     @Body() updateReferenceDto: UpdateReferenceDto,
   ) {
-    return this.referencesService.update(+id, updateReferenceDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.referencesService.remove(+id);
+    return this.referencesService.update(id, updateReferenceDto, user.userId);
   }
 }
