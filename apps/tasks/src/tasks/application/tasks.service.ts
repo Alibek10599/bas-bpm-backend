@@ -15,6 +15,7 @@ import { TaskStatusResponseDto } from '../interface/dto/task-status-response.dto
 import { UpdateTaskResponseDto } from '../interface/dto/update-task-response.dto';
 import { AssignTaskResponseDto } from '../interface/dto/assign-task-response.dto';
 import { CompleteTaskResponseDto } from '../interface/dto/complete-task-response.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class TasksService {
@@ -78,7 +79,9 @@ export class TasksService {
         order: { id: 'desc' },
       });
 
-      const updatedTask = await this.taskRepository.updateTask(id, updateTask);
+      const updatedTask = await taskRepo.save(
+        plainToInstance(Task, { id, updateTask }),
+      );
 
       await versionRepo.save({
         task: updatedTask,
