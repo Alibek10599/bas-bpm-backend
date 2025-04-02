@@ -14,6 +14,8 @@ export class TemplatesLocalRepository implements TemplatesRepository {
         return this.getEmailWelcomeTemplate(lang);
       case EmailTemplatesEnum.FORGOT_PASSWORD:
         return this.getEmailForgotPasswordTemplate(lang);
+      default:
+        return null;
     }
   }
 

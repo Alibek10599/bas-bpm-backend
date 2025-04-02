@@ -1,4 +1,4 @@
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { SendNotificationInput } from './types/send-notification.input';
 import { SendNotificationOutput } from './types/send-notification.output';
 import { NotificationStrategy } from './enums/notification-strategies.enum';
@@ -24,14 +24,16 @@ export class NotificationsService {
     switch (input.strategy) {
       case NotificationStrategy.Email:
         return await this.sendEmailNotification(
-          input.languages,
+          input.language,
           input.options as EmailOptions,
         );
       case NotificationStrategy.Sms:
         return await this.sendSmsNotification(
-          input.languages,
+          input.language,
           input.options as SmsOptions,
         );
+      default:
+        throw new Error('Unknown strategy');
     }
   }
 
@@ -43,6 +45,9 @@ export class NotificationsService {
       options.templateId,
       lang,
     );
+    if (!template) {
+      throw new Error('Template not found');
+    }
     const templateWithVariables = this.templateService.applyVariables(
       template,
       options.variables,
