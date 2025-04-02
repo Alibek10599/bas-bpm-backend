@@ -9,15 +9,14 @@ import { BpmnService } from '../../application/bpmn.service';
 import { UpdateBpmnDto } from '../dto/update-bpmn.dto';
 import { OnUpdateSubscriptionDto } from '../dto/on-update-subscription.dto';
 import { Server, Socket } from 'socket.io';
+import { ON_UPDATE_KEY } from '../../application/const/on-update.key';
 
 @WebSocketGateway()
 export class BpmnGateway {
   @WebSocketServer()
   private server: Server;
 
-  constructor(private readonly bpmnService: BpmnService) {
-    this.bpmnService.setServer(this.server);
-  }
+  constructor(private readonly bpmnService: BpmnService) {}
 
   @SubscribeMessage('update')
   update(
@@ -36,5 +35,13 @@ export class BpmnGateway {
       onUpdateSubscriptionDto.id,
       socket,
     );
+  }
+
+  bpmnUpdateNotify(id: string) {
+    if (!this.server) {
+      console.error('Socket.IO сервер еще не инициализирован');
+      return;
+    }
+    this.server.to(id).emit(ON_UPDATE_KEY, 'HELLOW WORLD');
   }
 }
