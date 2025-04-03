@@ -4,6 +4,7 @@ import { GrpcMethod, Payload } from '@nestjs/microservices';
 import { CreateReferenceDto } from '../dto/create-reference.dto';
 import { UpdateReferenceDto } from '../dto/update-reference.dto';
 import { GetReferencesByIdDto } from '../dto/get-references-by-id.dto';
+import { RequestMetadata } from '../dto/request.metadata';
 
 @Controller()
 export class GrpcReferencesController {
@@ -12,7 +13,7 @@ export class GrpcReferencesController {
   @GrpcMethod('ReferencesService', 'CreateReference')
   create(
     @Payload('body') createReferenceDto: CreateReferenceDto,
-    @Payload('metadata') metadata: any,
+    @Payload('metadata') metadata: RequestMetadata,
   ) {
     return this.referencesService.create(
       {
@@ -26,7 +27,7 @@ export class GrpcReferencesController {
   @GrpcMethod('ReferencesService', 'UpdateReference')
   update(
     @Payload('body') updateReferenceDto: UpdateReferenceDto,
-    @Payload('metadata') metadata: any,
+    @Payload('metadata') metadata: RequestMetadata,
   ) {
     return this.referencesService.update(
       updateReferenceDto.referenceId,
@@ -38,12 +39,12 @@ export class GrpcReferencesController {
   }
 
   @GrpcMethod('ReferencesService', 'GetReferencesList')
-  async findAll(@Payload('metadata') metadata: any) {
+  async findAll(@Payload('metadata') metadata: RequestMetadata) {
     const references = await this.referencesService.findAll(metadata.tenantId);
     return { items: references };
   }
 
-  @GrpcMethod('ReferencesService', 'GetReferencesById')
+  @GrpcMethod('ReferencesService', 'GetReferenceById')
   findOne(@Payload('body') body: GetReferencesByIdDto) {
     return this.referencesService.findOne(body.referenceId);
   }

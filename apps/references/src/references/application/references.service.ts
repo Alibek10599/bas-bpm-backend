@@ -59,7 +59,10 @@ export class ReferencesService {
         const referenceRepository = em.getRepository(Reference);
         const referenceVersionsRepository = em.getRepository(ReferenceVersions);
 
-        const reference = await referenceRepository.findOneByOrFail({ id });
+        const reference = await referenceRepository.findOneOrFail({
+          where: { id },
+          relations: ['referenceData'],
+        });
 
         const currentReferenceVersion =
           await referenceVersionsRepository.findOne({
@@ -98,9 +101,10 @@ export class ReferencesService {
     const changes = {};
     for (const key in updateReferenceDto) {
       if (
-        reference[key] &&
-        updateReferenceDto[key] &&
-        updateReferenceDto[key] !== reference[key]
+        (reference[key] &&
+          updateReferenceDto[key] &&
+          updateReferenceDto[key] !== reference[key]) ||
+        (key === 'referenceData' && updateReferenceDto[key])
       ) {
         changes[key] = {
           old: reference[key],

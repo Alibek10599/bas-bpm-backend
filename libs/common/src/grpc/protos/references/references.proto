@@ -3,55 +3,78 @@ syntax = "proto3";
 package references;
 
 service ReferencesService {
-  rpc CreateReference (CreateReference) returns (CreateReferenceResult);
-  rpc UpdateReference (UpdateReference) returns (UpdateReferenceResult);
-  rpc GetReferencesList (GetReferencesListFilter) returns (ReferenceList);
-  rpc GetReferenceById (GetReferencesById) returns (Reference);
+  rpc CreateReference (CreateReferenceWrapper) returns (CreateReferenceResult);
+  rpc UpdateReference (UpdateReferenceWrapper) returns (UpdateReferenceResult);
+  rpc GetReferencesList (GetReferencesListFilterWrapper) returns (ReferenceList);
+  rpc GetReferenceById (GetReferencesByIdWrapper) returns (Reference);
 }
 
 message CreateReference {
   string name = 1;
-  repeated ReferenceData referenceData = 2;
+  repeated CreateReferenceData referenceData = 2;
 }
-message ReferenceData {
+message CreateReferenceData {
   string type = 1;
   string key = 2;
   string value = 3;
 }
 message CreateReferenceWrapper {
-  CreateReference data = 1;
+  CreateReference body = 1;
   map<string, string> metadata = 2;
 }
 message CreateReferenceResult {
-
+  string referenceId = 1;
+  string message = 2;
 }
 
 message UpdateReference {
-
+  string referenceId = 1;
+  string name = 2;
+  repeated CreateReferenceData referenceData = 3;
 }
 message UpdateReferenceWrapper {
-
+  UpdateReference body = 1;
+  map<string, string> metadata = 2;
 }
 message UpdateReferenceResult {
-
+  string referenceId = 1;
+  string message = 2;
 }
 
 message GetReferencesListFilter {
-
+  string search = 1;
 }
 message GetReferencesListFilterWrapper {
-
+  GetReferencesListFilter body = 1;
+  map<string, string> metadata = 2;
 }
 message ReferenceList {
-
+  repeated Reference items = 1;
 }
 
 message GetReferencesById {
-
+  string referenceId = 1;
 }
 message GetReferencesByIdWrapper {
-
+  GetReferencesById body = 1;
+  map<string, string> metadata = 2;
 }
 message Reference {
+  string id = 1;
+  string name = 2;
+  string user_id = 3;
+  string tenant_id = 4;
+  string version = 5;
+  string created_at = 9;
+  ReferenceData referenceData = 10;
+}
 
+message ReferenceData {
+  string id = 1;
+
+  string type = 2;
+
+  string key = 3;
+
+  string value = 4;
 }
