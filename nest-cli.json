@@ -1,11 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/tasks/src",
+  "sourceRoot": "apps/ws-gateway/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/tasks/tsconfig.app.json",
+    "tsConfigPath": "apps/ws-gateway/tsconfig.app.json",
     "assets": ["**/*.html", "**/*.proto"]
   },
   "projects": {
@@ -36,6 +36,15 @@
         "tsConfigPath": "apps/notifications/tsconfig.app.json"
       }
     },
+    "ws-gateway": {
+      "type": "application",
+      "root": "apps/ws-gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/ws-gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ws-gateway/tsconfig.app.json"
+      }
+    },
     "tasks": {
       "type": "application",
       "root": "apps/tasks",
@@ -56,5 +65,5 @@
     }
   },
   "monorepo": true,
-  "root": "apps/tasks"
+  "root": "apps/ws-gateway"
 }
