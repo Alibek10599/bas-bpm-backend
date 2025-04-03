@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { ReferencesService } from '../../application/references.service';
 import { CreateReferenceDto } from '../dto/create-reference.dto';
-import { UpdateReferenceDto } from '../dto/update-reference.dto';
 import { CurrentUser } from '@app/common';
+import { HttpUpdateReferenceDto } from './dto/http-update-reference.dto';
 
 @Controller('references')
 export class ReferencesController {
@@ -21,8 +21,8 @@ export class ReferencesController {
   }
 
   @Get()
-  findAll() {
-    return this.referencesService.findAll();
+  findAll(@CurrentUser() user: any) {
+    return this.referencesService.findAll(user?.tenantId ?? '');
   }
 
   @Get(':id')
@@ -34,7 +34,7 @@ export class ReferencesController {
   update(
     @CurrentUser() user: any,
     @Param('id') id: string,
-    @Body() updateReferenceDto: UpdateReferenceDto,
+    @Body() updateReferenceDto: HttpUpdateReferenceDto,
   ) {
     return this.referencesService.update(
       id,

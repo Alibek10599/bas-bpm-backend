@@ -1,4 +1,4 @@
 export class UpdateReferenceResponseDto {
-  taskId: string;
+  referenceId: string;
   message: string;
 }

@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package references;
+
+service ReferencesService {
+  rpc CreateReference (CreateReference) returns (CreateReferenceResult);
+  rpc UpdateReference (UpdateReference) returns (UpdateReferenceResult);
+  rpc GetReferencesList (GetReferencesListFilter) returns (ReferenceList);
+  rpc GetReferenceById (GetReferencesById) returns (Reference);
+}
+
+message CreateReference {
+  string name = 1;
+  repeated ReferenceData referenceData = 2;
+}
+message ReferenceData {
+  string type = 1;
+  string key = 2;
+  string value = 3;
+}
+message CreateReferenceWrapper {
+  CreateReference data = 1;
+  map<string, string> metadata = 2;
+}
+message CreateReferenceResult {
+
+}
+
+message UpdateReference {
+
+}
+message UpdateReferenceWrapper {
+
+}
+message UpdateReferenceResult {
+
+}
+
+message GetReferencesListFilter {
+
+}
+message GetReferencesListFilterWrapper {
+
+}
+message ReferenceList {
+
+}
+
+message GetReferencesById {
+
+}
+message GetReferencesByIdWrapper {
+
+}
+message Reference {
+
+}

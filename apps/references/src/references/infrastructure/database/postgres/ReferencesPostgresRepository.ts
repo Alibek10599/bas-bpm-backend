@@ -19,8 +19,10 @@ export class ReferencesPostgresRepository implements ReferencesRepository {
     return this.referenceRepository.save(data);
   }
 
-  findAll(): Promise<Reference[]> {
-    return this.referenceRepository.find();
+  findAll(tenantId: string): Promise<Reference[]> {
+    return this.referenceRepository.find({
+      where: { tenant_id: tenantId },
+    });
   }
 
   update(id: string, updateReference: UpdateReference): Promise<Reference> {
