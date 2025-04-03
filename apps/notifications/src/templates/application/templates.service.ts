@@ -30,7 +30,7 @@ export class TemplatesService {
     vars: Record<string, string | number>,
   ): string {
     for (const key in vars) {
-      text = text.replace(new RegExp(`{{${key}}}`), `${vars[key]}`);
+      text = text.replace(new RegExp(`{{${key}}}`, 'g'), `${vars[key]}`);
     }
     return text;
   }

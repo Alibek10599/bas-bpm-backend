@@ -10,11 +10,11 @@ export class SendNotificationDto {
   strategy: NotificationStrategy;
 
   @IsEnum(Languages)
-  languages: Languages;
+  language: Languages;
 
   @ValidateNested()
   @Type((d) =>
     d.object.strategy === NotificationStrategy.Sms ? SmsOptions : EmailOptions,
   )
-  options: EmailOptions;
+  options: EmailOptions | SmsOptions;
 }
