@@ -1,0 +1,24 @@
+import { DataSource } from 'typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { DATABASE_PROVIDER_TOKEN } from './database-provider-token.const';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { File } from '../files/infrastructure/database/postgres/entities/file.entity';
+import { Document } from '../documents/infrastructure/database/postgres/entities/document.entity';
+
+export const databaseProviders = [
+  {
+    isGlobal: true,
+    imports: [ConfigModule],
+    provide: DATABASE_PROVIDER_TOKEN,
+    useFactory: async (cfg: ConfigService) => {
+      return new DataSource({
+        type: 'postgres',
+        url: cfg.get('POSTGRES_URL'),
+        entities: [File, Document],
+        synchronize: true,
+        logging: true,
+      } as PostgresConnectionOptions).initialize();
+    },
+    inject: [ConfigService],
+  },
+];
