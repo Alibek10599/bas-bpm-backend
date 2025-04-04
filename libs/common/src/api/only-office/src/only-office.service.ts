@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CheckFileResponseDto } from './dto/check-file.response.dto';
 import { PutFileOptions } from './types/put-file.options';
 import { PutFileResult } from './types/put-file-result';
@@ -8,10 +8,13 @@ import { FileProvider } from './interfaces/file.provider';
 import { LockMismatchError } from './errors/lock-mismatch.error';
 import { extname } from 'path';
 import { LockFileResult } from '@app/common/api/only-office/src/types/lock-file.result';
+import { FILE_PROVIDER_TOKEN } from '@app/common/api/only-office/src/const/file.provider.token';
 
 @Injectable()
 export class OnlyOfficeService {
-  constructor(private readonly fileProvider: FileProvider) {}
+  constructor(
+    @Inject(FILE_PROVIDER_TOKEN) private readonly fileProvider: FileProvider,
+  ) {}
 
   async checkFileInfo(fileId: string): Promise<CheckFileResponseDto> {
     const file = await this.fileProvider.getFileById(fileId);

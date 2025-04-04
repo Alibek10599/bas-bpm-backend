@@ -4,5 +4,6 @@ export class File {
   size: number;
   version: string;
   lockId?: string;
-  lockedAt?: string;
+  relatedTo?: string;
+  lockedAt?: Date;
 }
