@@ -14,11 +14,10 @@ export class LocalStorageProvider implements StorageProvider {
     return readFileSync(path);
   }
 
-  async save(file: File): Promise<string> {
+  async save(file: { name: string; buffer: Buffer }): Promise<string> {
     const fileHashName = this.generateFileHashName(extname(file.name));
     const fullPath = resolve(this.options.path, fileHashName);
-    const fileBytes = await file.bytes();
-    writeFileSync(fullPath, fileBytes);
+    writeFileSync(fullPath, file.buffer);
     return fileHashName;
   }
 

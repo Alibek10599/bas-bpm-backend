@@ -1,4 +1,5 @@
 import { IsOptional, IsString } from 'class-validator';
+import { Expose } from 'class-transformer';
 
 export class GetFileHeaders {
   /**
@@ -6,5 +7,6 @@ export class GetFileHeaders {
    * */
   @IsString()
   @IsOptional()
-  'X-WOPI-MaxExpectedSize'?: number;
+  @Expose({ name: 'x-wopi-maxexpectedsize' })
+  maxExpectedSize?: number;
 }

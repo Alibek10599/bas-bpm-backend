@@ -1,7 +1,7 @@
 export class PutFileOptions {
   operation: string;
   editors?: string[];
-  modifiedByUser?: string;
+  isModifiedByUser?: boolean;
   isAutoSave?: boolean;
   isExitSave?: boolean;
 }

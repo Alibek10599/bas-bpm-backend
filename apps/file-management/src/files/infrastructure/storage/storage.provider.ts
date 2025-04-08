@@ -2,7 +2,7 @@ export interface StorageProvider {
   /**
    * @return fileId - string
    * */
-  save(file: File): Promise<string>;
+  save(file: { name: string; buffer: Buffer }): Promise<string>;
 
   /**
    * get file by id
