@@ -28,6 +28,8 @@ export class FilesService {
       hashName,
       size: createFileDto.buffer.length,
       type: createFileDto.type,
+      userId: createFileDto.userId,
+      tenantId: createFileDto.tenantId,
     });
 
     return {

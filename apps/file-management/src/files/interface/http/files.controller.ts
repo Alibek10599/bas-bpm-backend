@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { FilesService } from '../../application/files.service';
 import { Response } from 'express';
+import { CurrentUser } from '@app/common';
 
 @Controller('files')
 export class FilesController {
@@ -19,11 +20,14 @@ export class FilesController {
     @Headers('x-file-name') fileName: string,
     @Headers('content-type') contentType: string,
     @Body() buffer: Buffer,
+    @CurrentUser() user: any,
   ) {
     return this.filesService.create({
       name: fileName,
       type: contentType,
       buffer: buffer,
+      userId: user.userId,
+      tenantId: user.tenantId,
     });
   }
 

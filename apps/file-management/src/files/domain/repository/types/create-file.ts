@@ -6,4 +6,8 @@ export class CreateFile {
   type: string;
 
   size: number;
+
+  userId: string;
+
+  tenantId: string;
 }
