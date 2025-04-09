@@ -7,6 +7,7 @@ import { STORAGE_PROVIDER_TOKEN } from '../infrastructure/storage/providers/stor
 import { FindAllFilesFilter } from '../domain/repository/types/find-all-files-filter';
 import { Buffer } from 'buffer';
 import { File } from '../infrastructure/database/postgres/entities/file.entity';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class FilesService {
@@ -24,6 +25,27 @@ export class FilesService {
     });
 
     const file = await this.filesRepository.createFile({
+      name: createFileDto.name,
+      hashName,
+      size: createFileDto.buffer.length,
+      type: createFileDto.type,
+      userId: createFileDto.userId,
+      tenantId: createFileDto.tenantId,
+    });
+
+    return {
+      fileId: file.id,
+      message: 'File successfully uploaded',
+    };
+  }
+
+  async createInTransaction(createFileDto: CreateFileDto, em: EntityManager) {
+    const hashName = await this.storageProvider.save({
+      name: createFileDto.name,
+      buffer: createFileDto.buffer,
+    });
+
+    const file = await em.getRepository(File).save({
       name: createFileDto.name,
       hashName,
       size: createFileDto.buffer.length,

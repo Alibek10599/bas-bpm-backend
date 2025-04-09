@@ -1,1 +1,8 @@
-export class CreateDocumentDto {}
+export class CreateDocumentDto {
+  name: string;
+  type: string;
+  buffer: Buffer;
+  documentType: string;
+  userId: string;
+  tenantId: string;
+}

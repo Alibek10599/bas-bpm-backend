@@ -12,6 +12,7 @@ import { DatabaseModule } from '../database/database.module';
   imports: [DatabaseModule],
   controllers: [FilesController, RmqFilesController, GrpcFilesController],
   providers: [filesStorageFactory, filesRepositoryFactory, FilesService],
+  exports: [FilesService],
 })
 export class FilesModule {
   configure(consumer: MiddlewareConsumer) {

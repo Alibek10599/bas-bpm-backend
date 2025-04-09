@@ -1,13 +1,16 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { DocumentsService } from './application/documents.service';
 import { DocumentsController } from './interface/http/documents.controller';
 import { GrpcDocumentsController } from './interface/grpc/grpc.documents.controller';
 import { RmqDocumentsController } from './interface/rmq/rmq.documents.controller';
-import { DatabaseModule } from '../../../tasks/src/database/database.module';
 import { documentsRepository } from './documents.repository';
+import { FilesModule } from '../files/files.module';
+import { rawBodyMiddleware } from '../files/interface/http/middlewares/raw.body.middleware';
+import { DatabaseModule } from '../database/database.module';
+import { RouteInfo } from '@nestjs/common/interfaces';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, FilesModule],
   controllers: [
     DocumentsController,
     RmqDocumentsController,
@@ -15,4 +18,13 @@ import { documentsRepository } from './documents.repository';
   ],
   providers: [documentsRepository, DocumentsService],
 })
-export class DocumentsModule {}
+export class DocumentsModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(rawBodyMiddleware)
+      .forRoutes(
+        { path: 'documents/upload', method: RequestMethod.POST },
+        { path: 'documents/:id', method: RequestMethod.PUT },
+      );
+  }
+}
