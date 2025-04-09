@@ -1,6 +1,4 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
-import { CreateDocumentDto } from '../interface/dto/create-document.dto';
-import { UpdateDocumentDto } from '../interface/dto/update-document.dto';
 import { FilesService } from '../../files/application/files.service';
 import { DOCUMENT_REPOSITORY_TOKEN } from '../domain/repository/document.repository.token';
 import { DocumentRepository } from '../domain/repository/document.repository';
@@ -9,6 +7,8 @@ import { DataSource } from 'typeorm';
 import { Document } from '../infrastructure/database/postgres/entities/document.entity';
 import { DocumentPermissionsEnum } from '../infrastructure/enums/document-permissions.enum';
 import { DocumentVersions } from '../infrastructure/database/postgres/entities/document-versions.entity';
+import { CreateDocument } from '../domain/repository/types/create-document';
+import { UpdateDocument } from '../domain/repository/types/update-document';
 
 @Injectable()
 export class DocumentsService {
@@ -20,7 +20,7 @@ export class DocumentsService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async create(createDocumentDto: CreateDocumentDto) {
+  async create(createDocumentDto: CreateDocument) {
     return await this.dataSource.transaction(async (em) => {
       const documentRepo = em.getRepository(Document);
       const versionRepo = em.getRepository(DocumentVersions);
@@ -114,7 +114,7 @@ export class DocumentsService {
     );
   }
 
-  async update(id: string, updateDocumentDto: UpdateDocumentDto) {
+  async update(id: string, updateDocumentDto: UpdateDocument) {
     return await this.dataSource.transaction(async (em) => {
       const documentRepo = em.getRepository(Document);
       const documentVersionRepo = em.getRepository(DocumentVersions);

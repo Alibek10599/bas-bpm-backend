@@ -1,45 +1,61 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { DocumentsService } from '../../application/documents.service';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CreateDocumentDto } from '../dto/create-document.dto';
+import { RequestMetadata } from '../dto/request.metadata';
 import { UpdateDocumentDto } from '../dto/update-document.dto';
+import { ChangeDocumentVersionDto } from '../dto/change-document-version.dto';
 
 @Controller('documents')
 export class RmqDocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 
-  @Post()
-  create(@Body() createDocumentDto: CreateDocumentDto) {
-    return this.documentsService.create(createDocumentDto);
+  @MessagePattern('documents.create')
+  createDocument(
+    @Payload('body') data: CreateDocumentDto,
+    @Payload('metadata') metadata: RequestMetadata,
+  ) {
+    return this.documentsService.create({ ...data, ...metadata });
   }
 
-  @Get()
-  findAll() {
+  @MessagePattern('documents.update')
+  updateDocument(
+    @Payload('body') data: UpdateDocumentDto,
+    @Payload('metadata') metadata: RequestMetadata,
+  ) {
+    return this.documentsService.update(data.documentId, {
+      ...data,
+      ...metadata,
+    });
+  }
+
+  @MessagePattern('documents.findAll')
+  findAllDocuments() {
     return this.documentsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.documentsService.findOne(+id);
+  @MessagePattern('documents.findOne')
+  findOneDocument(@Payload('body') data: { documentId: string }) {
+    return this.documentsService.findOne(data.documentId);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateDocumentDto: UpdateDocumentDto,
+  @MessagePattern('documents.versions')
+  findDocumentVersions(@Payload('body') data: { documentId: string }) {
+    return this.documentsService.findDocumentVersionsById(data.documentId);
+  }
+
+  @MessagePattern('documents.change-version')
+  changeDocumentVersion(
+    @Payload('body') data: { documentId: string } & ChangeDocumentVersionDto,
   ) {
-    return this.documentsService.update(+id, updateDocumentDto);
+    return this.documentsService.changeDocumentVersion(
+      data.documentId,
+      data.versionId,
+    );
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.documentsService.remove(+id);
+  @MessagePattern('documents.find-one-content')
+  findOneDocumentContent(@Payload('body') data: { documentId: string }) {
+    return this.documentsService.findOneContent(data.documentId);
   }
 }

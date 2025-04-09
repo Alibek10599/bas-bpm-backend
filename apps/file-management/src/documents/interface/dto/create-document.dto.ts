@@ -3,6 +3,4 @@ export class CreateDocumentDto {
   type: string;
   buffer: Buffer;
   documentType: string;
-  userId: string;
-  tenantId: string;
 }
