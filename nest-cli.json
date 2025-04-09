@@ -36,6 +36,15 @@
         "tsConfigPath": "apps/notifications/tsconfig.app.json"
       }
     },
+    "references": {
+      "type": "application",
+      "root": "apps/references",
+      "entryFile": "main",
+      "sourceRoot": "apps/references/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/references/tsconfig.app.json"
+      }
+    },
     "ws-gateway": {
       "type": "application",
       "root": "apps/ws-gateway",
