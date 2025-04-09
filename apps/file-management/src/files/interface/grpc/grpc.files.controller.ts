@@ -17,7 +17,7 @@ export class GrpcFilesController {
 
   @Post()
   create(@Body() createFileDto: CreateFileDto) {
-    return this.filesService.create(createFileDto);
+    return this.filesService.saveFile(createFileDto);
   }
 
   @Get()

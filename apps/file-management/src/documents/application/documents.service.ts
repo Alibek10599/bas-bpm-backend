@@ -9,6 +9,7 @@ import { DocumentPermissionsEnum } from '../infrastructure/enums/document-permis
 import { DocumentVersions } from '../infrastructure/database/postgres/entities/document-versions.entity';
 import { CreateDocument } from '../domain/repository/types/create-document';
 import { UpdateDocument } from '../domain/repository/types/update-document';
+import { File } from '../../files/infrastructure/database/postgres/entities/file.entity';
 
 @Injectable()
 export class DocumentsService {
@@ -20,11 +21,11 @@ export class DocumentsService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async create(createDocumentDto: CreateDocument) {
+  async saveFileAndCreateDocument(createDocumentDto: CreateDocument) {
     return await this.dataSource.transaction(async (em) => {
       const documentRepo = em.getRepository(Document);
       const versionRepo = em.getRepository(DocumentVersions);
-      const { fileId } = await this.filesService.createInTransaction(
+      const { fileId } = await this.filesService.saveFileInTransaction(
         createDocumentDto,
         em,
       );
@@ -55,12 +56,60 @@ export class DocumentsService {
     });
   }
 
+  async createDocument(
+    createDocumentDto: Omit<CreateDocument, 'buffer'> & {
+      size: number;
+      hashName: string;
+    },
+  ) {
+    return await this.dataSource.transaction(async (em) => {
+      const documentRepo = em.getRepository(Document);
+      const versionRepo = em.getRepository(DocumentVersions);
+      const file = await em.getRepository(File).save({
+        name: createDocumentDto.name,
+        hashName: createDocumentDto.hashName,
+        size: createDocumentDto.size,
+        type: createDocumentDto.type,
+        userId: createDocumentDto.userId,
+        tenantId: createDocumentDto.tenantId,
+      });
+      const document = await documentRepo.save({
+        name: createDocumentDto.name,
+        documentType: createDocumentDto.documentType,
+        createdBy: createDocumentDto.userId,
+        tenantId: createDocumentDto.tenantId,
+        documentPermissions: [
+          {
+            userId: createDocumentDto.userId,
+            permissionType: DocumentPermissionsEnum.delete,
+          },
+        ],
+      });
+      const version = await versionRepo.save({
+        createdBy: createDocumentDto.userId,
+        file: file,
+        document: document,
+      });
+      await documentRepo.save({ id: document.id, currentVersion: version });
+
+      return {
+        documentId: document.id,
+        message: 'Document successfully uploaded',
+      };
+    });
+  }
+
   findAll() {
     return this.documentsRepository.findAll({});
   }
 
-  findOne(id: string) {
-    return this.documentsRepository.findOneById(id);
+  async findOne(id: string) {
+    const doc = await this.documentsRepository.findOneById(id);
+
+    if (!doc) {
+      throw new Error('Document not found');
+    }
+    return doc;
   }
 
   findDocumentVersionsById(id: string) {
@@ -114,7 +163,10 @@ export class DocumentsService {
     );
   }
 
-  async update(id: string, updateDocumentDto: UpdateDocument) {
+  async saveFileAndUpdateDocument(
+    id: string,
+    updateDocumentDto: UpdateDocument,
+  ) {
     return await this.dataSource.transaction(async (em) => {
       const documentRepo = em.getRepository(Document);
       const documentVersionRepo = em.getRepository(DocumentVersions);
@@ -127,7 +179,7 @@ export class DocumentsService {
         throw new Error('Document not found');
       }
 
-      const { fileId } = await this.filesService.createInTransaction(
+      const { fileId } = await this.filesService.saveFileInTransaction(
         updateDocumentDto,
         em,
       );
@@ -136,6 +188,47 @@ export class DocumentsService {
         createdBy: updateDocumentDto.userId,
         file: {
           id: fileId,
+        },
+        document: document,
+        version: document.currentVersion.version + 1,
+      });
+
+      await documentRepo.save(document);
+    });
+  }
+
+  async updateDocument(
+    id: string,
+    updateDocumentDto: Omit<UpdateDocument, 'buffer'> & {
+      size: number;
+      hashName: string;
+    },
+  ) {
+    return await this.dataSource.transaction(async (em) => {
+      const documentRepo = em.getRepository(Document);
+      const documentVersionRepo = em.getRepository(DocumentVersions);
+      const document = await documentRepo.findOne({
+        relations: ['currentVersion'],
+        where: { id },
+      });
+
+      if (!document) {
+        throw new Error('Document not found');
+      }
+
+      const file = await em.getRepository(File).save({
+        name: updateDocumentDto.name,
+        hashName: updateDocumentDto.hashName,
+        size: updateDocumentDto.size,
+        type: updateDocumentDto.type,
+        userId: updateDocumentDto.userId,
+        tenantId: updateDocumentDto.tenantId,
+      });
+
+      document.currentVersion = await documentVersionRepo.save({
+        createdBy: updateDocumentDto.userId,
+        file: {
+          id: file.id,
         },
         document: document,
         version: document.currentVersion.version + 1,

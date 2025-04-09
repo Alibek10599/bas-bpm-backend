@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package documents;
+
+service DocumentsService {
+  rpc CreateDocument (CreateDocumentWrapper) returns (DocumentResponse);
+  rpc UpdateDocument (UpdateDocumentWrapper) returns (DocumentResponse);
+  rpc FindAllDocuments (FindAllDocumentsWrapper) returns (DocumentList);
+  rpc FindOneDocument (FindOneDocumentRequest) returns (Document);
+  rpc FindAllDocumentVersions (FindOneDocumentRequest) returns (DocumentVersionList);
+  rpc ChangeDocumentVersion (ChangeDocumentVersionWrapper) returns (DocumentResponse);
+}
+
+message FindAllDocumentsWrapper {
+  map<string, string> metadata = 1;
+}
+
+message CreateDocument {
+  string name = 1;
+  string type = 2;
+  int64 size = 3;
+  string hashName = 4;
+}
+
+message UpdateDocument {
+  string documentId = 1;
+  string name = 2;
+  string type = 3;
+  int64 size = 4;
+  string hashName = 5;
+}
+
+message FindOneDocumentRequest {
+  string documentId = 1;
+}
+
+message ChangeDocumentVersion {
+  string documentId = 1;
+  string versionId = 2;
+}
+
+message Document {
+  string id = 1;
+  string name = 2;
+  string type = 3;
+  int64 size = 4;
+  string hashName = 5;
+  string createdAt = 6;
+  string updatedAt = 7;
+}
+
+message DocumentVersion {
+  string versionId = 1;
+  string documentId = 2;
+  string createdAt = 3;
+}
+
+message DocumentList {
+  repeated Document items = 1;
+}
+
+message DocumentVersionList {
+  repeated DocumentVersion items = 1;
+}
+
+message DocumentResponse {
+  string message = 1;
+  Document document = 2;
+}
+
+message CreateDocumentWrapper {
+  CreateDocument body = 1;
+  map<string, string> metadata = 2;
+}
+
+message UpdateDocumentWrapper {
+  UpdateDocument body = 1;
+  map<string, string> metadata = 2;
+}
+
+message ChangeDocumentVersionWrapper {
+  ChangeDocumentVersion body = 1;
+  map<string, string> metadata = 2;
+}

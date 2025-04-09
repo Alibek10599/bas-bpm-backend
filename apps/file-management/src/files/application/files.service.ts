@@ -18,7 +18,7 @@ export class FilesService {
     private readonly storageProvider: StorageProvider,
   ) {}
 
-  async create(createFileDto: CreateFileDto) {
+  async saveFile(createFileDto: CreateFileDto) {
     const hashName = await this.storageProvider.save({
       name: createFileDto.name,
       buffer: createFileDto.buffer,
@@ -39,7 +39,7 @@ export class FilesService {
     };
   }
 
-  async createInTransaction(createFileDto: CreateFileDto, em: EntityManager) {
+  async saveFileInTransaction(createFileDto: CreateFileDto, em: EntityManager) {
     const hashName = await this.storageProvider.save({
       name: createFileDto.name,
       buffer: createFileDto.buffer,

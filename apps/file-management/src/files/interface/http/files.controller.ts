@@ -22,7 +22,7 @@ export class FilesController {
     @Body() buffer: Buffer,
     @CurrentUser() user: any,
   ) {
-    return this.filesService.create({
+    return this.filesService.saveFile({
       name: fileName,
       type: contentType,
       buffer: buffer,

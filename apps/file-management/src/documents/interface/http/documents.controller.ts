@@ -26,7 +26,7 @@ export class DocumentsController {
     @Body() buffer: Buffer,
     @CurrentUser() user: any,
   ) {
-    return this.documentsService.create({
+    return this.documentsService.saveFileAndCreateDocument({
       name: fileName,
       type: contentType,
       buffer: buffer,
@@ -75,7 +75,7 @@ export class DocumentsController {
     @Body() buffer: Buffer,
     @CurrentUser() user: any,
   ) {
-    return this.documentsService.update(id, {
+    return this.documentsService.saveFileAndUpdateDocument(id, {
       name: fileName,
       type: contentType,
       buffer: buffer,

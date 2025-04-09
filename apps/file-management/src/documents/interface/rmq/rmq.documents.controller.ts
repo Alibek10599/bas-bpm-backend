@@ -12,18 +12,29 @@ export class RmqDocumentsController {
 
   @MessagePattern('documents.create')
   createDocument(
-    @Payload('body') data: CreateDocumentDto,
+    @Payload('body')
+    data: Omit<CreateDocumentDto, 'buffer'> & {
+      size: number;
+      hashName: string;
+    },
     @Payload('metadata') metadata: RequestMetadata,
   ) {
-    return this.documentsService.create({ ...data, ...metadata });
+    return this.documentsService.createDocument({
+      ...data,
+      ...metadata,
+    });
   }
 
   @MessagePattern('documents.update')
   updateDocument(
-    @Payload('body') data: UpdateDocumentDto,
+    @Payload('body')
+    data: Omit<UpdateDocumentDto, 'buffer'> & {
+      size: number;
+      hashName: string;
+    },
     @Payload('metadata') metadata: RequestMetadata,
   ) {
-    return this.documentsService.update(data.documentId, {
+    return this.documentsService.updateDocument(data.documentId, {
       ...data,
       ...metadata,
     });
@@ -52,10 +63,5 @@ export class RmqDocumentsController {
       data.documentId,
       data.versionId,
     );
-  }
-
-  @MessagePattern('documents.find-one-content')
-  findOneDocumentContent(@Payload('body') data: { documentId: string }) {
-    return this.documentsService.findOneContent(data.documentId);
   }
 }
