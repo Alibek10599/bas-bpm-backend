@@ -7,7 +7,6 @@ import { documentsRepository } from './documents.repository';
 import { FilesModule } from '../files/files.module';
 import { rawBodyMiddleware } from '../files/interface/http/middlewares/raw.body.middleware';
 import { DatabaseModule } from '../database/database.module';
-import { RouteInfo } from '@nestjs/common/interfaces';
 
 @Module({
   imports: [DatabaseModule, FilesModule],

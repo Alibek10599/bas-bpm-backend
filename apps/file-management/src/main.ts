@@ -26,11 +26,7 @@ async function bootstrap() {
 
   const grpcUrl = configService.get<string>('GRPC_URL');
   app.connectMicroservice<GrpcOptions>(
-    grpcCfg(
-      grpcUrl,
-      ['notifications'],
-      [join(__dirname, './notifications.proto')],
-    ),
+    grpcCfg(grpcUrl, ['documents'], [join(__dirname, './documents.proto')]),
   );
 
   await app.startAllMicroservices();

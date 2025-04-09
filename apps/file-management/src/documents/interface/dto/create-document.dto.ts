@@ -1,6 +1,14 @@
+import { IsNumber, IsString } from 'class-validator';
+
 export class CreateDocumentDto {
+  @IsString()
   name: string;
+  @IsString()
   type: string;
-  buffer: Buffer;
+  @IsString()
   documentType: string;
+  @IsNumber()
+  size: number;
+  @IsString()
+  hashName: string;
 }

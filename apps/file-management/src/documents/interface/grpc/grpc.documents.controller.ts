@@ -5,6 +5,7 @@ import { GrpcMethod, Payload } from '@nestjs/microservices';
 import { RequestMetadata } from '../dto/request.metadata';
 import { UpdateDocumentDto } from '../dto/update-document.dto';
 import { ChangeDocumentVersionDto } from '../dto/change-document-version.dto';
+import { DocumentIdDto } from '../dto/document-id.dto';
 
 @Controller('documents')
 export class GrpcDocumentsController {
@@ -13,10 +14,7 @@ export class GrpcDocumentsController {
   @GrpcMethod('DocumentsService', 'CreateDocument')
   createDocument(
     @Payload('body')
-    data: Omit<CreateDocumentDto, 'buffer'> & {
-      size: number;
-      hashName: string;
-    },
+    data: CreateDocumentDto,
     @Payload('metadata') metadata: RequestMetadata,
   ) {
     return this.documentsService.createDocument({
@@ -28,10 +26,7 @@ export class GrpcDocumentsController {
   @GrpcMethod('DocumentsService', 'UpdateDocument')
   updateDocument(
     @Payload('body')
-    data: Omit<UpdateDocumentDto, 'buffer'> & {
-      size: number;
-      hashName: string;
-    },
+    data: UpdateDocumentDto,
     @Payload('metadata') metadata: RequestMetadata,
   ) {
     return this.documentsService.updateDocument(data.documentId, {
@@ -41,24 +36,28 @@ export class GrpcDocumentsController {
   }
 
   @GrpcMethod('DocumentsService', 'FindAllDocuments')
-  findAllDocuments() {
-    return this.documentsService.findAll();
+  async findAllDocuments() {
+    return {
+      items: await this.documentsService.findAll(),
+    };
   }
 
   @GrpcMethod('DocumentsService', 'FindOneDocument')
-  findOneDocument(@Payload('body') data: { documentId: string }) {
+  findOneDocument(@Payload('body') data: DocumentIdDto) {
     return this.documentsService.findOne(data.documentId);
   }
 
   @GrpcMethod('DocumentsService', 'FindAllDocumentVersions')
-  findDocumentVersions(@Payload('body') data: { documentId: string }) {
-    return this.documentsService.findDocumentVersionsById(data.documentId);
+  async findDocumentVersions(@Payload('body') data: DocumentIdDto) {
+    return {
+      items: await this.documentsService.findDocumentVersionsById(
+        data.documentId,
+      ),
+    };
   }
 
   @GrpcMethod('DocumentsService', 'ChangeDocumentVersion')
-  changeDocumentVersion(
-    @Payload('body') data: { documentId: string } & ChangeDocumentVersionDto,
-  ) {
+  changeDocumentVersion(@Payload('body') data: ChangeDocumentVersionDto) {
     return this.documentsService.changeDocumentVersion(
       data.documentId,
       data.versionId,

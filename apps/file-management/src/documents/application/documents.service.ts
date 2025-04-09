@@ -194,6 +194,11 @@ export class DocumentsService {
       });
 
       await documentRepo.save(document);
+      return {
+        documentId: document.id,
+        versionId: document.currentVersion.id,
+        message: 'Document updated successfully',
+      };
     });
   }
 
@@ -235,6 +240,12 @@ export class DocumentsService {
       });
 
       await documentRepo.save(document);
+
+      return {
+        documentId: document.id,
+        versionId: document.currentVersion.id,
+        message: 'Document updated successfully',
+      };
     });
   }
 }
