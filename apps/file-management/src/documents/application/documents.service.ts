@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { CreateDocumentDto } from '../interface/dto/create-document.dto';
 import { UpdateDocumentDto } from '../interface/dto/update-document.dto';
 import { FilesService } from '../../files/application/files.service';
@@ -77,15 +77,15 @@ export class DocumentsService {
       });
 
       if (!document) {
-        throw new Error('Document not found');
+        throw new HttpException('Document not found', 404);
       }
 
       const version = await documentVersionRepo.findOne({
-        where: { id: versionId },
+        where: { id: versionId, document: { id } },
       });
 
       if (!version) {
-        throw new Error('Version not found');
+        throw new HttpException('Version not found', 404);
       }
 
       document.currentVersion = version;
