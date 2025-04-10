@@ -9,6 +9,8 @@ import { LockMismatchError } from './errors/lock-mismatch.error';
 import { extname } from 'path';
 import { LockFileResult } from '@app/common/api/only-office/src/types/lock-file.result';
 import { FILE_PROVIDER_TOKEN } from '@app/common/api/only-office/src/const/file.provider.token';
+import { RenameFileResult } from '@app/common/api/only-office/src/types/rename-file.result';
+import { PutRelativeFileResult } from '@app/common/api/only-office/src/types/put-relative-file.result';
 
 @Injectable()
 export class OnlyOfficeService {
@@ -53,36 +55,7 @@ export class OnlyOfficeService {
     };
   }
 
-  async updateFile(fileId: string, updateFileOptions: UpdateFileOptions) {
-    switch (updateFileOptions.action) {
-      case 'LOCK':
-        return this.lockFile(fileId, updateFileOptions.lockId);
-      case 'UNLOCK':
-        return this.unlockFile(fileId, updateFileOptions.lockId);
-      case 'REFRESH_LOCK':
-        return this.refreshLock(fileId, updateFileOptions.lockId);
-      case 'RENAME_FILE':
-        return this.renameFile(
-          fileId,
-          updateFileOptions.requestedName,
-          updateFileOptions.lockId,
-        );
-      case 'PUT_RELATIVE':
-        return this.putRelativeFile(
-          fileId,
-          updateFileOptions.buffer,
-          updateFileOptions.suggestedTarget,
-          updateFileOptions.lockId,
-          updateFileOptions.fileSize,
-          updateFileOptions.fileConversion,
-        );
-    }
-  }
-
-  private async lockFile(
-    fileId: string,
-    lockId?: string,
-  ): Promise<LockFileResult> {
+  async lockFile(fileId: string, lockId?: string): Promise<LockFileResult> {
     const file = await this.fileProvider.getFileById(fileId);
 
     if (!file?.lockId) {
@@ -103,10 +76,7 @@ export class OnlyOfficeService {
     };
   }
 
-  private async unlockFile(
-    fileId: string,
-    lockId?: string,
-  ): Promise<LockFileResult> {
+  async unlockFile(fileId: string, lockId?: string): Promise<LockFileResult> {
     const file = await this.fileProvider.getFileById(fileId);
 
     if (!file?.lockId) {
@@ -128,10 +98,7 @@ export class OnlyOfficeService {
     };
   }
 
-  private async refreshLock(
-    fileId: string,
-    lockId?: string,
-  ): Promise<LockFileResult> {
+  async refreshLock(fileId: string, lockId?: string): Promise<LockFileResult> {
     const file = await this.fileProvider.getFileById(fileId);
 
     if (!file?.lockId || file.lockId !== lockId) {
@@ -146,7 +113,11 @@ export class OnlyOfficeService {
     };
   }
 
-  private async renameFile(fileId: string, newName: string, lockId?: string) {
+  async renameFile(
+    fileId: string,
+    newName: string,
+    lockId?: string,
+  ): Promise<RenameFileResult> {
     const file = await this.fileProvider.getFileById(fileId);
 
     if (file?.lockId && lockId !== file.lockId) {
@@ -161,14 +132,14 @@ export class OnlyOfficeService {
     };
   }
 
-  private async putRelativeFile(
+  async putRelativeFile(
     fileId: string,
     buffer: Buffer,
     suggestedTarget: string,
     lockId?: string,
     fileSize?: number,
     fileConversion?: boolean,
-  ) {
+  ): Promise<PutRelativeFileResult> {
     const file = await this.fileProvider.getFileById(fileId);
 
     if (file?.lockId && lockId !== file.lockId) {

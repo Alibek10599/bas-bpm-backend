@@ -2,9 +2,10 @@ import {
   Body,
   Controller,
   Get,
-  Headers,
+  Inject,
   Param,
   Post,
+  Query,
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -16,10 +17,17 @@ import { LockFileHeader } from './headers/lock-file.headers';
 import { PutRelativeFileHeaders } from './headers/put-relative-file.headers';
 import { RenameFileHeaders } from './headers/rename-file.headers';
 import { CheckFileResponseDto } from './dto/check-file.response.dto';
+import { LockMismatchError } from './errors/lock-mismatch.error';
+import { RequestHeader } from '@app/common/decorators/request-header.decorator';
+import { UpdateFileHeaders } from './validation/update-file-headers-validation.decorator';
+import { LockFileResult } from './types/lock-file.result';
 
 @Controller('only-office/wopi/files')
 export class OnlyOfficeWopiController {
-  constructor(private readonly onlyOfficeService: OnlyOfficeService) {}
+  constructor(
+    private readonly onlyOfficeService: OnlyOfficeService,
+    @Inject('HOST_URL') private readonly hostUrl: string,
+  ) {}
 
   /**
    * https://api.onlyoffice.com/docs/docs-api/using-wopi/wopi-rest-api/checkfileinfo/
@@ -27,7 +35,8 @@ export class OnlyOfficeWopiController {
   @Get(':fileId')
   async checkFileInfo(
     @Param('fileId') fileId: string,
-    @Headers() checkFileInfoHeaders: CheckFileInfoHeaders,
+    @RequestHeader(CheckFileInfoHeaders)
+    checkFileInfoHeaders: CheckFileInfoHeaders,
   ): Promise<CheckFileResponseDto> {
     return this.onlyOfficeService.checkFileInfo(fileId);
   }
@@ -38,15 +47,20 @@ export class OnlyOfficeWopiController {
   @Get(':fileId/contents')
   async getFile(
     @Param('fileId') fileId: string,
-    @Headers() getFileHeaders: GetFileHeaders,
+    @RequestHeader(GetFileHeaders) getFileHeaders: GetFileHeaders,
     @Res() res: Response,
-  ): Promise<Buffer> {
+  ): Promise<void> {
     const { file, version } = await this.onlyOfficeService.getFile(fileId);
-    res.setHeader('X-WOPI-ItemVersion', version);
-    if (file.length > +getFileHeaders['X-WOPI-MaxExpectedSize']) {
+    res.setHeader('x-wopi-ItemVersion', version);
+    if (
+      getFileHeaders.maxExpectedSize &&
+      file.length > +getFileHeaders.maxExpectedSize
+    ) {
       res.status(412);
+      res.send();
+      return;
     }
-    return file;
+    res.send(file);
   }
 
   /**
@@ -62,20 +76,75 @@ export class OnlyOfficeWopiController {
    * */
   @Post(':fileId')
   async updateFile(
+    @Res() res: Response,
     @Param('fileId') fileId: string,
-    @Headers()
+    @UpdateFileHeaders()
     headers: LockFileHeader | PutRelativeFileHeaders | RenameFileHeaders,
     @Body() buffer?: Buffer,
+    @Query('access_token') accessToken?: string,
   ) {
-    await this.onlyOfficeService.updateFile(fileId, {
-      action: headers['X-WOPI-Override'],
-      buffer,
-      suggestedTarget: headers['X-WOPI-SuggestedTarget'],
-      fileSize: +headers['X-WOPI-Size'],
-      lockId: headers['X-WOPI-Lock'],
-      requestedName: headers['X-WOPI-RequestedName'],
-      fileConversion: Boolean(headers['X-WOPI-FileConversion']),
-    });
+    switch (headers.operation) {
+      case 'LOCK':
+        return this.onlyOfficeService
+          .lockFile(fileId, headers.lockId)
+          .then((result) => {
+            return this.lockFileResponse(res, result);
+          });
+      case 'UNLOCK':
+        return this.onlyOfficeService
+          .unlockFile(fileId, headers.lockId)
+          .then((result) => {
+            return this.lockFileResponse(res, result);
+          });
+      case 'REFRESH_LOCK':
+        return this.onlyOfficeService
+          .refreshLock(fileId, headers.lockId)
+          .then((result) => {
+            return this.lockFileResponse(res, result);
+          });
+      case 'RENAME_FILE':
+        return this.onlyOfficeService
+          .renameFile(fileId, headers.requestedName, headers.lockId)
+          .then((result) => {
+            res.header('X-WOPI-Lock', result.lockId);
+            res.send({ Name: result.newName });
+          });
+      case 'PUT_RELATIVE':
+        return this.onlyOfficeService
+          .putRelativeFile(
+            fileId,
+            buffer,
+            headers.suggestedTarget,
+            headers.lockId,
+            +headers.size,
+            Boolean(headers.fileConversion),
+          )
+          .then((result) => {
+            res.header('X-WOPI-Lock', result.lockId);
+            res.send({
+              Name: result.relatedFileId,
+              Url: this.buildUrl(accessToken, result.relatedFileId),
+              HostViewUrl: '',
+              HostEditUrl: '',
+            });
+          });
+    }
+  }
+
+  private buildUrl(accessKey: string, fileId: string) {
+    return `${this.hostUrl}/only-office/wopi/files/${fileId}?access_token=${accessKey}`;
+  }
+
+  private async lockFileResponse(res: Response, result: LockFileResult) {
+    res.header('X-WOPI-Lock', result.lockId);
+    res.header('X-WOPI-ItemVersion', result.version);
+    res.send('OK');
+  }
+
+  private async putRelativeFileResponse(res: Response, result: LockFileResult) {
+    res.header('X-WOPI-Lock', result.lockId);
+    res.header('X-WOPI-ItemVersion', result.version);
+    res.send('OK');
   }
 
   /**
@@ -85,30 +154,40 @@ export class OnlyOfficeWopiController {
   async putFile(
     @Param('fileId') fileId: string,
     @Body() buffer: Buffer,
-    @Headers() putFileHeaders: PutFileHeaders,
+    @RequestHeader(PutFileHeaders) putFileHeaders: PutFileHeaders,
     @Res() res: Response,
   ) {
-    const result = await this.onlyOfficeService.putFile(
-      fileId,
-      buffer,
-      {
-        operation: putFileHeaders['X-WOPI-Override'],
-        editors: putFileHeaders['X-WOPI-Editors']?.split(','),
-        modifiedByUser: putFileHeaders['X-LOOL-WOPI-IsModifiedByUser'],
-        isAutoSave: Boolean(putFileHeaders['X-LOOL-WOPI-IsAutosave']),
-        isExitSave: Boolean(putFileHeaders['X-LOOL-WOPI-IsExitSave']),
-      },
-      putFileHeaders['X-WOPI-Lock'],
-    );
+    const result = await this.onlyOfficeService
+      .putFile(
+        fileId,
+        buffer,
+        {
+          operation: putFileHeaders.operation,
+          editors: putFileHeaders.editors?.split(','),
+          isModifiedByUser: Boolean(putFileHeaders.isModifiedByUser),
+          isAutoSave: Boolean(putFileHeaders.isAutosave),
+          isExitSave: Boolean(putFileHeaders.isExitSave),
+        },
+        putFileHeaders.lockId,
+      )
+      .catch((err) => {
+        if (err instanceof LockMismatchError) {
+          return err;
+        }
+        throw new Error(err.message);
+      });
+
+    if (result instanceof LockMismatchError) {
+      res.setHeader('X-WOPI-Lock', result.lockId);
+      res.status(409);
+      res.send(result.message);
+      return;
+    }
 
     const headers = new Map([['X-WOPI-ItemVersion', result.version]]);
 
-    if (result.lockId) {
-      headers.set('X-WOPI-Lock', result.lockId);
-      headers.set('X-WOPI-LockFailureReason', result.locReason);
-      res.status(409);
-    }
-
     res.setHeaders(headers);
+    res.status(200);
+    res.send();
   }
 }
