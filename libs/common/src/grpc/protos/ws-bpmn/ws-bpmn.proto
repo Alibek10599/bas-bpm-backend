@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package ws_bpmn;
+
+service WsBpmn {
+  rpc BpmnUpdateNotify (UpdateBpmnNotification) returns (UpdateBpmnNotificationResult);
+}
+
+message UpdateBpmnNotification {
+  string id = 1;
+}
+
+message UpdateBpmnNotificationResult {
+
+}
