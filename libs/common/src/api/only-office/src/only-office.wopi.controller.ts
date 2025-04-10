@@ -141,12 +141,6 @@ export class OnlyOfficeWopiController {
     res.send('OK');
   }
 
-  private async putRelativeFileResponse(res: Response, result: LockFileResult) {
-    res.header('X-WOPI-Lock', result.lockId);
-    res.header('X-WOPI-ItemVersion', result.version);
-    res.send('OK');
-  }
-
   /**
    * https://api.onlyoffice.com/docs/docs-api/using-wopi/wopi-rest-api/putfile/
    * */
