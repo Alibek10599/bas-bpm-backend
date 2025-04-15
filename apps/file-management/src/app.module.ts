@@ -4,7 +4,10 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { DocumentsModule } from './documents/documents.module';
 import { FilesModule } from './files/files.module';
-import { OnlyOfficeModule } from '@app/common/api/only-office';
+import {
+  OnlyOfficeApiModule,
+  OnlyOfficeModule,
+} from '@app/common/api/only-office';
 import { TestFileProvider } from './utils/test-file.provider';
 
 @Module({
@@ -22,6 +25,7 @@ import { TestFileProvider } from './utils/test-file.provider';
     DocumentsModule,
     FilesModule,
     OnlyOfficeModule.init(new TestFileProvider()),
+    OnlyOfficeApiModule,
   ],
   controllers: [],
   providers: [],

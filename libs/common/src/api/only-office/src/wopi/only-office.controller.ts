@@ -23,7 +23,7 @@ import { UpdateFileHeaders } from './validation/update-file-headers-validation.d
 import { LockFileResult } from './types/lock-file.result';
 
 @Controller('only-office/wopi/files')
-export class OnlyOfficeWopiController {
+export class OnlyOfficeController {
   constructor(
     private readonly onlyOfficeService: OnlyOfficeService,
     @Inject('HOST_URL') private readonly hostUrl: string,

@@ -20,6 +20,7 @@ async function bootstrap() {
   const rabbitMqUrls = configService
     .getOrThrow<string>('RABBITMQ_URLS')
     .split(',');
+  console.log('rabbitMqUrls', rabbitMqUrls);
   const rabbitMqQueue = configService.getOrThrow<string>('RABBITMQ_QUEUE');
 
   app.connectMicroservice<RmqOptions>(rabbitmqCfg(rabbitMqUrls, rabbitMqQueue));

@@ -7,10 +7,10 @@ import { UpdateFileOptions } from './types/update-file.options';
 import { FileProvider } from './interfaces/file.provider';
 import { LockMismatchError } from './errors/lock-mismatch.error';
 import { extname } from 'path';
-import { LockFileResult } from '@app/common/api/only-office/src/types/lock-file.result';
-import { FILE_PROVIDER_TOKEN } from '@app/common/api/only-office/src/const/file.provider.token';
-import { RenameFileResult } from '@app/common/api/only-office/src/types/rename-file.result';
-import { PutRelativeFileResult } from '@app/common/api/only-office/src/types/put-relative-file.result';
+import { LockFileResult } from '@app/common/api/only-office/src/wopi/types/lock-file.result';
+import { FILE_PROVIDER_TOKEN } from '@app/common/api/only-office/src/wopi/const/file.provider.token';
+import { RenameFileResult } from '@app/common/api/only-office/src/wopi/types/rename-file.result';
+import { PutRelativeFileResult } from '@app/common/api/only-office/src/wopi/types/put-relative-file.result';
 
 @Injectable()
 export class OnlyOfficeService {

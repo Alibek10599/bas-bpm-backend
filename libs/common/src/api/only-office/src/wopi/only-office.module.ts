@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { OnlyOfficeService } from './only-office.service';
-import { OnlyOfficeWopiController } from './only-office.wopi.controller';
+import { OnlyOfficeController } from './only-office.controller';
 import { FILE_PROVIDER_TOKEN } from './const/file.provider.token';
 import { FileProvider } from './interfaces/file.provider';
 import { ConfigService } from '@nestjs/config';
@@ -10,7 +10,7 @@ export class OnlyOfficeModule {
   static init(fileProvider: FileProvider) {
     return {
       module: OnlyOfficeModule,
-      controllers: [OnlyOfficeWopiController],
+      controllers: [OnlyOfficeController],
       providers: [
         {
           provide: 'HOST_URL',

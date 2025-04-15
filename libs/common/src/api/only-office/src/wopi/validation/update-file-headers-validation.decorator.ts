@@ -3,9 +3,9 @@ import {
   ExecutionContext,
   HttpException,
 } from '@nestjs/common';
-import { LockFileHeader } from '@app/common/api/only-office/src/headers/lock-file.headers';
-import { RenameFileHeaders } from '@app/common/api/only-office/src/headers/rename-file.headers';
-import { PutRelativeFileHeaders } from '@app/common/api/only-office/src/headers/put-relative-file.headers';
+import { LockFileHeader } from '@app/common/api/only-office/src/wopi/headers/lock-file.headers';
+import { RenameFileHeaders } from '@app/common/api/only-office/src/wopi/headers/rename-file.headers';
+import { PutRelativeFileHeaders } from '@app/common/api/only-office/src/wopi/headers/put-relative-file.headers';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 
