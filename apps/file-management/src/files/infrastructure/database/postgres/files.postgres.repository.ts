@@ -3,8 +3,8 @@ import { PaginatedList, toPaginated } from '@app/common/pagination';
 import { Repository } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
 import { File } from './entities/file.entity';
-import { CreateFile } from '../../../domain/repository/types/create-File';
-import { FindAllFilesFilter } from '../../../domain/repository/types/find-all-Files-filter';
+import { CreateFile } from '../../../domain/repository/types/create-file';
+import { FindAllFilesFilter } from '../../../domain/repository/types/find-all-files-filter';
 import { FilesRepository } from '../../../domain/repository/files.repository';
 
 @Injectable()

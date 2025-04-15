@@ -178,9 +178,7 @@ export class OnlyOfficeController {
       return;
     }
 
-    const headers = new Map([['X-WOPI-ItemVersion', result.version]]);
-
-    res.setHeaders(headers);
+    res.setHeader('X-WOPI-ItemVersion', result.version);
     res.status(200);
     res.send();
   }
