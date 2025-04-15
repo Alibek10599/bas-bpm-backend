@@ -10,13 +10,14 @@ import {
 import { FilesService } from '../../application/files.service';
 import { Response } from 'express';
 import { CurrentUser } from '@app/common';
+import { CreateEmptyFileDto } from '../dto/create-empty-file.dto';
 
 @Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
   @Post('upload')
-  create(
+  upload(
     @Headers('x-file-name') fileName: string,
     @Headers('content-type') contentType: string,
     @Body() buffer: Buffer,
@@ -28,6 +29,18 @@ export class FilesController {
       buffer: buffer,
       userId: user.userId,
       tenantId: user.tenantId,
+    });
+  }
+
+  @Post('create-empty')
+  createEmpty(
+    @Body() createEmptyFileDto: CreateEmptyFileDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.filesService.createEmptyFile({
+      ...createEmptyFileDto,
+      userId: user?.userId ?? '',
+      tenantId: user?.tenantId ?? '',
     });
   }
 

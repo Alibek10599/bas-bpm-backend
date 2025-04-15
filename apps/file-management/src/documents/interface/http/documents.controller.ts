@@ -13,13 +13,14 @@ import { DocumentsService } from '../../application/documents.service';
 import { CurrentUser } from '@app/common';
 import { Response } from 'express';
 import { ChangeDocumentVersionDto } from '../dto/change-document-version.dto';
+import { CreateEmptyFileDto } from '../dto/create-empty-file.dto';
 
 @Controller('documents')
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 
   @Post('upload')
-  create(
+  upload(
     @Headers('x-file-name') fileName: string,
     @Headers('x-document-type') documentType: string,
     @Headers('content-type') contentType: string,
@@ -31,6 +32,18 @@ export class DocumentsController {
       type: contentType,
       buffer: buffer,
       documentType: documentType,
+      userId: user?.userId ?? '',
+      tenantId: user?.tenantId ?? '',
+    });
+  }
+
+  @Post('create')
+  create(
+    @Body() createEmptyFileDto: CreateEmptyFileDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.documentsService.createEmptyDocument({
+      ...createEmptyFileDto,
       userId: user?.userId ?? '',
       tenantId: user?.tenantId ?? '',
     });

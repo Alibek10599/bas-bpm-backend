@@ -10,6 +10,8 @@ import { DocumentVersions } from '../infrastructure/database/postgres/entities/d
 import { CreateDocument } from '../domain/repository/types/create-document';
 import { UpdateDocument } from '../domain/repository/types/update-document';
 import { File } from '../../files/infrastructure/database/postgres/entities/file.entity';
+import { CreateEmptyDocument } from '../domain/repository/types/create-empty-document';
+import { CreateEmptyDocumentResponse } from '../domain/repository/types/create-empty-document.response';
 
 @Injectable()
 export class DocumentsService {
@@ -52,6 +54,49 @@ export class DocumentsService {
       return {
         documentId: document.id,
         message: 'Document successfully uploaded',
+      };
+    });
+  }
+
+  async createEmptyDocument(
+    createEmptyDocument: CreateEmptyDocument,
+  ): Promise<CreateEmptyDocumentResponse> {
+    return await this.dataSource.transaction(async (em) => {
+      const documentRepo = em.getRepository(Document);
+      const versionRepo = em.getRepository(DocumentVersions);
+
+      const { fileId } = await this.filesService.createEmptyFileInTransaction(
+        em,
+        {
+          name: createEmptyDocument.name,
+          type: createEmptyDocument.documentType,
+          userId: createEmptyDocument.userId,
+          tenantId: createEmptyDocument.tenantId,
+        },
+      );
+
+      const document = await documentRepo.save({
+        name: createEmptyDocument.name,
+        documentType: createEmptyDocument.documentType,
+        createdBy: createEmptyDocument.userId,
+        tenantId: createEmptyDocument.tenantId,
+        documentPermissions: [
+          {
+            userId: createEmptyDocument.userId,
+            permissionType: DocumentPermissionsEnum.delete,
+          },
+        ],
+      });
+      const version = await versionRepo.save({
+        createdBy: createEmptyDocument.userId,
+        document: document,
+        file: { id: fileId },
+      });
+      await documentRepo.save({ id: document.id, currentVersion: version });
+
+      return {
+        fileId: document.id,
+        message: 'Document successfully created',
       };
     });
   }
