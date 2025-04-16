@@ -36,8 +36,9 @@ export class OnlyOfficeCallbackDto {
    * Defines the list of the identifiers of the users who opened the document for editing;
    * when the document has been changed the users will return the identifier of the user who was the last to edit the document (for status 2 and status 6 replies).
    * */
+  @IsOptional()
   @IsString({ each: true })
-  users: string;
+  users?: string;
 
   /**
    * Defines the link to the edited document to be saved with the document storage service.

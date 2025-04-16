@@ -192,7 +192,7 @@ export class DocumentsService {
     });
   }
 
-  async findOneContent(id: string) {
+  async findOneContent(id: string, version: number) {
     const document = await this.documentsRepository.findOneById(id);
 
     if (!document) {
@@ -201,6 +201,13 @@ export class DocumentsService {
 
     if (!document.currentVersion.file) {
       throw new Error('File not found');
+    }
+
+    if (version || version === 0) {
+      const docVersion = await this.dataSource
+        .getRepository(DocumentVersions)
+        .findOne({ relations: ['file'], where: { document: { id }, version } });
+      return await this.filesService.findOneContent(docVersion.file.id);
     }
 
     return await this.filesService.findOneContent(

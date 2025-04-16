@@ -8,12 +8,14 @@ import {
   Put,
   Res,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { DocumentsService } from '../../application/documents.service';
 import { CurrentUser } from '@app/common';
 import { Response } from 'express';
 import { ChangeDocumentVersionDto } from '../dto/change-document-version.dto';
 import { CreateEmptyFileDto } from '../dto/create-empty-file.dto';
+import { DocumentContentQueryDto } from '../dto/document-content-query.dto';
 
 @Controller('documents')
 export class DocumentsController {
@@ -73,8 +75,13 @@ export class DocumentsController {
   }
 
   @Get(':id/content')
-  async findOneContent(@Res() res: Response, @Param('id') id: string) {
-    const data = await this.documentsService.findOneContent(id);
+  async findOneContent(
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Query() query: DocumentContentQueryDto,
+  ) {
+    console.log(query);
+    const data = await this.documentsService.findOneContent(id, +query.version);
     res.header('Content-Type', data.type);
     res.send(data.buffer);
   }

@@ -13,23 +13,19 @@ export class OnlyOfficeApiService {
   ) {}
 
   async handleCallback(body: OnlyOfficeCallbackDto) {
-    console.log(body);
     if (body.status === 2) {
-      await this.documentsProvider.updateDocument(
-        body.key,
-        body.users[0],
-        body.url,
-      );
+      const key = body.key.includes('-v') ? body.key.split('-v')[0] : body.key;
+      await this.documentsProvider.updateDocument(key, body.users[0], body.url);
     }
   }
 
-  buildTestPage(key: string) {
-    const token = this.jwtService.sign({
+  buildTestPage(key: string, version: string) {
+    const cfg = {
       document: {
         fileType: 'docx',
-        key: key,
+        key: key + '-v' + version,
         title: 'temp.docx',
-        url: `http://192.168.8.10:3003/documents/${key}/content`,
+        url: `http://192.168.8.10:3003/documents/${key}/content?version=${version}`,
       },
       documentType: 'word',
       editorConfig: {
@@ -39,7 +35,8 @@ export class OnlyOfficeApiService {
           name: 'Admin',
         },
       },
-    });
+    };
+    const token = this.jwtService.sign(cfg);
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -49,25 +46,11 @@ export class OnlyOfficeApiService {
     </head>
     <body style="height: 98vh;">
         <div id="placeholder"></div>
-        <script src="http://localhost:8081/web-apps/apps/api/documents/api.js"></script>
+        <script src="http://192.168.8.10:8081/web-apps/apps/api/documents/api.js"></script>
         <script>
-            const docEditor = new DocsAPI.DocEditor("placeholder", {
-                token: "${token}",
-                document: {
-                    fileType: "docx",
-                    key: "${key}",
-                    title: "temp.docx",
-                    url: "http://192.168.8.10:3003/documents/${key}/content",
-                },
-                documentType: "word",
-                editorConfig: {
-                    callbackUrl: "http://192.168.8.10:3003/only-office/api/callback",
-                    user: {
-                      id: "73f4c430-2a06-4380-9aa9-fb3261175ae0",
-                      name: "Admin"
-                    },
-                }
-            });
+            const docEditor = new DocsAPI.DocEditor("placeholder", ${JSON.stringify(
+              { ...cfg, token },
+            )});
         </script>
     </body> 
     </html>  
