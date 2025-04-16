@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { Document, Packer } from 'docx';
 import { OnlyOfficeApiService } from './only-office.api.service';
@@ -36,7 +44,7 @@ export class OnlyOfficeApiController {
   }
 
   @Get('show')
-  async show(@Res() res: Response) {
-    res.send(this.onlyOfficeApiService.buildTestPage());
+  async show(@Res() res: Response, @Query('key') key: string) {
+    res.send(this.onlyOfficeApiService.buildTestPage(key));
   }
 }

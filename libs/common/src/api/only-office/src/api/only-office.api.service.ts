@@ -1,27 +1,39 @@
-import { Injectable } from '@nestjs/common';
-import { OnlyOfficeCallbackDto } from '@app/common/api/only-office/src/api/dto/only-office-callback.dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { OnlyOfficeCallbackDto } from './dto/only-office-callback.dto';
 import { JwtService } from '@nestjs/jwt';
+import { documentsProviderToken } from './documents/documents.provider.token';
+import { DocumentsProvider } from './documents/documents.provider';
 
 @Injectable()
 export class OnlyOfficeApiService {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    @Inject(documentsProviderToken)
+    private readonly documentsProvider: DocumentsProvider,
+  ) {}
 
   async handleCallback(body: OnlyOfficeCallbackDto) {
-    console.log('Callback received:', body);
+    console.log(body);
+    if (body.status === 2) {
+      await this.documentsProvider.updateDocument(
+        body.key,
+        body.users[0],
+        body.url,
+      );
+    }
   }
 
-  buildTestPage() {
-    const key = '12345678-90l';
+  buildTestPage(key: string) {
     const token = this.jwtService.sign({
       document: {
         fileType: 'docx',
         key: key,
         title: 'temp.docx',
-        url: 'http://192.168.0.101:3003/only-office/api/test-doc-file',
+        url: `http://192.168.8.10:3003/documents/${key}/content`,
       },
       documentType: 'word',
       editorConfig: {
-        callbackUrl: 'http://192.168.0.101:3003/only-office/api/callback',
+        callbackUrl: 'http://192.168.8.10:3003/only-office/api/callback',
         user: {
           id: '73f4c430-2a06-4380-9aa9-fb3261175ae0',
           name: 'Admin',
@@ -36,8 +48,8 @@ export class OnlyOfficeApiService {
         <title>Document Editor</title>
     </head>
     <body style="height: 98vh;">
-        <div id="placeholder" style="width: 100%; height: 90vh;"></div>
-        <script src="http://localhost/web-apps/apps/api/documents/api.js"></script>
+        <div id="placeholder"></div>
+        <script src="http://localhost:8081/web-apps/apps/api/documents/api.js"></script>
         <script>
             const docEditor = new DocsAPI.DocEditor("placeholder", {
                 token: "${token}",
@@ -45,11 +57,11 @@ export class OnlyOfficeApiService {
                     fileType: "docx",
                     key: "${key}",
                     title: "temp.docx",
-                    url: "http://192.168.0.101:3003/only-office/api/test-doc-file",
+                    url: "http://192.168.8.10:3003/documents/${key}/content",
                 },
                 documentType: "word",
                 editorConfig: {
-                    callbackUrl: "http://192.168.0.101:3003/only-office/api/callback",
+                    callbackUrl: "http://192.168.8.10:3003/only-office/api/callback",
                     user: {
                       id: "73f4c430-2a06-4380-9aa9-fb3261175ae0",
                       name: "Admin"
