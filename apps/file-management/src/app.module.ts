@@ -25,7 +25,7 @@ import { DatabaseModule } from './database/database.module';
     FilesModule,
     OnlyOfficeApiModule.forRoot({
       jwtSecret: 'my_jwt_secret',
-      imports: [DatabaseModule],
+      imports: [DatabaseModule, FilesModule],
       documentsProvider: TestDocumentProvider,
     }),
   ],
