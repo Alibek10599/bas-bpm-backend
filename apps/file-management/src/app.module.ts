@@ -4,15 +4,14 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { DocumentsModule } from './documents/documents.module';
 import { FilesModule } from './files/files.module';
-import {
-  OnlyOfficeApiModule,
-  OnlyOfficeModule,
-} from '@app/common/api/only-office';
-import { TestFileProvider } from './utils/test-file.provider';
+import { OnlyOfficeApiModule } from '@app/common/api/only-office';
+import { TestDocumentProvider } from './utils/test-document.provider';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
     LoggerModule,
+    DatabaseModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
@@ -24,8 +23,11 @@ import { TestFileProvider } from './utils/test-file.provider';
     }),
     DocumentsModule,
     FilesModule,
-    OnlyOfficeModule.init(new TestFileProvider()),
-    OnlyOfficeApiModule,
+    OnlyOfficeApiModule.forRoot({
+      jwtSecret: 'my_jwt_secret',
+      imports: [DatabaseModule],
+      documentsProvider: TestDocumentProvider,
+    }),
   ],
   controllers: [],
   providers: [],
