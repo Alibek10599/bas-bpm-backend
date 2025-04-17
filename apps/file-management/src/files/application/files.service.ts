@@ -156,7 +156,7 @@ export class FilesService {
     return await Packer.toBuffer(doc);
   }
   private async getEmptyPptxFile() {
-    const pptx = new pptxgen();
+    const pptx = new (pptxgen as any)();
 
     pptx.addSlide();
 
