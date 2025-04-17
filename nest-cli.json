@@ -1,11 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/ws-gateway/src",
+  "sourceRoot": "apps/file-management/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/ws-gateway/tsconfig.app.json",
+    "tsConfigPath": "apps/file-management/tsconfig.app.json",
     "assets": ["**/*.html", "**/*.proto"]
   },
   "projects": {
@@ -63,6 +63,15 @@
         "tsConfigPath": "apps/tasks/tsconfig.app.json"
       }
     },
+    "file-management": {
+      "type": "application",
+      "root": "apps/file-management",
+      "entryFile": "main",
+      "sourceRoot": "apps/file-management/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/file-management/tsconfig.app.json"
+      }
+    },
     "auth": {
       "type": "application",
       "root": "apps/auth",
@@ -74,5 +83,5 @@
     }
   },
   "monorepo": true,
-  "root": "apps/ws-gateway"
+  "root": "apps/file-management"
 }

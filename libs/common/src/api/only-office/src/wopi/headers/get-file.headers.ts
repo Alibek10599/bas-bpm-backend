@@ -1,0 +1,12 @@
+import { IsOptional, IsString } from 'class-validator';
+import { Expose } from 'class-transformer';
+
+export class GetFileHeaders {
+  /**
+   * The upper bound of the expected size of the file being requested. The host should use the maximum value of a 4-byte integer if this value isn't set in the request. If the file requested is larger than this value, the host must respond with a 412 Precondition Failed.
+   * */
+  @IsString()
+  @IsOptional()
+  @Expose({ name: 'x-wopi-maxexpectedsize' })
+  maxExpectedSize?: number;
+}
