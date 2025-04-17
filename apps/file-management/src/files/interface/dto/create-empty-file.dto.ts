@@ -1,11 +1,12 @@
-import { IsIn, IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
+import { DocumentTypes } from '../../../documents/infrastructure/enums/document-types.enum';
 
 export class CreateEmptyFileDto {
   @IsString()
   name: string;
 
-  @IsIn(['docx', 'pptx', 'xlsx'])
-  type: 'docx' | 'pptx' | 'xlsx';
+  @IsEnum(DocumentTypes)
+  type: DocumentTypes;
 
   userId: string;
   tenantId: string;

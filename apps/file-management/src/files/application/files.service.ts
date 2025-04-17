@@ -10,6 +10,9 @@ import { File } from '../infrastructure/database/postgres/entities/file.entity';
 import { EntityManager } from 'typeorm';
 import { CreateEmptyFileDto } from '../interface/dto/create-empty-file.dto';
 import { Packer, Document } from 'docx';
+import { DocumentTypes } from '../../documents/infrastructure/enums/document-types.enum';
+import * as ExcelJS from 'exceljs';
+import * as pptxgen from 'pptxgenjs';
 
 @Injectable()
 export class FilesService {
@@ -83,7 +86,9 @@ export class FilesService {
     em: EntityManager,
     createEmptyFileDto: CreateEmptyFileDto,
   ) {
-    const buffer = await this.getEmptyFileByType(createEmptyFileDto.type);
+    const buffer = await this.getEmptyFileByDocumentType(
+      createEmptyFileDto.type,
+    );
 
     const hashName = await this.storageProvider.save({
       name: createEmptyFileDto.name,
@@ -106,7 +111,9 @@ export class FilesService {
   }
 
   async createEmptyFile(createEmptyFileDto: CreateEmptyFileDto) {
-    const buffer = await this.getEmptyFileByType(createEmptyFileDto.type);
+    const buffer = await this.getEmptyFileByDocumentType(
+      createEmptyFileDto.type,
+    );
 
     const hashName = await this.storageProvider.save({
       name: createEmptyFileDto.name,
@@ -128,13 +135,15 @@ export class FilesService {
     };
   }
 
-  private async getEmptyFileByType(type: 'docx' | 'pptx' | 'xlsx') {
+  private async getEmptyFileByDocumentType(
+    type: DocumentTypes,
+  ): Promise<Buffer> {
     switch (type) {
-      case 'docx':
+      case DocumentTypes.WORD:
         return this.getEmptyDocxFile();
-      case 'pptx':
+      case DocumentTypes.PRESENTATION:
         return this.getEmptyPptxFile();
-      case 'xlsx':
+      case DocumentTypes.EXCEL:
         return this.getEmptyXlsxFile();
     }
   }
@@ -147,34 +156,19 @@ export class FilesService {
     return await Packer.toBuffer(doc);
   }
   private async getEmptyPptxFile() {
-    return Buffer.from(
-      'UEsDBBQABgAIAAAAIQB0DOcYVwEAAOQFAAAQAAAAZG9jUHJvcHMvYXBwLnhtbCCiBAIooAAC' +
-        'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
-        'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUEsDBBQABgAIAAAA' +
-        'IQB0DOcYVwEAAOQFAAAQAAAAZG9jUHJvcHMvY29yZS54bWwg7FlLbtswEL0r8T9g+Y3uhvRJ' +
-        'l22T04E0w3XYHgt0GRMXHCL//uNydWRtpDRqU74WIPTmnOec+bz34TlvAYiDgN9ljkU8z8N+' +
-        'jc+KLZc+aZeqzxzv7hHzk3EBNxkKXKocQYlL4SkXxHVn4rL+A52vhlMLFrKtI5InOrK8oGHM' +
-        'aIoMWMKJPJzOJSg2+iw9J2cJgr2zTBlU6C6UNFci6hcZTgQ1AfEX6oEG+RhEvmKjUvAW0AV0' +
-        'FxXpZc1IqY1Gk/7KSLE3pGyUDtrf4qhyFeJYmKLUEsBAhQDFAAGAAgAAAAhAHTM5xhXAQAA5' +
-        'AUAABAAAAAAAAAAAAAAAAAAAAAAGRvY1Byb3BzL2FwcC54bWxQSwECFAMUAAUACAAAACEAdA' +
-        'znGFcBAADkBQAAEAAAAAAAAAAAAAAAAAAAAAAAZG9jUHJvcHMvY29yZS54bWxQSwUGAAAAAA' +
-        'IAAgDEAQAAvAUAAAAA',
-      'base64',
-    );
+    const pptx = new pptxgen();
+
+    pptx.addSlide();
+
+    const uint8Array = (await pptx.write({
+      outputType: 'arraybuffer',
+    })) as ArrayBuffer;
+    return Buffer.from(uint8Array);
   }
   private async getEmptyXlsxFile() {
-    return Buffer.from(
-      'UEsDBBQABgAIAAAAIQDq3P6aWwEAAJQDAAAQAAAAZG9jUHJvcHMvYXBwLnhtbCCiBAIooAAC' +
-        'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' +
-        'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUEsDBBQABgAIAAAA' +
-        'IQDq3P6aWwEAAJQDAAAQAAAAZG9jUHJvcHMvY29yZS54bWwgy07LbtswDL0r+T9gnxM3Di22' +
-        'dIpktnL4sYhN0u1txK+jYZEwMNb/vnXc4Mm8jW2UVU8i9L5H37r8weGfaMR+wWyGe+HBDw8h' +
-        'Y1XJbyyoBhR8j4axzNvjssu+/+KMA7FHQ1PQdGJI9oq8NWPUH2+T2U/VOTeTq1hQqhRhMNKp' +
-        '2vCHIWKqNfMNXPMm1Yo4zVQzKaosR0RSrIouF1EPzP8+gE0pW9yEtctA8XYSmPL4QyO+hZVS' +
-        'Yk9Aecq0CTW4xV1emWnLQSwECFAMUAAUACAAAACEA6tz+mlsBAACUAwAAEAAAAAAAAAAAAAAA' +
-        'AAAAAABkb2NQcm9wcy9hcHAueG1sUEsBAhQDFAAGAAgAAAAhAOrc/p5bAQAAlAMAAA8AAAAA' +
-        'AAAAAAAAAAAAAGRvY1Byb3BzL2NvcmUueG1sUEsFBgAAAAACAAIAMQEAALQFAAAAAA==',
-      'base64',
-    );
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet1');
+    const buffer = await workbook.xlsx.writeBuffer();
+    return Buffer.from(buffer);
   }
 }

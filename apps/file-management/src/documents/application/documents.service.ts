@@ -12,6 +12,7 @@ import { UpdateDocument } from '../domain/repository/types/update-document';
 import { File } from '../../files/infrastructure/database/postgres/entities/file.entity';
 import { CreateEmptyDocument } from '../domain/repository/types/create-empty-document';
 import { CreateEmptyDocumentResponse } from '../domain/repository/types/create-empty-document.response';
+import { DocumentTypes } from '../infrastructure/enums/document-types.enum';
 
 @Injectable()
 export class DocumentsService {
