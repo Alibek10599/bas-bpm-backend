@@ -9,15 +9,24 @@ service ScriptsService {
   rpc UpdateScript (UpdateScriptWrapper) returns (ScriptResponse);
 }
 
+enum ProgrammingLanguage {
+  NULL = 0;
+  JS = 1;
+  TS = 2;
+  Python = 3;
+}
+
 message CreateScript {
   string name = 1;
   string script = 2;
+  ProgrammingLanguage language = 3;
 }
 
 message UpdateScript {
   string scriptId = 1;
   string name = 2;
   string script = 3;
+  ProgrammingLanguage language = 4;
 }
 
 message ScriptId {
@@ -28,8 +37,9 @@ message Script {
   string id = 1;
   string name = 2;
   string script = 3;
-  string createdAt = 4;
-  string updatedAt = 5;
+  ProgrammingLanguage language = 4;
+  string createdAt = 5;
+  string updatedAt = 6;
 }
 
 message ScriptList {

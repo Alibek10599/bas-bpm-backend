@@ -23,5 +23,6 @@ import { GrpcScriptsController } from './interface/grpc/grpc.scripts.controller'
     },
     ScriptsService,
   ],
+  exports: [ScriptsService],
 })
 export class ScriptsModule {}

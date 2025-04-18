@@ -22,6 +22,7 @@ export class ScriptsController {
     return this.scriptsService.create({
       name: createScriptDto.name,
       script: createScriptDto.script,
+      language: createScriptDto.language,
       tenantId: user?.tenantId ?? '',
       userId: user?.userId ?? '',
     });

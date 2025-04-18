@@ -25,7 +25,7 @@ export class ScriptPostgresRepository implements ScriptRepository {
   findAll(filter: FindAllScriptsFilter): Promise<Script[]> {
     return this.scriptRepository.find({
       where: {
-        name: ILike(`%${filter.search}%`),
+        name: filter.search ? ILike(`%${filter.search}%`) : undefined,
         tenantId: filter.tenantId,
         userId: filter.userId,
       },

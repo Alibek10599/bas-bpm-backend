@@ -5,6 +5,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ProgrammingLanguages } from '../../../enums/programming-languages.enum';
+import { ScriptLanguageTransformer } from '../mappers/script.language.transformer';
 
 @Entity('scripts')
 export class Script {
@@ -16,6 +18,13 @@ export class Script {
 
   @Column({ type: 'text' })
   script: string;
+
+  @Column({
+    type: 'varchar',
+    length: 10,
+    transformer: new ScriptLanguageTransformer(),
+  })
+  language: ProgrammingLanguages;
 
   @Column({
     type: 'varchar',

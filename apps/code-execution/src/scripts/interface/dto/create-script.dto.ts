@@ -1,4 +1,5 @@
-import { IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
+import { ProgrammingLanguages } from '../../infrastructure/enums/programming-languages.enum';
 
 export class CreateScriptDto {
   @IsString()
@@ -6,4 +7,7 @@ export class CreateScriptDto {
 
   @IsString()
   script: string;
+
+  @IsEnum(ProgrammingLanguages)
+  language: ProgrammingLanguages;
 }
