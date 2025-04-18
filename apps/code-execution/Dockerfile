@@ -9,12 +9,12 @@ COPY nest-cli.json nest-cli.json
 
 RUN npm install -g pnpm
 
-COPY apps/file-management apps/file-management
+COPY apps/code-execution apps/code-execution
 COPY libs libs
 
 RUN pnpm install -r
 
-RUN pnpm run build file-management
+RUN pnpm run build code-execution
 
 FROM node:alpine as production
 
@@ -32,4 +32,4 @@ RUN pnpm install --prod
 
 COPY --from=development /usr/src/app/dist ./dist
 
-CMD ["node", "dist/apps/file-management/main"]
+CMD ["node", "dist/apps/code-execution/main"]

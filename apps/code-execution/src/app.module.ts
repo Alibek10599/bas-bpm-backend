@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { DatabaseModule } from './database/database.module';
 import { CodeExecutionModule } from './code-execution/code-execution.module';
+import { ScriptsModule } from './scripts/scripts.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CodeExecutionModule } from './code-execution/code-execution.module';
         HTTP_PORT: Joi.number(),
       }),
     }),
+    ScriptsModule,
     CodeExecutionModule,
   ],
   controllers: [],

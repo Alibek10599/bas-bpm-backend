@@ -28,7 +28,7 @@ async function bootstrap() {
   app.connectMicroservice<GrpcOptions>(
     grpcCfg(
       grpcUrl,
-      ['scripts', 'code-execution'],
+      ['scripts', 'code_execution'],
       [
         join(__dirname, './scripts.proto'),
         join(__dirname, './code-execution.proto'),
