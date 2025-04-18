@@ -25,10 +25,10 @@ export class CodeExecutionHistory {
   execution_time_ms: string;
 
   @Column({
-    type: 'text',
-    default: '',
+    type: 'jsonb',
+    default: null,
   })
-  result: string;
+  result: any;
 
   @Column({
     type: 'varchar',

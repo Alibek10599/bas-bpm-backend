@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ExecuteScriptDto } from '../dto/execute-script.dto';
 import { CodeExecutionService } from '../../application/code-execution.service';
 import { CurrentUser } from '@app/common';
+import { CodeExecutionHistoryFilterDto } from '../dto/code-execution-history-filter.dto';
 
 @Controller('code-execution')
 export class CodeExecutionController {
@@ -14,8 +15,20 @@ export class CodeExecutionController {
   ) {
     return await this.codeExecutionService.executeScript({
       ...executeScriptDto,
+      tenantId: user?.tenantId ?? '',
+      userId: user?.userId ?? '',
+    });
+  }
+
+  @Get('/history')
+  async getCodeExecutionHistory(
+    @CurrentUser() user: any,
+    @Query() codeExecutionHistoryFilter: CodeExecutionHistoryFilterDto,
+  ) {
+    return await this.codeExecutionService.getCodeExecutionHistory({
+      scriptId: codeExecutionHistoryFilter.scriptId,
+      userId: codeExecutionHistoryFilter.userId,
       tenantId: user.tenantId,
-      userId: user.userId,
     });
   }
 }

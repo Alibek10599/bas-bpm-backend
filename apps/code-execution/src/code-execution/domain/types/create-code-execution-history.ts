@@ -1,7 +1,7 @@
 export class CreateCodeExecutionHistory {
   scriptId: string;
   execution_time_ms: number;
-  result: string;
+  result: any;
   userId?: string;
   tenantId?: string;
 }

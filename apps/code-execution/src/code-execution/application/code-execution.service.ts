@@ -1,10 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as ivm from 'isolated-vm';
+import * as ts from 'typescript';
 import { ScriptsService } from '../../scripts/application/scripts.service';
 import { ExecuteScriptInput } from '../domain/types/execute-script.input';
 import { ExecuteScriptOutput } from '../domain/types/execute-script.output';
 import { CodeExecutionRepositoryToken } from '../domain/code-execution.repository.token';
 import { CodeExecutionRepository } from '../domain/code-execution.repository';
+import { FindExecutionHistoryFilter } from '../domain/types/find-execution-history-filter';
+import { Script } from '../../scripts/infrastructure/database/postgres/entities/script.entity';
+import { ProgrammingLanguages } from '../../scripts/infrastructure/enums/programming-languages.enum';
 
 @Injectable()
 export class CodeExecutionService {
@@ -21,6 +25,42 @@ export class CodeExecutionService {
       executeScriptInput.scriptId,
     );
 
+    const { executionTime, result } = await this.execute(
+      executeScriptInput,
+      script,
+    );
+
+    await this.codeExecutionRepository.create({
+      scriptId: script.id,
+      execution_time_ms: executionTime,
+      result: result,
+      tenantId: executeScriptInput.tenantId,
+      userId: executeScriptInput.userId,
+    });
+    return { scriptId: script.id, status: 'OK' };
+  }
+
+  async getCodeExecutionHistory(filter: FindExecutionHistoryFilter) {
+    return await this.codeExecutionRepository.findAll(filter);
+  }
+
+  private async execute(
+    executeScriptInput: ExecuteScriptInput,
+    script: Script,
+  ) {
+    switch (script.language) {
+      case ProgrammingLanguages.JS:
+      case ProgrammingLanguages.TS:
+        return await this.executeJsOrTs(executeScriptInput, script);
+      case ProgrammingLanguages.Python:
+        return await this.executePython(executeScriptInput, script);
+    }
+  }
+
+  private async executeJsOrTs(
+    executeScriptInput: ExecuteScriptInput,
+    script: Script,
+  ) {
     const isolate = new ivm.Isolate({ memoryLimit: 64 });
 
     const context = await isolate.createContext();
@@ -40,17 +80,49 @@ export class CodeExecutionService {
       new ivm.ExternalCopy(executeScriptInput.tenantId).copyInto(),
     );
 
-    const compiledScript = await isolate.compileScript(script.script);
-    const startDate = +new Date();
-    const result = await compiledScript.run(context, { timeout: 10000 });
+    const preparedScript =
+      script.language === 'ts' ? ts.transpile(script.script) : script.script;
 
-    await this.codeExecutionRepository.create({
-      scriptId: script.id,
-      execution_time_ms: +new Date() - startDate,
-      result: result,
-      tenantId: executeScriptInput.tenantId,
-      userId: executeScriptInput.userId,
-    });
-    return { scriptId: script.id, status: 'OK' };
+    const compiledScript = await isolate.compileScript(preparedScript);
+
+    const startDate = +new Date();
+    return await compiledScript
+      .run(context, { timeout: 10000 })
+      .then((result) => {
+        return {
+          status: 'success',
+          data: result,
+        };
+      })
+      .catch((err) => {
+        return {
+          status: 'error',
+          data: {
+            message: err.message,
+          },
+        };
+      })
+      .then((result) => {
+        console.log(+new Date() - startDate);
+        return {
+          executionTime: +new Date() - startDate,
+          result,
+        };
+      });
+  }
+
+  private async executePython(
+    executeScriptInput: ExecuteScriptInput,
+    script: Script,
+  ) {
+    return {
+      executionTime: 0,
+      result: {
+        status: 'error',
+        message: {
+          message: 'not implemented',
+        },
+      },
+    };
   }
 }

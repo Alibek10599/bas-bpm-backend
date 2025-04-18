@@ -12,7 +12,7 @@ import { DataSource } from 'typeorm';
 import { CodeExecutionHistory } from './infrastructure/database/postgres/entities/code-execution-history.entity';
 
 @Module({
-  imports: [ScriptsModule, DatabaseModule],
+  imports: [DatabaseModule, ScriptsModule],
   controllers: [
     CodeExecutionController,
     RmqCodeExecutionController,
