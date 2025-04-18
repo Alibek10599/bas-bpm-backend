@@ -1,0 +1,1 @@
+export const ScriptsRepositoryToken = 'ScriptsRepositoryToken';
