@@ -18,6 +18,7 @@ export class GrpcScriptsController {
   ) {
     return this.scriptsService.create({
       name: createScriptDto.name,
+      language: createScriptDto.language,
       script: createScriptDto.script,
       tenantId: metadata?.tenantId ?? '',
       userId: metadata?.userId ?? '',
