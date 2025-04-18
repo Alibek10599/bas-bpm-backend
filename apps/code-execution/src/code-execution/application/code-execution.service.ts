@@ -25,6 +25,10 @@ export class CodeExecutionService {
       executeScriptInput.scriptId,
     );
 
+    if (!script) {
+      throw new Error('Script not found');
+    }
+
     const { executionTime, result } = await this.execute(
       executeScriptInput,
       script,

@@ -22,7 +22,7 @@ export class CodeExecutionHistory {
     type: 'integer',
     default: 0,
   })
-  execution_time_ms: string;
+  execution_time_ms: number;
 
   @Column({
     type: 'jsonb',

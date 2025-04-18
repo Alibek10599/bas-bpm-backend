@@ -12,19 +12,23 @@ export class ScriptsService {
     private readonly scriptRepository: ScriptRepository,
   ) {}
 
-  create(createScript: CreateScript) {
+  async create(createScript: CreateScript) {
     return this.scriptRepository.create(createScript);
   }
 
-  findAll(findAllScriptsFilter: FindAllScriptsFilter) {
+  async findAll(findAllScriptsFilter: FindAllScriptsFilter) {
     return this.scriptRepository.findAll(findAllScriptsFilter);
   }
 
-  findOne(id: string) {
-    return this.scriptRepository.findOneById(id);
+  async findOne(id: string) {
+    const result = await this.scriptRepository.findOneById(id);
+    if (!result) {
+      throw Error('Script not found');
+    }
+    return result;
   }
 
-  update(id: string, updateScript: UpdateScript) {
+  async update(id: string, updateScript: UpdateScript) {
     return this.scriptRepository.update(id, updateScript);
   }
 }
