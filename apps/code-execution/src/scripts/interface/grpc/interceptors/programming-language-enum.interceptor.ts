@@ -8,9 +8,11 @@ export class ProgrammingLanguageEnumInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
-    const call = context.switchToRpc().getData();
+    const data = context.switchToRpc().getData();
 
-    call.language = this.mapProgrammingLanguage(call.language);
+    if (data.body?.language) {
+      data.body.language = this.mapProgrammingLanguage(data.body.language);
+    }
 
     return next.handle();
   }

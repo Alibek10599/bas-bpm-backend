@@ -28,12 +28,12 @@ message CodeExecutionHistory {
   string userId = 3;
   string tenantId = 4;
   string executedAt = 5;
-  google.protobuf.Struct result = 6;
 }
 
 message ExecuteScriptResponse {
   string message = 1;
-  google.protobuf.Struct result = 2;
+  string scriptId = 2;
+  int32 executionTime = 3;
 }
 
 message CodeExecutionHistoryList {

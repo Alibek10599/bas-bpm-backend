@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseInterceptors } from '@nestjs/common';
 import { ScriptsService } from '../../application/scripts.service';
 import { GrpcMethod, Payload } from '@nestjs/microservices';
 import { MessageMetadata } from '../dto/message.metadata';
@@ -6,17 +6,19 @@ import { CreateScriptDto } from '../dto/create-script.dto';
 import { FindAllScriptsFilterDto } from '../dto/find-all-scripts-filter.dto';
 import { UpdateScriptDto } from '../dto/update-script.dto';
 import { ScriptIdDto } from '../dto/script-id.dto';
+import { ProgrammingLanguageEnumInterceptor } from './interceptors/programming-language-enum.interceptor';
 
 @Controller()
 export class GrpcScriptsController {
   constructor(private readonly scriptsService: ScriptsService) {}
 
+  @UseInterceptors(ProgrammingLanguageEnumInterceptor)
   @GrpcMethod('ScriptsService', 'CreateScript')
-  create(
+  async create(
     @Payload('metadata') metadata: MessageMetadata,
     @Payload('body') createScriptDto: CreateScriptDto,
   ) {
-    return this.scriptsService.create({
+    return await this.scriptsService.create({
       name: createScriptDto.name,
       language: createScriptDto.language,
       script: createScriptDto.script,
@@ -26,15 +28,18 @@ export class GrpcScriptsController {
   }
 
   @GrpcMethod('ScriptsService', 'FindAllScripts')
-  findAll(
+  async findAll(
     @Payload('metadata') metadata: MessageMetadata,
     @Payload('body') filter: FindAllScriptsFilterDto,
   ) {
-    return this.scriptsService.findAll({
+    const result = await this.scriptsService.findAll({
       ...filter,
       userId: metadata.userId,
       tenantId: metadata.tenantId,
     });
+    return {
+      items: result,
+    };
   }
 
   @GrpcMethod('ScriptsService', 'FindOneScript')
@@ -42,9 +47,10 @@ export class GrpcScriptsController {
     return this.scriptsService.findOne(body.scriptId);
   }
 
+  @UseInterceptors(ProgrammingLanguageEnumInterceptor)
   @GrpcMethod('ScriptsService', 'UpdateScript')
-  update(@Payload('body') updateScriptDto: UpdateScriptDto) {
-    return this.scriptsService.update(
+  async update(@Payload('body') updateScriptDto: UpdateScriptDto) {
+    return await this.scriptsService.update(
       updateScriptDto.scriptId,
       updateScriptDto,
     );

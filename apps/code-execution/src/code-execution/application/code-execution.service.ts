@@ -41,7 +41,12 @@ export class CodeExecutionService {
       tenantId: executeScriptInput.tenantId,
       userId: executeScriptInput.userId,
     });
-    return { scriptId: script.id, status: 'OK' };
+    return {
+      scriptId: script.id,
+      message: 'Script executed successfully',
+      result,
+      executionTime,
+    };
   }
 
   async getCodeExecutionHistory(filter: FindExecutionHistoryFilter) {
@@ -56,7 +61,7 @@ export class CodeExecutionService {
       case ProgrammingLanguages.JS:
       case ProgrammingLanguages.TS:
         return await this.executeJsOrTs(executeScriptInput, script);
-      case ProgrammingLanguages.Python:
+      default:
         return await this.executePython(executeScriptInput, script);
     }
   }
@@ -93,12 +98,14 @@ export class CodeExecutionService {
     return await compiledScript
       .run(context, { timeout: 10000 })
       .then((result) => {
+        console.log(result);
         return {
           status: 'success',
           data: result,
         };
       })
       .catch((err) => {
+        console.log(err);
         return {
           status: 'error',
           data: {
@@ -106,7 +113,7 @@ export class CodeExecutionService {
           },
         };
       })
-      .then((result) => {
+      .then((result: any) => {
         console.log(+new Date() - startDate);
         return {
           executionTime: +new Date() - startDate,

@@ -3,10 +3,10 @@ syntax = "proto3";
 package scripts;
 
 service ScriptsService {
-  rpc CreateScript (CreateScriptWrapper) returns (ScriptResponse);
+  rpc CreateScript (CreateScriptWrapper) returns (CreateScriptResponse);
   rpc FindAllScripts (FindAllScriptsWrapper) returns (ScriptList);
-  rpc FindOneScript (ScriptId) returns (Script);
-  rpc UpdateScript (UpdateScriptWrapper) returns (ScriptResponse);
+  rpc FindOneScript (ScriptIdWrapper) returns (Script);
+  rpc UpdateScript (UpdateScriptWrapper) returns (UpdateScriptResponse);
 }
 
 enum ProgrammingLanguage {
@@ -22,6 +22,11 @@ message CreateScript {
   ProgrammingLanguage language = 3;
 }
 
+message CreateScriptResponse {
+  string scriptId = 1;
+  string message = 2;
+}
+
 message UpdateScript {
   string scriptId = 1;
   string name = 2;
@@ -29,15 +34,27 @@ message UpdateScript {
   ProgrammingLanguage language = 4;
 }
 
+
+message UpdateScriptResponse {
+  string scriptId = 1;
+  string message = 2;
+}
+
+
 message ScriptId {
   string scriptId = 1;
+}
+
+message ScriptIdWrapper {
+  ScriptId body = 1;
+  map<string, string> metadata = 2;
 }
 
 message Script {
   string id = 1;
   string name = 2;
   string script = 3;
-  ProgrammingLanguage language = 4;
+  string language = 4;
   string createdAt = 5;
   string updatedAt = 6;
 }

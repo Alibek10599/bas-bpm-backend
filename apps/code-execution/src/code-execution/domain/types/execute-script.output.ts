@@ -1,4 +1,6 @@
 export class ExecuteScriptOutput {
   scriptId: string;
-  status: string;
+  message: string;
+  executionTime: number;
+  result: any;
 }

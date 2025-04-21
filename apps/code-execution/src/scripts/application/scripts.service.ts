@@ -13,7 +13,11 @@ export class ScriptsService {
   ) {}
 
   async create(createScript: CreateScript) {
-    return this.scriptRepository.create(createScript);
+    const result = await this.scriptRepository.create(createScript);
+    return {
+      scriptId: result.id,
+      message: 'Script successfully created',
+    };
   }
 
   async findAll(findAllScriptsFilter: FindAllScriptsFilter) {
@@ -29,6 +33,10 @@ export class ScriptsService {
   }
 
   async update(id: string, updateScript: UpdateScript) {
-    return this.scriptRepository.update(id, updateScript);
+    await this.scriptRepository.update(id, updateScript);
+    return {
+      scriptId: id,
+      message: 'Script successfully created',
+    };
   }
 }
