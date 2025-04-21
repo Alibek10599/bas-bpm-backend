@@ -36,7 +36,7 @@ export class ScriptsService {
     await this.scriptRepository.update(id, updateScript);
     return {
       scriptId: id,
-      message: 'Script successfully created',
+      message: 'Script successfully updated',
     };
   }
 }

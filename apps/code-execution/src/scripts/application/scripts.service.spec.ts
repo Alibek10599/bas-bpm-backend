@@ -44,12 +44,16 @@ describe('ScriptsService', () => {
         userId: '',
       };
       const createdScript = { id: '1', ...createScriptDto };
+      const resultToEqual = {
+        scriptId: '1',
+        message: 'Script successfully created',
+      };
 
       jest.spyOn(scriptRepository, 'create').mockResolvedValue(createdScript);
 
       const result = await service.create(createScriptDto);
 
-      expect(result).toEqual(createdScript);
+      expect(result).toEqual(resultToEqual);
       expect(scriptRepository.create).toHaveBeenCalledWith(createScriptDto);
     });
   });
@@ -120,11 +124,16 @@ describe('ScriptsService', () => {
       };
       const updatedScript = { id: '1', ...updateScriptDto };
 
+      const resultToEqual = {
+        scriptId: '1',
+        message: 'Script successfully updated',
+      };
+
       jest.spyOn(scriptRepository, 'update').mockResolvedValue(updatedScript);
 
       const result = await service.update('1', updateScriptDto);
 
-      expect(result).toEqual(updatedScript);
+      expect(result).toEqual(resultToEqual);
       expect(scriptRepository.update).toHaveBeenCalledWith(
         '1',
         updateScriptDto,

@@ -87,7 +87,15 @@ describe('CodeExecutionService', () => {
 
       const result = await service.executeScript(mockInput);
 
-      expect(result).toEqual({ scriptId: '1', status: 'OK' });
+      expect(result).toEqual({
+        scriptId: '1',
+        message: 'Script executed successfully',
+        executionTime: 0,
+        result: {
+          data: 'Mocked script result',
+          status: 'success',
+        },
+      });
       expect(scriptsService.findOne).toHaveBeenCalledWith('1');
       expect(codeExecutionRepository.create).toHaveBeenCalledWith({
         scriptId: '1',

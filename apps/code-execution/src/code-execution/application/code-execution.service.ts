@@ -98,14 +98,12 @@ export class CodeExecutionService {
     return await compiledScript
       .run(context, { timeout: 10000 })
       .then((result) => {
-        console.log(result);
         return {
           status: 'success',
           data: result,
         };
       })
       .catch((err) => {
-        console.log(err);
         return {
           status: 'error',
           data: {
@@ -114,7 +112,6 @@ export class CodeExecutionService {
         };
       })
       .then((result: any) => {
-        console.log(+new Date() - startDate);
         return {
           executionTime: +new Date() - startDate,
           result,
