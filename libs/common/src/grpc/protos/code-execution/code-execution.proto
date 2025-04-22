@@ -11,7 +11,7 @@ service CodeExecutionService {
 
 message ExecuteScript {
   string scriptId = 1;
-  google.protobuf.Struct context = 2;
+  map<string, string> context = 2;
   string tenantId = 3;
   string userId = 4;
 }
@@ -34,6 +34,7 @@ message ExecuteScriptResponse {
   string message = 1;
   string scriptId = 2;
   int32 executionTime = 3;
+  repeated string logs = 4;
 }
 
 message CodeExecutionHistoryList {

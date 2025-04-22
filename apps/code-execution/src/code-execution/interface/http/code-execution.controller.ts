@@ -15,8 +15,8 @@ export class CodeExecutionController {
   ) {
     return await this.codeExecutionService.executeScript({
       ...executeScriptDto,
-      tenantId: user?.tenantId ?? '',
-      userId: user?.userId ?? '',
+      tenantId: user?.tenantId ?? 'vit',
+      userId: user?.userId ?? 'uid-1',
     });
   }
 

@@ -3,4 +3,5 @@ export class ExecuteScriptOutput {
   message: string;
   executionTime: number;
   result: any;
+  logs: string[];
 }

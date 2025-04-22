@@ -29,7 +29,7 @@ export class CodeExecutionService {
       throw new Error('Script not found');
     }
 
-    const { executionTime, result } = await this.execute(
+    const { executionTime, result, logs } = await this.execute(
       executeScriptInput,
       script,
     );
@@ -46,6 +46,7 @@ export class CodeExecutionService {
       message: 'Script executed successfully',
       result,
       executionTime,
+      logs,
     };
   }
 
@@ -71,20 +72,33 @@ export class CodeExecutionService {
     script: Script,
   ) {
     const isolate = new ivm.Isolate({ memoryLimit: 64 });
-
     const context = await isolate.createContext();
     const jail = context.global;
+    const logs = [];
 
     await jail.set('global', jail.derefInto());
-    await jail.set(
+
+    jail.setSync('log', function (...args) {
+      logs.push(
+        args
+          .reduce(
+            (a, b) =>
+              typeof b === 'object' ? a + ' ' + JSON.stringify(b) : a + ' ' + b,
+            '',
+          )
+          .trim(),
+      );
+    });
+
+    jail.setSync(
       'data',
       new ivm.ExternalCopy(executeScriptInput.context).copyInto(),
     );
-    await jail.set(
+    jail.setSync(
       'userId',
       new ivm.ExternalCopy(executeScriptInput.userId).copyInto(),
     );
-    await jail.set(
+    jail.setSync(
       'tenantId',
       new ivm.ExternalCopy(executeScriptInput.tenantId).copyInto(),
     );
@@ -92,9 +106,9 @@ export class CodeExecutionService {
     const preparedScript =
       script.language === 'ts' ? ts.transpile(script.script) : script.script;
 
-    const compiledScript = await isolate.compileScript(preparedScript);
+    const compiledScript = isolate.compileScriptSync(preparedScript);
 
-    const startDate = +new Date();
+    const startDate = Date.now();
     return await compiledScript
       .run(context, { timeout: 10000 })
       .then((result) => {
@@ -113,8 +127,9 @@ export class CodeExecutionService {
       })
       .then((result: any) => {
         return {
-          executionTime: +new Date() - startDate,
+          executionTime: Date.now() - startDate,
           result,
+          logs,
         };
       });
   }
@@ -131,6 +146,7 @@ export class CodeExecutionService {
           message: 'not implemented',
         },
       },
+      logs: [],
     };
   }
 }
