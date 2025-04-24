@@ -1,4 +1,19 @@
 services:
+  ws-gateway:
+    build:
+      context: .
+      dockerfile: ./apps/ws-gateway/Dockerfile
+      target: development
+    command: pnpm run start:dev ws-gateway
+    env_file:
+      - ./apps/ws-gateway/.env
+    ports:
+      - '8080:8080'
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - bas-bpm
+
   reservations:
     build:
       context: .
@@ -11,6 +26,9 @@ services:
       - '3000:3000'
     volumes:
       - .:/usr/src/app
+    networks:
+      - bas-bpm
+
   auth:
     build:
       context: .
@@ -23,6 +41,9 @@ services:
       - '3001:3001'
     volumes:
       - .:/usr/src/app
+    networks:
+      - bas-bpm
+
   notifications:
     build:
       context: .
@@ -35,8 +56,74 @@ services:
       - '3002:3002'
     volumes:
       - .:/usr/src/app
+    networks:
+      - bas-bpm
+
+  file-management:
+    build:
+      context: .
+      dockerfile: ./apps/file-management/Dockerfile
+      target: development
+    command: pnpm run start:dev file-management
+    env_file:
+      - ./apps/file-management/.env
+    ports:
+      - '3003:3003'
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - bas-bpm
+
+  tasks:
+    build:
+      context: .
+      dockerfile: ./apps/tasks/Dockerfile
+      target: development
+    command: pnpm run start:dev tasks
+    env_file:
+      - ./apps/tasks/.env
+    ports:
+      - '3004:3004'
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - bas-bpm
+
+  references:
+    build:
+      context: .
+      dockerfile: ./apps/references/Dockerfile
+      target: development
+    command: pnpm run start:dev references
+    env_file:
+      - ./apps/references/.env
+    ports:
+      - '3005:3005'
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - bas-bpm
+
+  code-execution:
+    build:
+      context: .
+      dockerfile: ./apps/code-execution/Dockerfile
+      target: development
+    command: pnpm run start:dev code-execution
+    env_file:
+      - ./apps/code-execution/.env
+    ports:
+      - '3006:3006'
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - bas-bpm
+
   mongo:
     image: mongo
+    networks:
+      - bas-bpm
+
   minio:
     image: minio/minio:latest
     container_name: minio
@@ -49,5 +136,59 @@ services:
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    container_name: bas-postgres
+    environment:
+      POSTGRES_DB: bas_bpm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - bas-bpm
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: bas-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - '5672:5672'   # AMQP
+      - '15672:15672' # Management UI
+    networks:
+      - bas-bpm
+
+  redis:
+    image: redis:7-alpine
+    container_name: bas-redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - bas-bpm
+
+  onlyoffice-documentserver:
+    image: onlyoffice/documentserver
+    container_name: onlyoffice-documentserver
+    ports:
+      - "8081:80"
+    restart: always
+    environment:
+      - JWT_SECRET=my_jwt_secret
+    networks:
+      - bas-bpm
+
 volumes:
   minio_data:
+  pgdata:
+  redis_data:
+
+networks:
+  bas-bpm:
