@@ -1,9 +1,15 @@
-FROM node:alpine As development
+FROM node:20-alpine As development
+
+RUN apk add --no-cache \
+  python3 \
+  make \
+  g++
 
 WORKDIR /usr/src/app
 
 COPY package.json ./
 COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
 COPY tsconfig.json tsconfig.json
 COPY nest-cli.json nest-cli.json
 
@@ -16,7 +22,7 @@ RUN pnpm install -r
 
 RUN pnpm run build code-execution
 
-FROM node:alpine as production
+FROM node:20-alpine as production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
@@ -32,4 +38,4 @@ RUN pnpm install --prod
 
 COPY --from=development /usr/src/app/dist ./dist
 
-CMD ["node", "dist/apps/code-execution/main"]
+CMD ["node", "--no-node-snapshot", "dist/apps/code-execution/main"]
