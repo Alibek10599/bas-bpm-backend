@@ -3,3 +3,4 @@ onlyBuiltDependencies:
   - isolated-vm
   - nestjs-pino
   - protobufjs
+  - es5-ext

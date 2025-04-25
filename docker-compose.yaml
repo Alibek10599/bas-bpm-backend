@@ -9,8 +9,6 @@ services:
       - ./apps/ws-gateway/.env
     ports:
       - '8080:8080'
-    volumes:
-      - .:/usr/src/app
     networks:
       - bas-bpm
 
@@ -24,8 +22,6 @@ services:
       - ./apps/reservations/.env
     ports:
       - '3000:3000'
-    volumes:
-      - .:/usr/src/app
     networks:
       - bas-bpm
 
@@ -39,8 +35,6 @@ services:
       - ./apps/auth/.env
     ports:
       - '3001:3001'
-    volumes:
-      - .:/usr/src/app
     networks:
       - bas-bpm
 
@@ -54,8 +48,6 @@ services:
       - ./apps/notifications/.env
     ports:
       - '3002:3002'
-    volumes:
-      - .:/usr/src/app
     networks:
       - bas-bpm
 
@@ -69,8 +61,6 @@ services:
       - ./apps/file-management/.env
     ports:
       - '3003:3003'
-    volumes:
-      - .:/usr/src/app
     networks:
       - bas-bpm
 
@@ -84,8 +74,6 @@ services:
       - ./apps/tasks/.env
     ports:
       - '3004:3004'
-    volumes:
-      - .:/usr/src/app
     networks:
       - bas-bpm
 
@@ -99,8 +87,6 @@ services:
       - ./apps/references/.env
     ports:
       - '3005:3005'
-    volumes:
-      - .:/usr/src/app
     networks:
       - bas-bpm
 
@@ -114,8 +100,6 @@ services:
       - ./apps/code-execution/.env
     ports:
       - '3006:3006'
-    volumes:
-      - .:/usr/src/app
     networks:
       - bas-bpm
 
