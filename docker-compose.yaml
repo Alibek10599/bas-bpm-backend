@@ -11,6 +11,11 @@ services:
       - '8080:8080'
     networks:
       - bas-bpm
+    depends_on:
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   reservations:
     build:
@@ -24,6 +29,13 @@ services:
       - '3000:3000'
     networks:
       - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   auth:
     build:
@@ -37,6 +49,13 @@ services:
       - '3001:3001'
     networks:
       - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   notifications:
     build:
@@ -50,6 +69,11 @@ services:
       - '3002:3002'
     networks:
       - bas-bpm
+    depends_on:
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   file-management:
     build:
@@ -63,6 +87,15 @@ services:
       - '3003:3003'
     networks:
       - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      minio:
+        condition: service_started
 
   tasks:
     build:
@@ -76,6 +109,13 @@ services:
       - '3004:3004'
     networks:
       - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   references:
     build:
@@ -89,6 +129,13 @@ services:
       - '3005:3005'
     networks:
       - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   code-execution:
     build:
@@ -102,6 +149,13 @@ services:
       - '3006:3006'
     networks:
       - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   mongo:
     image: mongo
@@ -135,6 +189,11 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - bas-bpm
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -147,6 +206,11 @@ services:
       - '15672:15672' # Management UI
     networks:
       - bas-bpm
+    healthcheck:
+      test: [ "CMD-SHELL", "rabbitmqctl status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
@@ -157,6 +221,11 @@ services:
       - redis_data:/data
     networks:
       - bas-bpm
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   onlyoffice-documentserver:
     image: onlyoffice/documentserver
