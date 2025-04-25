@@ -172,6 +172,8 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin123
     command: server /data --console-address ":9001"
+    networks:
+      - bas-bpm
     volumes:
       - minio_data:/data
 
