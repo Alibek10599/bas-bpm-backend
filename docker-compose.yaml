@@ -9,6 +9,7 @@ services:
       - ./apps/ws-gateway/.env
     ports:
       - '8080:8080'
+      - '50080:50080'
     networks:
       - bas-bpm
     depends_on:
@@ -27,6 +28,7 @@ services:
       - ./apps/reservations/.env
     ports:
       - '3000:3000'
+      - '50050:50050'
     networks:
       - bas-bpm
     depends_on:
@@ -47,6 +49,7 @@ services:
       - ./apps/auth/.env
     ports:
       - '3001:3001'
+      - '50051:50051'
     networks:
       - bas-bpm
     depends_on:
@@ -67,6 +70,7 @@ services:
       - ./apps/notifications/.env
     ports:
       - '3002:3002'
+      - '50052:50052'
     networks:
       - bas-bpm
     depends_on:
@@ -85,6 +89,7 @@ services:
       - ./apps/file-management/.env
     ports:
       - '3003:3003'
+      - '50053:50053'
     networks:
       - bas-bpm
     depends_on:
@@ -107,6 +112,7 @@ services:
       - ./apps/tasks/.env
     ports:
       - '3004:3004'
+      - '50054:50054'
     networks:
       - bas-bpm
     depends_on:
@@ -127,6 +133,7 @@ services:
       - ./apps/references/.env
     ports:
       - '3005:3005'
+      - '50055:50055'
     networks:
       - bas-bpm
     depends_on:
@@ -147,6 +154,7 @@ services:
       - ./apps/code-execution/.env
     ports:
       - '3006:3006'
+      - '50056:50056'
     networks:
       - bas-bpm
     depends_on:
@@ -156,11 +164,6 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_healthy
-
-  mongo:
-    image: mongo
-    networks:
-      - bas-bpm
 
   minio:
     image: minio/minio:latest
