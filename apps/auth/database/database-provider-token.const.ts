@@ -1,1 +1,0 @@
-export const DATABASE_PROVIDER_TOKEN = 'DATA_SOURCE';
