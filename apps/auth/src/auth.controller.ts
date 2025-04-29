@@ -1,27 +1,37 @@
-import { Controller, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Res,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserDocument } from './users/models/user.schema';
-import { Response } from 'express';
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CurrentUser } from '@app/common';
+import { CreateUserDto } from './users/dto/create-user.dto';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   async login(
-    @CurrentUser() user: UserDocument,
+    @Body() loginDto: CreateUserDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    await this.authService.login(user, response);
-    response.send(user);
+    return this.authService.login(loginDto, response);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Post('register')
+  async register(
+    @Body() dto: CreateUserDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    return this.authService.register(dto, response);
+  }
+
   @MessagePattern('authenticate')
   async authenticate(@Payload() data: any) {
     return data.user;

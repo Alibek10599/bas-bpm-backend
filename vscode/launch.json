@@ -1,0 +1,27 @@
+{
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "program": "${workspaceFolder}/${input:programPath}",
+      "preLaunchTask": "build"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "pickString",
+      "id": "programPath",
+      "description": "Select the main file to launch",
+      "options": ["apps/auth/src/main.ts", "apps/notifications/src/main.ts"]
+    }
+  ],
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "build",
+      "command": "pnpm",
+      "args": ["build"]
+    }
+  ]
+}
