@@ -10,6 +10,6 @@ export const rolesRepository: Provider[] = [
     provide: ROLE_REPOSITORY_TOKEN,
     inject: [DATABASE_PROVIDER_TOKEN],
     useFactory: (dataSource: DataSource) =>
-      new RolesPostgresRepository(dataSource.getRepository(Role)),
+      new RolesPostgresRepository(dataSource.getRepository(Role), dataSource),
   },
 ];
