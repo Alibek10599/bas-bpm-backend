@@ -5,6 +5,7 @@ import { NotFoundException } from '@nestjs/common';
 import { ReferencesRepository } from '../domain/repository/references.repository';
 import { REFERENCES_REPOSITORY_TOKEN } from '../domain/repository/references.repository.token';
 import { DATABASE_PROVIDER_TOKEN } from '../../database/database-provider-token.const';
+import { Reference } from '../infrastructure/database/postgres/entities/reference.entity';
 
 describe('ReferencesService', () => {
   let service: ReferencesService;
@@ -26,19 +27,18 @@ describe('ReferencesService', () => {
           },
         },
         {
-          provide: DATABASE_PROVIDER_TOKEN,
+          provide: EntityManager,
           useValue: {
-            transaction: jest.fn((_, cb) => cb(entityManager)),
+            findOneOrFail: jest.fn(),
+            findOneByOrFail: jest.fn(),
+            save: jest.fn(),
+            findOne: jest.fn(),
           },
         },
         {
-          provide: EntityManager,
+          provide: DATABASE_PROVIDER_TOKEN,
           useValue: {
-            getRepository: jest.fn().mockReturnValue({
-              findOneByOrFail: jest.fn(),
-              save: jest.fn(),
-              findOne: jest.fn(),
-            }),
+            transaction: jest.fn((_, cb) => cb(entityManager)),
           },
         },
       ],
@@ -118,11 +118,24 @@ describe('ReferencesService', () => {
       const updatedReference = { ...reference, ...updateDto, version: 2 };
       const versionData = { name: { old: 'Old Name', new: 'Updated Name' } };
 
-      (entityManager.getRepository as jest.Mock).mockReturnValue({
-        findOneByOrFail: jest.fn().mockResolvedValue(reference),
-        save: jest.fn().mockResolvedValue(updatedReference),
+      const mockEntityManager = {
+        findOneOrFail: jest.fn().mockResolvedValue(reference),
         findOne: jest.fn().mockResolvedValue({ version: 1 }),
-      });
+        save: jest
+          .fn()
+          .mockResolvedValueOnce(updatedReference) // Save updated reference
+          .mockResolvedValueOnce({
+            reference: updatedReference,
+            version: 2,
+            data: versionData,
+          }),
+      };
+
+      jest
+        .spyOn(dataSource, 'transaction')
+        .mockImplementation(async (_, callback) => {
+          return callback(mockEntityManager as unknown as EntityManager);
+        });
 
       const result = await service.update('1', updateDto, 'user1');
 
@@ -130,6 +143,11 @@ describe('ReferencesService', () => {
         referenceId: '1',
         message: 'Reference updated successfully',
       });
+      expect(mockEntityManager.findOneOrFail).toHaveBeenCalledWith(Reference, {
+        where: { id: '1' },
+        relations: ['referenceData'],
+      });
+      expect(mockEntityManager.save).toHaveBeenCalledTimes(2);
     });
   });
 });

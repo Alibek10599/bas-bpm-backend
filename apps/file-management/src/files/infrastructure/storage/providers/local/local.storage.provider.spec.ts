@@ -39,15 +39,14 @@ describe('LocalStorageProvider', () => {
   });
 
   it('should save file and return hash name', async () => {
-    const fakeFile: File = {
+    const fakeFile = {
       name: 'test.txt',
-      bytes: jest.fn().mockResolvedValue(Buffer.from('file content')),
+      buffer: Buffer.from('file content'),
     } as any;
 
     const fileName = await provider.save(fakeFile);
 
     expect(fileName).toBe('2023-01-01T00:00:00.000Zmocked-uuid-1-1-1.txt');
-    expect(fakeFile.bytes).toHaveBeenCalled();
     expect(fs.writeFileSync).toHaveBeenCalledWith(
       resolve(options.path, fileName),
       Buffer.from('file content'),

@@ -1,41 +1,37 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from './users/users.module';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { LoggerModule } from '@app/common';
-import * as Joi from 'joi';
-import { LocalStrategy } from './strategies/local.strategy';
-import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './strategies/jwt.strategy';
-
+import { User } from './users/user.entity';
+import { JwtService } from '@nestjs/jwt';
+import { LoggerModule } from 'nestjs-pino';
+import { DatabaseModule } from '../../../libs/common/src';
 @Module({
   imports: [
-    UsersModule,
-    LoggerModule,
-    PassportModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      validationSchema: Joi.object({
-        MONGODB_URI: Joi.string(),
-        JWT_SECRET: Joi.string(),
-        JWT_EXPIRATION_TIME: Joi.string(),
-        HTTP_PORT: Joi.number(),
-        TCP_PORT: Joi.number(),
-      }),
+      envFilePath: './apps/auth/.env',
     }),
-    JwtModule.registerAsync({
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: {
-          expiresIn: `${configService.get('JWT_EXPIRATION_TIME')}s`,
-        },
-      }),
+    TypeOrmModule.forRootAsync({
       inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('POSTGRES_HOST'),
+        port: configService.get('POSTGRES_PORT'),
+        username: configService.get('POSTGRES_USER'),
+        password: configService.get('POSTGRES_PASSWORD'),
+        database: configService.get('POSTGRES_DB'),
+        entities: [User],
+        synchronize: configService.get('NODE_ENV') !== 'production',
+      }),
     }),
+    UsersModule,
+    LoggerModule.forRoot(),
+    DatabaseModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, JwtService],
 })
 export class AuthModule {}

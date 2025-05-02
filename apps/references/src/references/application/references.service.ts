@@ -56,23 +56,20 @@ export class ReferencesService {
     return await this.dataSource.transaction(
       'REPEATABLE READ',
       async (em: EntityManager) => {
-        const referenceRepository = em.getRepository(Reference);
-        const referenceVersionsRepository = em.getRepository(ReferenceVersions);
-
-        const reference = await referenceRepository.findOneOrFail({
+        const reference = await em.findOneOrFail(Reference, {
           where: { id },
           relations: ['referenceData'],
         });
 
-        const currentReferenceVersion =
-          await referenceVersionsRepository.findOne({
-            where: { reference: { id } },
-            order: { id: 'desc' },
-          });
+        const currentReferenceVersion = await em.findOne(ReferenceVersions, {
+          where: { reference: { id } },
+          order: { id: 'desc' },
+        });
 
         const newVersion = (currentReferenceVersion?.version ?? 0) + 1;
 
-        const updatedReference = await referenceRepository.save(
+        const updatedReference = await em.save(
+          Reference,
           plainToInstance(Reference, {
             id,
             version: newVersion,
@@ -80,7 +77,7 @@ export class ReferencesService {
           }),
         );
 
-        await referenceVersionsRepository.save({
+        await em.save(ReferenceVersions, {
           reference: updatedReference,
           data: this.getReferenceChanges(reference, updateReferenceDto),
           version: newVersion,
