@@ -7,7 +7,11 @@ import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { LoggerModule } from 'nestjs-pino';
-import { DatabaseModule } from '../../../libs/common/src';
+import { DatabaseModule, JwtAuthModule } from '@app/common';
+import { AuthGrpcController } from './auth.grpc.controller';
+import { GrpcModule } from '@app/common/grpc';
+import { join } from 'path';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,11 +31,17 @@ import { DatabaseModule } from '../../../libs/common/src';
         synchronize: configService.get('NODE_ENV') !== 'production',
       }),
     }),
+    GrpcModule.forFeature(
+      'localhost:50051',
+      'auth',
+      join(__dirname, './auth.proto'),
+    ),
+    JwtAuthModule,
     UsersModule,
     LoggerModule.forRoot(),
     DatabaseModule,
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, AuthGrpcController],
   providers: [AuthService, JwtService],
 })
 export class AuthModule {}
