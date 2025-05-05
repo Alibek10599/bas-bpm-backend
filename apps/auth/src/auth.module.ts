@@ -5,18 +5,24 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
-import { JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { LoggerModule } from 'nestjs-pino';
 import { DatabaseModule, JwtAuthModule } from '@app/common';
 import { AuthGrpcController } from './auth.grpc.controller';
-import { GrpcModule } from '@app/common/grpc';
-import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: './apps/auth/.env',
+    }),
+    JwtModule.registerAsync({
+      useFactory: (cfg: ConfigService) => {
+        return {
+          secret: cfg.get<string>('JWT_SECRET'),
+        };
+      },
+      inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -31,17 +37,12 @@ import { join } from 'path';
         synchronize: configService.get('NODE_ENV') !== 'production',
       }),
     }),
-    GrpcModule.forFeature(
-      'localhost:50051',
-      'auth',
-      join(__dirname, './auth.proto'),
-    ),
     JwtAuthModule,
     UsersModule,
     LoggerModule.forRoot(),
     DatabaseModule,
   ],
   controllers: [AuthController, AuthGrpcController],
-  providers: [AuthService, JwtService],
+  providers: [AuthService],
 })
 export class AuthModule {}

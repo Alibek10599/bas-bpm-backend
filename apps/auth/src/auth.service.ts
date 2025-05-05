@@ -49,6 +49,7 @@ export class AuthService {
       // Generate token
       const tokenPayload = {
         userId: user.id,
+        tenantId: '',
         email: user.email,
       };
 
@@ -125,6 +126,7 @@ export class AuthService {
       // Instead of reusing login, create tokens directly
       const tokenPayload = {
         userId: user.id,
+        tenantId: '',
         email: user.email,
       };
 
@@ -189,5 +191,9 @@ export class AuthService {
   private sanitizeUser(user: any) {
     const { password, ...result } = user;
     return result;
+  }
+
+  async verifyToken(token: string) {
+    return this.jwtService.verify(token);
   }
 }

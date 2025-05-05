@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { AuthGrpc } from '@app/common/auth/interfaces/auth-grpc';
 import { Request } from 'express';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -20,10 +21,10 @@ export class JwtAuthGuard implements CanActivate {
       return false;
     }
 
-    context.switchToHttp().getRequest().user = await this.authGrpc.Authenticate(
-      {
+    context.switchToHttp().getRequest().user = await firstValueFrom(
+      this.authGrpc.Authenticate({
         token: jwt,
-      },
+      }),
     );
     return true;
   }
@@ -41,7 +42,7 @@ export class JwtAuthGuard implements CanActivate {
   }
 
   private extractTokenFromHeaders(req: Request): string {
-    const authentication = req.headers['authentication'] as string;
+    const authentication = req.headers['authorization'] as string;
     if (!authentication) {
       return null;
     }

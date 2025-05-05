@@ -8,11 +8,7 @@ export class AuthGrpcController {
   constructor(private readonly authService: AuthService) {}
 
   @GrpcMethod('AuthService', 'Authenticate')
-  async authenticate(@Payload('body') body: AuthenticateBodyDto) {
-    console.log('trying to auth', body);
-    return {
-      tenantId: 'vit',
-      userId: 'uid-1',
-    };
+  async authenticate(@Payload() body: AuthenticateBodyDto) {
+    return this.authService.verifyToken(body.token);
   }
 }
