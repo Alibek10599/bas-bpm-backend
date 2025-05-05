@@ -1,15 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import { Controller, Body } from '@nestjs/common';
 import { RolesService } from '../../application/roles.service';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
-import { CurrentUser } from '@app/common';
+import { GrpcMethod, Payload } from '@nestjs/microservices';
+import { RequestMetadata } from '@app/common';
+import { RoleIdDto } from '../dto/role-id.dto';
 
-@Controller('roles')
+@Controller()
 export class RolesGrpcController {
   constructor(private readonly rolesService: RolesService) {}
 
-  @Post()
-  create(@CurrentUser() user: any, @Body() createRoleDto: CreateRoleDto) {
+  @GrpcMethod('RolesService', 'CreateRole')
+  create(
+    @Payload('metadata') user: RequestMetadata,
+    @Body('body') createRoleDto: CreateRoleDto,
+  ) {
     return this.rolesService.create({
       ...createRoleDto,
       tenantId: user.tenantId,
@@ -17,18 +22,31 @@ export class RolesGrpcController {
     });
   }
 
-  @Get()
-  findAll() {
-    return this.rolesService.findAll();
+  @GrpcMethod('RolesService', 'FindAll')
+  async findAll(@Payload('metadata') user: RequestMetadata) {
+    const items = await this.rolesService.findAll();
+    return { items };
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.rolesService.findOne(id);
+  @GrpcMethod('RolesService', 'GetRolesTree')
+  async findAllTree(@Payload('metadata') user: RequestMetadata) {
+    const items = await this.rolesService.findAllTree();
+    return { items };
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.rolesService.update(id, updateRoleDto);
+  @GrpcMethod('RolesService', 'FindOne')
+  findOne(
+    @Payload('metadata') user: RequestMetadata,
+    @Payload('body') roleIdDto: RoleIdDto,
+  ) {
+    return this.rolesService.findOne(roleIdDto.roleId);
+  }
+
+  @GrpcMethod('RolesService', 'UpdateRole')
+  update(
+    @Payload('metadata') user: RequestMetadata,
+    @Payload('body') updateRoleDto: UpdateRoleDto,
+  ) {
+    return this.rolesService.update(updateRoleDto.roleId, updateRoleDto);
   }
 }

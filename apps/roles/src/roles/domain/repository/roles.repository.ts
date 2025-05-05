@@ -8,7 +8,7 @@ import { RoleTree } from './types/role-tree';
 export interface RolesRepository {
   findOneById(id: string): Promise<Role>;
   findAll(filter: FindAllRolesFilter): Promise<Role[]>;
-  findAllTree(): Promise<any>;
+  findAllTree(): Promise<RoleTree[]>;
   findAllPaginated(filter: FindAllRolesFilter): Promise<PaginatedList<Role>>;
   createRole(createRole: CreateRole): Promise<Role>;
   updateRole(id: string, updateRole: UpdateRole): Promise<Role>;

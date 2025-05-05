@@ -45,12 +45,12 @@ export class RolesPostgresRepository implements RolesRepository {
       .then((res) => toPaginated(...res));
   }
 
-  async findAllTree() {
+  async findAllTree(): Promise<RoleTree[]> {
     const roles = await this.findAll({});
     return this.makeTree(roles);
   }
 
-  private makeTree(flatRoles: Role[]) {
+  private makeTree(flatRoles: Role[]): RoleTree[] {
     const map = new Map<string, Role>();
 
     flatRoles.forEach((role) => {

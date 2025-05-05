@@ -19,7 +19,7 @@ export class Role {
 
   @ManyToOne(() => Role, { nullable: true })
   @JoinColumn({ name: 'parent_id' })
-  parent: Role;
+  parent?: Role;
 
   @OneToMany(() => Role, (r) => r.parent)
   children: Role[];

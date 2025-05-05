@@ -3,6 +3,7 @@ import { RolesService } from '../../application/roles.service';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { CurrentUser } from '@app/common';
+import { HttpUpdateRoleDto } from './dto/http-update-role.dto';
 
 @Controller('roles')
 export class RolesController {
@@ -35,7 +36,7 @@ export class RolesController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateRoleDto: UpdateRoleDto,
+    @Body() updateRoleDto: HttpUpdateRoleDto,
     @Req() req: Request,
   ) {
     return this.rolesService.update(id, updateRoleDto);
