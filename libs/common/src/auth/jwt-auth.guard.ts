@@ -21,11 +21,17 @@ export class JwtAuthGuard implements CanActivate {
       return false;
     }
 
-    context.switchToHttp().getRequest().user = await firstValueFrom(
+    const result = await firstValueFrom(
       this.authGrpc.Authenticate({
         token: jwt,
       }),
-    );
+    ).catch(() => null);
+
+    if (!result) {
+      return false;
+    }
+
+    context.switchToHttp().getRequest().user = result;
     return true;
   }
 
