@@ -19,24 +19,7 @@ export const databaseProviders = [
       } as PostgresConnectionOptions)
         .initialize()
         .then(async (dataSource) => {
-          const roleRepository = dataSource.getRepository(Role);
-          const countRoles = await roleRepository.count();
-          if (countRoles > 0) return dataSource;
-
           await dataSource.transaction(async (em) => {
-            const admin = await em.save(Role, {
-              name: 'Admins',
-            });
-            const developer = await em.save(Role, {
-              name: 'Developers',
-              parent: admin,
-            });
-
-            await em.save(Role, {
-              name: 'Users',
-              parent: developer,
-            });
-
             await em.query(`
             DO $$
                 BEGIN
