@@ -29,8 +29,9 @@ message RoleTree {
   string id = 1;
   string name = 2;
   repeated RoleTree children = 3;
-  string createdAt = 4;
-  string updatedAt = 5;
+  Role parent = 4;
+  string createdAt = 5;
+  string updatedAt = 6;
 }
 
 message RoleTreeResponse {
