@@ -4,10 +4,11 @@ import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
-import { join } from 'path';
 import { grpcCfg } from '@app/common/grpc';
 import { GrpcOptions, RmqOptions } from '@nestjs/microservices';
 import { rabbitmqCfg } from '@app/common/rmq';
+import { ROLES_SERVICE_GRPC } from '@app/common/constants/grpc-cfg';
+import { resolve } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,7 +27,11 @@ async function bootstrap() {
 
   const grpcUrl = configService.get<string>('GRPC_URL');
   app.connectMicroservice<GrpcOptions>(
-    grpcCfg(grpcUrl, ['roles'], [join(__dirname, './roles.proto')]),
+    grpcCfg(
+      grpcUrl,
+      ROLES_SERVICE_GRPC.package,
+      ROLES_SERVICE_GRPC.protoFile.map((e) => resolve(__dirname, e)),
+    ),
   );
 
   await app.startAllMicroservices();
