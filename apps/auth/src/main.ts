@@ -18,13 +18,13 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   });
 
+  const grpcUrl = configService.get<string>('GRPC_URL');
+
   app.connectMicroservice<GrpcOptions>(
     grpcCfg(
-      AUTH_SERVICE_GRPC.serverUrl,
+      grpcUrl,
       AUTH_SERVICE_GRPC.package,
-      Array.isArray(AUTH_SERVICE_GRPC.protoFile)
-        ? AUTH_SERVICE_GRPC.protoFile.map((e) => resolve(__dirname, e))
-        : resolve(__dirname, AUTH_SERVICE_GRPC.protoFile),
+      AUTH_SERVICE_GRPC.protoFile.map((e) => resolve(__dirname, e)),
     ),
   );
 

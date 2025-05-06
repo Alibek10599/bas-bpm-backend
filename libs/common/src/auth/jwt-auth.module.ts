@@ -10,9 +10,7 @@ import { AUTH_SERVICE_GRPC } from '@app/common/constants';
     GrpcModule.forFeature(
       AUTH_SERVICE_GRPC.clientUrl,
       AUTH_SERVICE_GRPC.package,
-      Array.isArray(AUTH_SERVICE_GRPC.protoFile)
-        ? AUTH_SERVICE_GRPC.protoFile.map((e) => resolve(__dirname, e))
-        : resolve(__dirname, AUTH_SERVICE_GRPC.protoFile),
+      AUTH_SERVICE_GRPC.protoFile.map((e) => resolve(__dirname, e)),
     ),
   ],
   providers: [authGrpcProvider, JwtAuthGuard],
