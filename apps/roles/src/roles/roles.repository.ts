@@ -1,9 +1,9 @@
 import { Provider } from '@nestjs/common';
 import { ROLE_REPOSITORY_TOKEN } from './domain/repository/roles.repository.token';
-import { DATABASE_PROVIDER_TOKEN } from '../../../tasks/src/database/database-provider-token.const';
 import { DataSource } from 'typeorm';
 import { Role } from './infrastructure/database/postgres/entities/role.entity';
 import { RolesPostgresRepository } from './infrastructure/database/postgres/roles.postgres.repository';
+import { DATABASE_PROVIDER_TOKEN } from '../database/database-provider-token.const';
 
 export const rolesRepository: Provider[] = [
   {
