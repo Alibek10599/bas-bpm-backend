@@ -49,7 +49,6 @@ export class AuthService {
       // Generate token
       const tokenPayload = {
         userId: user.id,
-        tenantId: '',
         email: user.email,
       };
 
@@ -126,7 +125,6 @@ export class AuthService {
       // Instead of reusing login, create tokens directly
       const tokenPayload = {
         userId: user.id,
-        tenantId: '',
         email: user.email,
       };
 
