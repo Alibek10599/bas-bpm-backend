@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DATABASE_PROVIDER_TOKEN } from './database-provider-token.const';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { Role } from '../roles/infrastructure/database/postgres/entities/role.entity';
+import { Privilege } from '../privileges/infrastructure/database/postgres/entities/privilege.entity';
 
 export const databaseProviders = [
   {
@@ -13,7 +14,7 @@ export const databaseProviders = [
       return new DataSource({
         type: 'postgres',
         url: cfg.get('POSTGRES_URL'),
-        entities: [Role],
+        entities: [Role, Privilege],
         synchronize: true,
         logging: true,
       } as PostgresConnectionOptions)

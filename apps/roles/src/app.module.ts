@@ -6,6 +6,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AUTH_SERVICE } from '@app/common/constants/services';
 import { DatabaseModule } from './database/database.module';
 import { RolesModule } from './roles/roles.module';
+import { PrivilegesModule } from './privileges/privileges.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { RolesModule } from './roles/roles.module';
     ]),
     DatabaseModule,
     RolesModule,
+    PrivilegesModule,
   ],
   controllers: [],
   providers: [],
