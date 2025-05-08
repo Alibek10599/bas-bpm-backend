@@ -7,7 +7,6 @@ import { Role } from './entities/role.entity';
 import { CreateRole } from '../../../domain/repository/types/create-role';
 import { FindAllRolesFilter } from '../../../domain/repository/types/find-all-roles-filter';
 import { UpdateRole } from '../../../domain/repository/types/update-role';
-import { RoleTree } from '../../../domain/repository/types/role-tree';
 
 @Injectable()
 export class RolesPostgresRepository implements RolesRepository {
@@ -43,37 +42,6 @@ export class RolesPostgresRepository implements RolesRepository {
     return this.roleRepository
       .findAndCount()
       .then((res) => toPaginated(...res));
-  }
-
-  async findAllTree(): Promise<RoleTree[]> {
-    const roles = await this.findAll({});
-    return this.makeTree(roles);
-  }
-
-  private makeTree(flatRoles: Role[]): RoleTree[] {
-    const map = new Map<string, Role>();
-
-    flatRoles.forEach((role) => {
-      map.set(role.id, { ...role, children: [] });
-    });
-
-    const roots: RoleTree[] = [];
-
-    for (const role of flatRoles) {
-      const current = map.get(role.id);
-
-      if (role.parent && map.has(role.parent.id)) {
-        const parent = map.get(role.parent.id);
-        if (!parent.children) {
-          parent.children = [];
-        }
-        parent.children.push(current);
-      } else {
-        roots.push(current);
-      }
-    }
-
-    return roots;
   }
 
   async findOneById(id: string): Promise<Role> {
