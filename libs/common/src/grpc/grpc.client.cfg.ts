@@ -3,16 +3,18 @@ import { Transport, GrpcOptions } from '@nestjs/microservices';
 
 export const grpcClientCfg = (
   url: string,
-  grpcPackage: string,
-  grpcProtoPath: string,
-) => ({
-  name: GRPC_SERVICE_TOKEN,
-  useFactory: (): GrpcOptions => ({
-    transport: Transport.GRPC,
-    options: {
-      url: url,
-      package: grpcPackage,
-      protoPath: grpcProtoPath,
-    },
-  }),
-});
+  grpcPackages: string | string[],
+  grpcProtoPath: string | string[],
+) => {
+  return {
+    name: GRPC_SERVICE_TOKEN,
+    useFactory: (): GrpcOptions => ({
+      transport: Transport.GRPC,
+      options: {
+        url: url,
+        package: grpcPackages,
+        protoPath: grpcProtoPath,
+      },
+    }),
+  };
+};

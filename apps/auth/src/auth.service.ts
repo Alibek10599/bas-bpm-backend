@@ -190,4 +190,8 @@ export class AuthService {
     const { password, ...result } = user;
     return result;
   }
+
+  async verifyToken(token: string) {
+    return this.jwtService.verify(token);
+  }
 }

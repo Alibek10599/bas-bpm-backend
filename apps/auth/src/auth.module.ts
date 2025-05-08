@@ -5,14 +5,24 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
-import { JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { LoggerModule } from 'nestjs-pino';
-import { DatabaseModule } from '../../../libs/common/src';
+import { DatabaseModule, JwtAuthModule } from '@app/common';
+import { AuthGrpcController } from './auth.grpc.controller';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: './apps/auth/.env',
+    }),
+    JwtModule.registerAsync({
+      useFactory: (cfg: ConfigService) => {
+        return {
+          secret: cfg.get<string>('JWT_SECRET'),
+        };
+      },
+      inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -27,11 +37,12 @@ import { DatabaseModule } from '../../../libs/common/src';
         synchronize: configService.get('NODE_ENV') !== 'production',
       }),
     }),
+    JwtAuthModule,
     UsersModule,
     LoggerModule.forRoot(),
     DatabaseModule,
   ],
-  controllers: [AuthController],
-  providers: [AuthService, JwtService],
+  controllers: [AuthController, AuthGrpcController],
+  providers: [AuthService],
 })
 export class AuthModule {}
