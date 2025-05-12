@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { PrivilegesService } from '../../application/privileges.service';
 import { CreatePrivilegeDto } from '../dto/create-privilege.dto';
-import { UpdatePrivilegeDto } from '../dto/update-privilege.dto';
+import { HttpUpdatePrivilegeDto } from './dto/http-update-privilege.dto';
 
 @Controller('privileges')
 export class PrivilegesController {
@@ -25,7 +25,7 @@ export class PrivilegesController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updatePrivilegeDto: UpdatePrivilegeDto,
+    @Body() updatePrivilegeDto: HttpUpdatePrivilegeDto,
   ) {
     return this.privilegesService.update(id, updatePrivilegeDto);
   }

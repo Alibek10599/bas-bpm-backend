@@ -1,45 +1,43 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { PrivilegesService } from '../../application/privileges.service';
 import { CreatePrivilegeDto } from '../dto/create-privilege.dto';
 import { UpdatePrivilegeDto } from '../dto/update-privilege.dto';
+import { GrpcMethod, Payload } from '@nestjs/microservices';
+import { PrivilegeIdDto } from '../dto/privilege-id.dto';
+import { RequestMetadata } from '@app/common';
 
 @Controller()
 export class PrivilegesGrpcController {
   constructor(private readonly privilegesService: PrivilegesService) {}
 
-  @Post()
-  create(@Body() createPrivilegeDto: CreatePrivilegeDto) {
-    return this.privilegesService.create(createPrivilegeDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.privilegesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.privilegesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updatePrivilegeDto: UpdatePrivilegeDto,
+  @GrpcMethod('PrivilegesService', 'CreatePrivilege')
+  create(
+    @Payload('body') createPrivilegeDto: CreatePrivilegeDto,
+    @Payload('metadata') requestMetadata: RequestMetadata,
   ) {
-    return this.privilegesService.update(+id, updatePrivilegeDto);
+    return this.privilegesService.create({
+      ...createPrivilegeDto,
+      userId: requestMetadata.userId,
+      tenantId: requestMetadata.tenantId,
+    });
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.privilegesService.remove(+id);
+  @GrpcMethod('PrivilegesService', 'FindAll')
+  async findAll() {
+    const items = await this.privilegesService.findAll();
+    return { items };
+  }
+
+  @GrpcMethod('PrivilegesService', 'FindOne')
+  async findOne(@Payload('body') body: PrivilegeIdDto) {
+    return this.privilegesService.findOne(body.privilegeId);
+  }
+
+  @GrpcMethod('PrivilegesService', 'UpdatePrivilege')
+  update(@Payload('body') updatePrivilegeDto: UpdatePrivilegeDto) {
+    return this.privilegesService.update(
+      updatePrivilegeDto.privilegeId,
+      updatePrivilegeDto,
+    );
   }
 }

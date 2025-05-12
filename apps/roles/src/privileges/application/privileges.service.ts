@@ -1,8 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreatePrivilegeDto } from '../interface/dto/create-privilege.dto';
-import { UpdatePrivilegeDto } from '../interface/dto/update-privilege.dto';
 import { PrivilegesRepository } from '../domain/repository/privileges.repository';
 import { PRIVILEGES_REPOSITORY_TOKEN } from '../domain/repository/privileges.repository.token';
+import { HttpUpdatePrivilegeDto } from '../interface/http/dto/http-update-privilege.dto';
+import { CreatePrivilege } from '../domain/repository/types/create-privilege';
+import { UpdatePrivilege } from '../domain/repository/types/update-privilege';
 
 @Injectable()
 export class PrivilegesService {
@@ -11,7 +12,7 @@ export class PrivilegesService {
     private readonly privilegesRepository: PrivilegesRepository,
   ) {}
 
-  create(createPrivilegeDto: CreatePrivilegeDto) {
+  create(createPrivilegeDto: CreatePrivilege) {
     return this.privilegesRepository.createPrivilege(createPrivilegeDto);
   }
 
@@ -23,7 +24,7 @@ export class PrivilegesService {
     return this.privilegesRepository.findOneById(id);
   }
 
-  update(id: string, updatePrivilegeDto: UpdatePrivilegeDto) {
-    return this.privilegesRepository.updatePrivilege(id, updatePrivilegeDto);
+  update(id: string, updatePrivilege: UpdatePrivilege) {
+    return this.privilegesRepository.updatePrivilege(id, updatePrivilege);
   }
 }

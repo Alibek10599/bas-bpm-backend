@@ -22,17 +22,17 @@ export class PrivilegesPostgresRepository implements PrivilegesRepository {
   findAll(filter?: FindAllPrivilegesFilter): Promise<Privilege[]> {
     return this.privilegeRepository.find({
       where: {
-        name: filter.search ? ILike(`%${filter.search}%`) : undefined,
+        name: filter?.search ? ILike(`%${filter?.search}%`) : undefined,
       },
     });
   }
 
   async findAllPaginated(
-    filter: FindAllPrivilegesFilter,
+    filter?: FindAllPrivilegesFilter,
   ): Promise<PaginatedList<Privilege>> {
     const r = await this.privilegeRepository.findAndCount({
       where: {
-        name: filter.search ? ILike(`%${filter.search}%`) : undefined,
+        name: filter?.search ? ILike(`%${filter?.search}%`) : undefined,
       },
     });
     return toPaginated(...r);

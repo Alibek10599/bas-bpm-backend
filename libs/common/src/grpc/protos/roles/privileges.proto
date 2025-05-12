@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package privileges;
+
+service PrivilegesService {
+  rpc CreatePrivilege (CreatePrivilegeWrapper) returns (Privilege);
+  rpc FindAll (RequestMetadata) returns (PrivilegeList);
+  rpc FindOne (FindOnePrivilegeWrapper) returns (Privilege);
+  rpc UpdatePrivilege (UpdatePrivilegeWrapper) returns (Privilege);
+}
+
+message Privilege {
+  string id = 1;
+  string name = 2;
+  AccessModel accesses = 3;
+  string tenantId = 4;
+  string userId = 5;
+  string createdAt = 6;
+  string updatedAt = 7;
+}
+
+message PrivilegeList {
+  repeated Privilege items = 1;
+}
+
+message CreatePrivilege {
+  string name = 1;
+  AccessModel accesses = 3;
+}
+
+message UpdatePrivilege {
+  string privilegeId = 1;
+  string name = 2;
+  AccessModel accesses = 3;
+}
+
+message FindOnePrivilege {
+  string privilegeId = 1;
+}
+
+message RequestMetadata {
+  string tenantId = 1;
+  string userId = 2;
+}
+
+message CreatePrivilegeWrapper {
+  CreatePrivilege body = 1;
+  RequestMetadata metadata = 2;
+}
+
+message UpdatePrivilegeWrapper {
+  UpdatePrivilege body = 1;
+  RequestMetadata metadata = 2;
+}
+
+message FindOnePrivilegeWrapper {
+  FindOnePrivilege body = 1;
+  RequestMetadata metadata = 2;
+}
+
+message AccessModel {
+  AccessModelUsers users = 1;
+}
+
+message AccessModelUsers {
+  bool create = 1;
+  bool update = 2;
+  bool invite = 3;
+  bool delete = 4;
+}
