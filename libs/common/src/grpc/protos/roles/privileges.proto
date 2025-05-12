@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package privileges;
 
+import "access_model.proto";
+
 service PrivilegesService {
   rpc CreatePrivilege (CreatePrivilegeWrapper) returns (CreatePrivilegeResult);
   rpc FindAll (RequestMetadata) returns (PrivilegeList);
@@ -12,7 +14,7 @@ service PrivilegesService {
 message Privilege {
   string id = 1;
   string name = 2;
-  AccessModel accesses = 3;
+  access_model.AccessesModel accesses = 3;
   string tenantId = 4;
   string userId = 5;
   string createdAt = 6;
@@ -35,13 +37,13 @@ message PrivilegeList {
 
 message CreatePrivilege {
   string name = 1;
-  AccessModel accesses = 3;
+  access_model.AccessesModel accesses = 3;
 }
 
 message UpdatePrivilege {
   string privilegeId = 1;
   string name = 2;
-  AccessModel accesses = 3;
+  access_model.AccessesModel accesses = 3;
 }
 
 message FindOnePrivilege {
@@ -66,15 +68,4 @@ message UpdatePrivilegeWrapper {
 message FindOnePrivilegeWrapper {
   FindOnePrivilege body = 1;
   RequestMetadata metadata = 2;
-}
-
-message AccessModel {
-  AccessModelUsers users = 1;
-}
-
-message AccessModelUsers {
-  bool create = 1;
-  bool update = 2;
-  bool invite = 3;
-  bool delete = 4;
 }

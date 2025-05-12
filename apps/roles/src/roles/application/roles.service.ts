@@ -5,12 +5,18 @@ import { CreateRole } from '../domain/repository/types/create-role';
 import { UpdateRole } from '../domain/repository/types/update-role';
 import { Role } from '../infrastructure/database/postgres/entities/role.entity';
 import { RoleTree } from '../domain/repository/types/role-tree';
+import { DATABASE_PROVIDER_TOKEN } from '../../database/database-provider-token.const';
+import { DataSource } from 'typeorm';
+import { RoleVersion } from '../infrastructure/database/postgres/entities/role-version.entity';
+import { getObjectChanges } from '@app/common/utils/get-object-changes';
 
 @Injectable()
 export class RolesService {
   constructor(
     @Inject(ROLE_REPOSITORY_TOKEN)
     private readonly rolesRepository: RolesRepository,
+    @Inject(DATABASE_PROVIDER_TOKEN)
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(createRoleDto: CreateRole) {
@@ -61,14 +67,43 @@ export class RolesService {
     return roots;
   }
 
-  async update(id: string, updateRoleDto: UpdateRole) {
-    const createdRole = await this.rolesRepository.updateRole(
-      id,
-      updateRoleDto,
-    );
-    return {
-      message: 'Role successfully updated',
-      roleId: createdRole.id,
-    };
+  async update(userId: string, id: string, updateRoleDto: UpdateRole) {
+    return await this.dataSource.transaction(async (em) => {
+      const lastVersion = await em.findOne(RoleVersion, {
+        where: { role: { id } },
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+
+      const role = await em.findOneBy(Role, { id });
+
+      const createdRole: Role = await em.save(Role, {
+        id,
+        ...updateRoleDto,
+        parent: { id: updateRoleDto.parent },
+      });
+
+      await em.save(RoleVersion, {
+        userId,
+        role: { id: createdRole.id },
+        changes: getObjectChanges(
+          {
+            ...role,
+            parent: { id: role.parent } as any,
+          },
+          {
+            ...updateRoleDto,
+            parent: { id: updateRoleDto.parent } as any,
+          },
+        ),
+        version: (lastVersion?.version ?? 0) + 1,
+      });
+
+      return {
+        message: 'Role successfully updated',
+        roleId: createdRole.id,
+      };
+    });
   }
 }

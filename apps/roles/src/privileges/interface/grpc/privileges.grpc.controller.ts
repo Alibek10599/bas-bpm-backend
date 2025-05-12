@@ -34,10 +34,15 @@ export class PrivilegesGrpcController {
   }
 
   @GrpcMethod('PrivilegesService', 'UpdatePrivilege')
-  update(@Payload('body') updatePrivilegeDto: UpdatePrivilegeDto) {
+  update(
+    @Payload('body') updatePrivilegeDto: UpdatePrivilegeDto,
+    @Payload('metadata') requestMetadata: RequestMetadata,
+  ) {
+    const { privilegeId, ...upd } = updatePrivilegeDto;
     return this.privilegesService.update(
-      updatePrivilegeDto.privilegeId,
-      updatePrivilegeDto,
+      requestMetadata.userId,
+      privilegeId,
+      upd,
     );
   }
 }

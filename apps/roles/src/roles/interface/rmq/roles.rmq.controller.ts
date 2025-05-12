@@ -12,29 +12,29 @@ export class RolesRmqController {
 
   @MessagePattern('roles.create')
   create(
-    @Payload('metadata') user: RequestMetadata,
+    @Payload('metadata') metadata: RequestMetadata,
     @Body('body') createRoleDto: CreateRoleDto,
   ) {
     return this.rolesService.create({
       ...createRoleDto,
-      tenantId: user.tenantId,
-      userId: user.userId,
+      tenantId: metadata.tenantId,
+      userId: metadata.userId,
     });
   }
 
   @MessagePattern('roles.get.list')
-  findAll(@Payload('metadata') user: RequestMetadata) {
+  findAll(@Payload('metadata') metadata: RequestMetadata) {
     return this.rolesService.findAll();
   }
 
   @MessagePattern('roles.get.tree')
-  findAllTree(@Payload('metadata') user: RequestMetadata) {
+  findAllTree(@Payload('metadata') metadata: RequestMetadata) {
     return this.rolesService.findAllTree();
   }
 
   @MessagePattern('roles.get.one')
   findOne(
-    @Payload('metadata') user: RequestMetadata,
+    @Payload('metadata') metadata: RequestMetadata,
     @Payload('body') roleIdDto: RoleIdDto,
   ) {
     return this.rolesService.findOne(roleIdDto.roleId);
@@ -42,9 +42,12 @@ export class RolesRmqController {
 
   @MessagePattern('roles.update')
   update(
-    @Payload('metadata') user: RequestMetadata,
+    @Payload('metadata') metadata: RequestMetadata,
     @Payload('body') updateRoleDto: UpdateRoleDto,
   ) {
-    return this.rolesService.update(updateRoleDto.roleId, updateRoleDto);
+    return this.rolesService.update(metadata.userId, updateRoleDto.roleId, {
+      ...updateRoleDto,
+      userId: metadata.userId,
+    });
   }
 }

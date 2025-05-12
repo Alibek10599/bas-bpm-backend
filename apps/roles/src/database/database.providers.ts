@@ -4,6 +4,8 @@ import { DATABASE_PROVIDER_TOKEN } from './database-provider-token.const';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { Role } from '../roles/infrastructure/database/postgres/entities/role.entity';
 import { Privilege } from '../privileges/infrastructure/database/postgres/entities/privilege.entity';
+import { RoleVersion } from '../roles/infrastructure/database/postgres/entities/role-version.entity';
+import { PrivilegeVersion } from '../privileges/infrastructure/database/postgres/entities/privilege-version.entity';
 
 export const databaseProviders = [
   {
@@ -14,7 +16,7 @@ export const databaseProviders = [
       return new DataSource({
         type: 'postgres',
         url: cfg.get('POSTGRES_URL'),
-        entities: [Role, Privilege],
+        entities: [Role, Privilege, RoleVersion, PrivilegeVersion],
         synchronize: true,
         logging: true,
       } as PostgresConnectionOptions)

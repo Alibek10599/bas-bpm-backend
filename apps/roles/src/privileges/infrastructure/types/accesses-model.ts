@@ -1,84 +1,178 @@
+import { IsBoolean, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+class AccessesModelUser {
+  @IsBoolean()
+  create: boolean;
+  @IsBoolean()
+  update: boolean;
+  @IsBoolean()
+  delete: boolean;
+  @IsBoolean()
+  invite: boolean;
+  /**
+   * Обновление роли пользователя
+   * */
+  @IsBoolean()
+  updateRole: boolean;
+  /**
+   * Обновление привилегии пользователя
+   * */
+  @IsBoolean()
+  updatePrivilege: boolean;
+}
+
+class AccessesModelRoles {
+  @IsBoolean()
+  create: boolean;
+  @IsBoolean()
+  update: boolean;
+  @IsBoolean()
+  delete: boolean;
+  /**
+   * Доступ на просмотр всего древа
+   * */
+  @IsBoolean()
+  seeTree: boolean;
+}
+
+class AccessesModelPrivileges {
+  @IsBoolean()
+  create: boolean;
+  @IsBoolean()
+  update: boolean;
+  @IsBoolean()
+  delete: boolean;
+  /**
+   * Доступ на просмотр списска привелегий
+   * */
+  @IsBoolean()
+  seeList: boolean;
+}
+
+class AccessesModelReferences {
+  @IsBoolean()
+  create: boolean;
+  @IsBoolean()
+  update: boolean;
+  @IsBoolean()
+  delete: boolean;
+}
+class AccessesModelReservations {
+  @IsBoolean()
+  create: boolean;
+  @IsBoolean()
+  update: boolean;
+  @IsBoolean()
+  delete: boolean;
+}
+class AccessesModelTasks {
+  @IsBoolean()
+  create: boolean;
+  @IsBoolean()
+  update: boolean;
+  @IsBoolean()
+  delete: boolean;
+  @IsBoolean()
+  delegate: boolean;
+  /**
+   * Выполнять чужие задачи
+   * */
+  @IsBoolean()
+  performOther: boolean;
+}
+
+class AccessesModelFilesFile {
+  @IsBoolean()
+  upload: boolean;
+  @IsBoolean()
+  createEmpty: boolean;
+  @IsBoolean()
+  getContent: boolean;
+}
+class AccessesModelFilesDocument {
+  /**
+   * Доступ на просмотр всех документов, тк скорее всего в документах прийдется делать отдельную обработку доступов
+   * и галочками или как то еще помечать кто может видеть документ
+   * */
+  @IsBoolean()
+  seeAll: boolean;
+  @IsBoolean()
+  upload: boolean;
+  @IsBoolean()
+  createEmpty: boolean;
+  @IsBoolean()
+  getContent: boolean;
+  @IsBoolean()
+  update: boolean;
+  @IsBoolean()
+  delete: boolean;
+}
+
+class AccessesModelFiles {
+  @ValidateNested()
+  @Type(() => AccessesModelFilesFile)
+  file: AccessesModelFilesFile;
+  @ValidateNested()
+  @Type(() => AccessesModelFilesDocument)
+  document: AccessesModelFilesDocument;
+}
+
+class AccessesModelCodeExecutionScripts {
+  @IsBoolean()
+  create: boolean;
+  @IsBoolean()
+  update: boolean;
+  @IsBoolean()
+  delete: boolean;
+}
+class AccessesModelCodeExecutionExecutions {
+  @IsBoolean()
+  execute: boolean;
+  @IsBoolean()
+  seeExecutionHistory: boolean;
+}
+
+class AccessesModelCodeExecution {
+  @ValidateNested()
+  @Type(() => AccessesModelCodeExecutionScripts)
+  scripts: AccessesModelCodeExecutionScripts;
+
+  @ValidateNested()
+  @Type(() => AccessesModelCodeExecutionExecutions)
+  execution: AccessesModelCodeExecutionExecutions;
+}
+
 export class AccessesModel {
-  user: {
-    create: boolean;
-    update: boolean;
-    delete: boolean;
-    invite: boolean;
-    /**
-     * Обновление роли пользователя
-     * */
-    updateRole: boolean;
-    /**
-     * Обновление привилегии пользователя
-     * */
-    updatePrivilege: boolean;
-  };
-  roles: {
-    create: boolean;
-    update: boolean;
-    delete: boolean;
-    /**
-     * Доступ на просмотр всего древа
-     * */
-    seeTree: boolean;
-  };
-  privileges: {
-    create: boolean;
-    update: boolean;
-    delete: boolean;
-    /**
-     * Доступ на просмотр списска привелегий
-     * */
-    seeList: boolean;
-  };
-  references: {
-    create: boolean;
-    update: boolean;
-    delete: boolean;
-  };
-  reservations: {
-    create: boolean;
-    update: boolean;
-    delete: boolean;
-  };
-  tasks: {
-    create: boolean;
-    update: boolean;
-    delete: boolean;
-    delegate: boolean;
-    /**
-     * Выполнять чужие задачи
-     * */
-    performOther: boolean;
-  };
-  files: {
-    file: {
-      upload: boolean;
-      createEmpty: boolean;
-      getContent: boolean;
-    };
-    document: {
-      /**
-       * Доступ на просмотр всех документов, тк скорее всего в документах прийдется делать отдельную обработку доступов
-       * и галочками или как то еще помечать кто может видеть документ
-       * */
-      seeAll: boolean;
-      upload: boolean;
-      createEmpty: boolean;
-      getContent: boolean;
-      update: boolean;
-      delete: boolean;
-    };
-  };
-  codeExecution: {
-    scripts: {
-      create: boolean;
-      update: boolean;
-      delete: boolean;
-    };
-    execution: {
-      execute: boolean;
-      seeExecutionHistory: boolean;
-    };
-  };
+  @ValidateNested()
+  @Type(() => AccessesModelUser)
+  user: AccessesModelUser;
+
+  @ValidateNested()
+  @Type(() => AccessesModelRoles)
+  roles: AccessesModelRoles;
+
+  @ValidateNested()
+  @Type(() => AccessesModelPrivileges)
+  privileges: AccessesModelPrivileges;
+
+  @ValidateNested()
+  @Type(() => AccessesModelReferences)
+  references: AccessesModelReferences;
+
+  @ValidateNested()
+  @Type(() => AccessesModelReservations)
+  reservations: AccessesModelReservations;
+
+  @ValidateNested()
+  @Type(() => AccessesModelTasks)
+  tasks: AccessesModelTasks;
+
+  @ValidateNested()
+  @Type(() => AccessesModelFiles)
+  files: AccessesModelFiles;
+
+  @ValidateNested()
+  @Type(() => AccessesModelCodeExecution)
+  codeExecution: AccessesModelCodeExecution;
 }

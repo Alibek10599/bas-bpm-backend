@@ -12,24 +12,24 @@ export class RolesGrpcController {
 
   @GrpcMethod('RolesService', 'CreateRole')
   create(
-    @Payload('metadata') user: RequestMetadata,
+    @Payload('metadata') metadata: RequestMetadata,
     @Body('body') createRoleDto: CreateRoleDto,
   ) {
     return this.rolesService.create({
       ...createRoleDto,
-      tenantId: user.tenantId,
-      userId: user.userId,
+      tenantId: metadata.tenantId,
+      userId: metadata.userId,
     });
   }
 
   @GrpcMethod('RolesService', 'FindAll')
-  async findAll(@Payload('metadata') user: RequestMetadata) {
+  async findAll(@Payload('metadata') metadata: RequestMetadata) {
     const items = await this.rolesService.findAll();
     return { items };
   }
 
   @GrpcMethod('RolesService', 'GetRolesTree')
-  async findAllTree(@Payload('metadata') user: RequestMetadata) {
+  async findAllTree(@Payload('metadata') metadata: RequestMetadata) {
     const items = await this.rolesService.findAllTree();
     return { items };
   }
@@ -44,9 +44,12 @@ export class RolesGrpcController {
 
   @GrpcMethod('RolesService', 'UpdateRole')
   update(
-    @Payload('metadata') user: RequestMetadata,
+    @Payload('metadata') metadata: RequestMetadata,
     @Payload('body') updateRoleDto: UpdateRoleDto,
   ) {
-    return this.rolesService.update(updateRoleDto.roleId, updateRoleDto);
+    return this.rolesService.update(metadata.userId, updateRoleDto.roleId, {
+      ...updateRoleDto,
+      userId: metadata.userId,
+    });
   }
 }

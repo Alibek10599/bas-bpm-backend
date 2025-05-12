@@ -37,8 +37,11 @@ export class RolesController {
   update(
     @Param('id') id: string,
     @Body() updateRoleDto: HttpUpdateRoleDto,
-    @Req() req: Request,
+    @CurrentUser() user: any,
   ) {
-    return this.rolesService.update(id, updateRoleDto);
+    return this.rolesService.update(user.userId, id, {
+      ...updateRoleDto,
+      userId: user.userId,
+    });
   }
 }
