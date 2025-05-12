@@ -3,11 +3,11 @@ syntax = "proto3";
 package roles;
 
 service RolesService {
-  rpc CreateRole (CreateRoleWrapper) returns (Role);
+  rpc CreateRole (CreateRoleWrapper) returns (CreateRoleResult);
   rpc FindAll (RequestMetadata) returns (RoleList);
   rpc GetRolesTree (RequestMetadata) returns (RoleTreeResponse);
   rpc FindOne (FindOneRoleWrapper) returns (Role);
-  rpc UpdateRole (UpdateRoleWrapper) returns (Role);
+  rpc UpdateRole (UpdateRoleWrapper) returns (UpdateRoleResult);
 }
 
 message Role {
@@ -23,6 +23,17 @@ message Role {
 
 message RoleList {
   repeated Role items = 1;
+}
+
+message CreateRoleResult {
+  string message = 1;
+  string roleId = 2;
+
+}
+
+message UpdateRoleResult {
+  string message = 1;
+  string roleId = 2;
 }
 
 message RoleTree {

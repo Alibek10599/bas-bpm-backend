@@ -13,8 +13,13 @@ export class RolesService {
     private readonly rolesRepository: RolesRepository,
   ) {}
 
-  create(createRoleDto: CreateRole) {
-    return this.rolesRepository.createRole(createRoleDto);
+  async create(createRoleDto: CreateRole) {
+    const createdRole = await this.rolesRepository.createRole(createRoleDto);
+
+    return {
+      message: 'Role successfully created',
+      roleId: createdRole.id,
+    };
   }
 
   findAll() {
@@ -56,7 +61,14 @@ export class RolesService {
     return roots;
   }
 
-  update(id: string, updateRoleDto: UpdateRole) {
-    return this.rolesRepository.updateRole(id, updateRoleDto);
+  async update(id: string, updateRoleDto: UpdateRole) {
+    const createdRole = await this.rolesRepository.updateRole(
+      id,
+      updateRoleDto,
+    );
+    return {
+      message: 'Role successfully updated',
+      roleId: createdRole.id,
+    };
   }
 }

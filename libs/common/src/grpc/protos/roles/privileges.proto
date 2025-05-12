@@ -3,10 +3,10 @@ syntax = "proto3";
 package privileges;
 
 service PrivilegesService {
-  rpc CreatePrivilege (CreatePrivilegeWrapper) returns (Privilege);
+  rpc CreatePrivilege (CreatePrivilegeWrapper) returns (CreatePrivilegeResult);
   rpc FindAll (RequestMetadata) returns (PrivilegeList);
   rpc FindOne (FindOnePrivilegeWrapper) returns (Privilege);
-  rpc UpdatePrivilege (UpdatePrivilegeWrapper) returns (Privilege);
+  rpc UpdatePrivilege (UpdatePrivilegeWrapper) returns (UpdatePrivilegeResult);
 }
 
 message Privilege {
@@ -17,6 +17,16 @@ message Privilege {
   string userId = 5;
   string createdAt = 6;
   string updatedAt = 7;
+}
+
+message CreatePrivilegeResult {
+  string message = 1;
+  string privilegeId = 2;
+}
+
+message UpdatePrivilegeResult {
+  string message = 1;
+  string privilegeId = 2;
 }
 
 message PrivilegeList {
