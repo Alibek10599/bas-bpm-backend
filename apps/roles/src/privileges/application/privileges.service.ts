@@ -5,8 +5,6 @@ import { CreatePrivilege } from '../domain/repository/types/create-privilege';
 import { UpdatePrivilege } from '../domain/repository/types/update-privilege';
 import { DATABASE_PROVIDER_TOKEN } from '../../database/database-provider-token.const';
 import { DataSource } from 'typeorm';
-import { RoleVersion } from '../../roles/infrastructure/database/postgres/entities/role-version.entity';
-import { Role } from '../../roles/infrastructure/database/postgres/entities/role.entity';
 import { getObjectChanges } from '@app/common/utils/get-object-changes';
 import { PrivilegeVersion } from '../infrastructure/database/postgres/entities/privilege-version.entity';
 import { Privilege } from '../infrastructure/database/postgres/entities/privilege.entity';

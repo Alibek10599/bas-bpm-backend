@@ -78,7 +78,7 @@ export class RolesService {
 
       const role = await em.findOneBy(Role, { id });
 
-      const createdRole: Role = await em.save(Role, {
+      const updatedRole: Role = await em.save(Role, {
         id,
         ...updateRoleDto,
         parent: { id: updateRoleDto.parent },
@@ -86,7 +86,7 @@ export class RolesService {
 
       await em.save(RoleVersion, {
         userId,
-        role: { id: createdRole.id },
+        role: { id: updatedRole.id },
         changes: getObjectChanges(
           {
             ...role,
@@ -102,7 +102,7 @@ export class RolesService {
 
       return {
         message: 'Role successfully updated',
-        roleId: createdRole.id,
+        roleId: role.id,
       };
     });
   }

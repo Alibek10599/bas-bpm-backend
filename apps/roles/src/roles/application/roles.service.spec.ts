@@ -2,27 +2,43 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RolesService } from './roles.service';
 import { RolesRepository } from '../domain/repository/roles.repository';
 import { ROLE_REPOSITORY_TOKEN } from '../domain/repository/roles.repository.token';
+import { DATABASE_PROVIDER_TOKEN } from '../../database/database-provider-token.const';
+import { DataSource } from 'typeorm';
 
 describe('RolesService', () => {
   let service: RolesService;
   let repository: jest.Mocked<RolesRepository>;
+  let dataSource: DataSource;
 
   beforeEach(async () => {
     const mockRepository = {
       createRole: jest.fn(),
       findAll: jest.fn(),
       findOneById: jest.fn(),
-      findAllTree: jest.fn(),
       updateRole: jest.fn(),
     };
 
+    dataSource = {
+      transaction: jest.fn((cb) =>
+        cb({
+          findOneBy: jest.fn(),
+          findOne: jest.fn(),
+          save: jest.fn(),
+        }),
+      ),
+    } as unknown as DataSource;
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        RolesService,
         {
           provide: ROLE_REPOSITORY_TOKEN,
           useValue: mockRepository,
         },
+        {
+          provide: DATABASE_PROVIDER_TOKEN,
+          useValue: dataSource,
+        },
+        RolesService,
       ],
     }).compile();
 
@@ -43,6 +59,10 @@ describe('RolesService', () => {
         tenantId: 'tenant1',
         userId: 'user1',
       };
+      const expextedResult = {
+        roleId: 'uid-1',
+        message: 'Role successfully created',
+      };
       const createdRoleDto = {
         id: 'uid-1',
         name: 'Admin',
@@ -58,7 +78,7 @@ describe('RolesService', () => {
       const result = await service.create(createRoleDto);
 
       expect(repository.createRole).toHaveBeenCalledWith(createRoleDto);
-      expect(result).toEqual(createdRoleDto);
+      expect(result).toEqual(expextedResult);
     });
   });
 
@@ -108,14 +128,30 @@ describe('RolesService', () => {
 
   describe('findAllTree', () => {
     it('should call findAllTree and return the result', async () => {
-      const tree = [
-        { id: '1', name: 'Admin', children: [], createdAt: '', updatedAt: '' },
+      const roles = [
+        {
+          id: 'uid-1',
+          name: 'Admin',
+          children: [],
+          createdAt: '',
+          updatedAt: '',
+        },
       ];
-      repository.findAllTree.mockResolvedValue(tree);
+      const tree = [
+        {
+          id: 'uid-1',
+          name: 'Admin',
+          children: [],
+          createdAt: '',
+          updatedAt: '',
+        },
+      ];
+
+      repository.findAll.mockResolvedValue(roles);
 
       const result = await service.findAllTree();
 
-      expect(repository.findAllTree).toHaveBeenCalled();
+      expect(repository.findAll).toHaveBeenCalled();
       expect(result).toEqual(tree);
     });
   });
@@ -133,15 +169,22 @@ describe('RolesService', () => {
         createdAt: '',
         updatedAt: '',
       };
-      repository.updateRole.mockResolvedValue(updatedRoleDto);
+      const expextedResult = {
+        roleId: 'uid-1',
+        message: 'Role successfully updated',
+      };
 
-      const result = await service.update('uid-1', updateRoleDto);
-
-      expect(repository.updateRole).toHaveBeenCalledWith(
-        'uid-1',
-        updateRoleDto,
+      (dataSource.transaction as jest.Mock).mockImplementation(async (cb) =>
+        cb({
+          findOneBy: jest.fn().mockResolvedValue(updatedRoleDto),
+          findOne: jest.fn().mockResolvedValue(updatedRoleDto),
+          save: jest.fn().mockResolvedValue({ ...updateRoleDto }),
+        }),
       );
-      expect(result).toEqual(updatedRoleDto);
+
+      const result = await service.update('1', 'uid-1', updateRoleDto);
+
+      expect(result).toEqual(expextedResult);
     });
   });
 });
