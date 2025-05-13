@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RolesService } from './roles.service';
 import { RolesRepository } from '../domain/repository/roles.repository';
 import { ROLE_REPOSITORY_TOKEN } from '../domain/repository/roles.repository.token';
-import { DATABASE_PROVIDER_TOKEN } from '../../database/database-provider-token.const';
+import { DATABASE_PROVIDER_TOKEN } from '../../../../roles/src/database/database-provider-token.const';
 import { DataSource } from 'typeorm';
 
 describe('RolesService', () => {

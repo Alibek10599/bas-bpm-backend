@@ -9,10 +9,14 @@ import * as Joi from 'joi';
 import { LocalStrategy } from './strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { RolesModule } from './roles/roles.module';
+import { PrivilegesModule } from './privileges/privileges.module';
 
 @Module({
   imports: [
     UsersModule,
+    RolesModule,
+    PrivilegesModule,
     LoggerModule,
     PassportModule,
     ConfigModule.forRoot({

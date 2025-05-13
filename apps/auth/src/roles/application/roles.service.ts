@@ -5,7 +5,7 @@ import { CreateRole } from '../domain/repository/types/create-role';
 import { UpdateRole } from '../domain/repository/types/update-role';
 import { Role } from '../infrastructure/database/postgres/entities/role.entity';
 import { RoleTree } from '../domain/repository/types/role-tree';
-import { DATABASE_PROVIDER_TOKEN } from '../../database/database-provider-token.const';
+import { DATABASE_PROVIDER_TOKEN } from '../../../../roles/src/database/database-provider-token.const';
 import { DataSource } from 'typeorm';
 import { RoleVersion } from '../infrastructure/database/postgres/entities/role-version.entity';
 import { getObjectChanges } from '@app/common/utils/get-object-changes';
