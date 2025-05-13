@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrivilegesRepository } from '../../domain/repository/privileges.repository';
 import { CreatePrivilege } from '../../domain/repository/types/create-privilege';
 import { Privilege } from './postgres/entities/privilege.entity';
@@ -6,12 +6,12 @@ import { FindAllPrivilegesFilter } from '../../domain/repository/types/find-all-
 import { PaginatedList, toPaginated } from '@app/common/pagination';
 import { UpdatePrivilege } from '../../domain/repository/types/update-privilege';
 import { ILike, Repository } from 'typeorm';
-import { PRIVILEGES_REPOSITORY_TOKEN } from '../../domain/repository/privileges.repository.token';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PrivilegesPostgresRepository implements PrivilegesRepository {
   constructor(
-    @Inject(PRIVILEGES_REPOSITORY_TOKEN)
+    @InjectRepository(Privilege)
     private readonly privilegeRepository: Repository<Privilege>,
   ) {}
 

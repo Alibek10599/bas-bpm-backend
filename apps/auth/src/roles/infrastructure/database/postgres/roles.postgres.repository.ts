@@ -7,17 +7,16 @@ import { Role } from './entities/role.entity';
 import { CreateRole } from '../../../domain/repository/types/create-role';
 import { FindAllRolesFilter } from '../../../domain/repository/types/find-all-roles-filter';
 import { UpdateRole } from '../../../domain/repository/types/update-role';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class RolesPostgresRepository implements RolesRepository {
   constructor(
+    @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
+    @InjectDataSource()
     private readonly dataSource: DataSource,
   ) {}
-
-  private async refreshMaterializedView(em: EntityManager) {
-    await em.query(`REFRESH MATERIALIZED VIEW role_hierarchy;`);
-  }
 
   async createRole(createRole: CreateRole): Promise<Role> {
     return this.dataSource.transaction(async (em) => {
@@ -57,5 +56,9 @@ export class RolesPostgresRepository implements RolesRepository {
       await this.refreshMaterializedView(em);
       return result;
     });
+  }
+
+  private async refreshMaterializedView(em: EntityManager) {
+    await em.query(`REFRESH MATERIALIZED VIEW role_hierarchy;`);
   }
 }

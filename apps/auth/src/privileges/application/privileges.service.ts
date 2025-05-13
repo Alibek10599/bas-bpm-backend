@@ -1,20 +1,20 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PrivilegesRepository } from '../domain/repository/privileges.repository';
-import { PRIVILEGES_REPOSITORY_TOKEN } from '../domain/repository/privileges.repository.token';
 import { CreatePrivilege } from '../domain/repository/types/create-privilege';
 import { UpdatePrivilege } from '../domain/repository/types/update-privilege';
-import { DATABASE_PROVIDER_TOKEN } from '../../../../roles/src/database/database-provider-token.const';
 import { DataSource } from 'typeorm';
 import { getObjectChanges } from '@app/common/utils/get-object-changes';
 import { PrivilegeVersion } from '../infrastructure/database/postgres/entities/privilege-version.entity';
 import { Privilege } from '../infrastructure/database/postgres/entities/privilege.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { PRIVILEGES_REPOSITORY_TOKEN } from '../domain/repository/privileges.repository.token';
 
 @Injectable()
 export class PrivilegesService {
   constructor(
     @Inject(PRIVILEGES_REPOSITORY_TOKEN)
     private readonly privilegesRepository: PrivilegesRepository,
-    @Inject(DATABASE_PROVIDER_TOKEN)
+    @InjectDataSource()
     private readonly dataSource: DataSource,
   ) {}
 

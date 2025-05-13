@@ -1,14 +1,23 @@
 import { Module } from '@nestjs/common';
 import { RolesService } from './application/roles.service';
 import { RolesController } from './interface/http/roles.controller';
-import { DatabaseModule } from '../../../roles/src/database/database.module';
-import { rolesRepository } from './roles.repository';
 import { RolesRmqController } from './interface/rmq/roles.rmq.controller';
 import { RolesGrpcController } from './interface/grpc/roles.grpc.controller';
+import { DatabaseModule } from '@app/common';
+import { Role } from './infrastructure/database/postgres/entities/role.entity';
+import { RoleVersion } from './infrastructure/database/postgres/entities/role-version.entity';
+import { ROLE_REPOSITORY_TOKEN } from './domain/repository/roles.repository.token';
+import { RolesPostgresRepository } from './infrastructure/database/postgres/roles.postgres.repository';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule.forFeature([Role, RoleVersion])],
   controllers: [RolesController, RolesRmqController, RolesGrpcController],
-  providers: [...rolesRepository, RolesService],
+  providers: [
+    {
+      provide: ROLE_REPOSITORY_TOKEN,
+      useClass: RolesPostgresRepository,
+    },
+    RolesService,
+  ],
 })
 export class RolesModule {}
