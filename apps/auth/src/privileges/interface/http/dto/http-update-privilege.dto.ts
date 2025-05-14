@@ -1,6 +1,14 @@
-import { OmitType } from '@nestjs/mapped-types';
-import { UpdatePrivilegeDto } from '../../dto/update-privilege.dto';
+import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { AccessesModel } from '@app/common';
 
-export class HttpUpdatePrivilegeDto extends OmitType(UpdatePrivilegeDto, [
-  'privilegeId',
-]) {}
+export class HttpUpdatePrivilegeDto {
+  @IsOptional()
+  @IsString()
+  name: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AccessesModel)
+  accesses: AccessesModel;
+}

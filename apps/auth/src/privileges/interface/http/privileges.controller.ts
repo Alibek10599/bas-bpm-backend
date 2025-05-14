@@ -29,6 +29,10 @@ export class PrivilegesController {
     @Body() updatePrivilegeDto: HttpUpdatePrivilegeDto,
     @CurrentUser() user: any,
   ) {
-    return this.privilegesService.update(user.userId, id, updatePrivilegeDto);
+    return this.privilegesService.update(
+      user?.userId ?? '',
+      id,
+      updatePrivilegeDto,
+    );
   }
 }

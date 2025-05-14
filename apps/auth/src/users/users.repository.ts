@@ -54,7 +54,7 @@ export class UsersRepository {
     await this.userRepository.save({
       id,
       ...updateUserDto,
-      role: { id: updateUserDto.roleId },
+      role: updateUserDto.roleId ? { id: updateUserDto.roleId } : undefined,
       privileges: updateUserDto.privilegeIds?.map((e) => ({ id: e })),
     });
     return this.findOneById(id);
