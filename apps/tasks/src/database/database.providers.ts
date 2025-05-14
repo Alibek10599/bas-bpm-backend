@@ -13,13 +13,19 @@ export const databaseProviders = [
     imports: [ConfigModule],
     provide: DATABASE_PROVIDER_TOKEN,
     useFactory: async (cfg: ConfigService) => {
-      return new DataSource({
+      const dataSource = new DataSource({
         type: 'postgres',
         url: cfg.get('POSTGRES_URL'),
         entities: [Task, TaskVersion, TaskDelegation],
         synchronize: true,
         logging: true,
-      } as PostgresConnectionOptions).initialize();
+        relationLoadStrategy: 'join',
+        extra: {
+          max: 30,
+        },
+      } as PostgresConnectionOptions);
+
+      return dataSource.initialize();
     },
     inject: [ConfigService],
   },

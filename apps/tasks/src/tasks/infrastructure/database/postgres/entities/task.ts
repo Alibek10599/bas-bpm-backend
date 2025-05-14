@@ -5,16 +5,21 @@ import {
   Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { TaskStatuses } from '../../../enums/task-statuses.enum';
 import { TaskStatusTransformer } from '../mappers/task-status.transformer';
 import { TaskType } from '../../../enums/task-types.enum';
 import { TaskTypeTransformer } from '../mappers/task-type.transformer';
+import { TaskVersion } from '../../../../../tasks-versions/infrastructure/database/postgres/entities/task-version.entity';
 
 @Entity('tasks')
 export class Task {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @OneToMany(() => TaskVersion, (version: TaskVersion) => version.task)
+  versions: TaskVersion[];
 
   //(UUID, FK -> `workflow_instances.id`, nullable): Идентификатор экземпляра процесса.
   @Column({ default: null, name: 'workflow_instance_id' })
