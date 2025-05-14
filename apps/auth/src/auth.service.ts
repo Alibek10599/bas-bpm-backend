@@ -12,6 +12,8 @@ import { UsersService } from './users/users.service';
 import { CreateUserDto } from './users/dto/create-user.dto';
 import * as crypto from 'crypto';
 import { AccessRedisService } from '@app/common/redis/accesses-redis';
+import { AccessesModel } from '@app/common';
+import { accessModel } from '@app/common/constants/access-model';
 
 @Injectable()
 export class AuthService {
@@ -21,13 +23,6 @@ export class AuthService {
     private readonly userService: UsersService,
     private readonly accessRedisService: AccessRedisService,
   ) {}
-
-  private hashPassword(password: string): string {
-    return crypto
-      .createHash('sha256')
-      .update(password + this.configService.get('JWT_SECRET')) // use JWT_SECRET as salt
-      .digest('hex');
-  }
 
   async login(loginDto: CreateUserDto, response?: Response) {
     try {
@@ -41,6 +36,10 @@ export class AuthService {
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
+
+      const accesses = user.privileges.map((e) => e.accesses);
+      const access = this.combineAccesses(accesses);
+      await this.accessRedisService.set(user.id, access);
 
       // Verify password with simple hash
       const hashedPassword = this.hashPassword(loginDto.password);
@@ -195,5 +194,39 @@ export class AuthService {
 
   async verifyToken(token: string) {
     return this.jwtService.verify(token);
+  }
+
+  private hashPassword(password: string): string {
+    return crypto
+      .createHash('sha256')
+      .update(password + this.configService.get('JWT_SECRET')) // use JWT_SECRET as salt
+      .digest('hex');
+  }
+
+  private combineAccesses(accesses: AccessesModel[]): AccessesModel {
+    // функция должна собирать массив доступов в 1 объект, объекты могут быть не полными
+    if (accesses.length === 0) {
+      throw new Error('Access list is empty');
+    }
+
+    const combined = accessModel;
+
+    const merge = (target: any, sources: any[]) => {
+      for (const key of Object.keys(target)) {
+        const values = sources
+          .map((s) => s?.[key])
+          .filter((v) => v !== undefined);
+
+        if (typeof target[key] === 'boolean') {
+          target[key] = values.some((v) => v === true);
+        } else if (typeof target[key] === 'object' && target[key] !== null) {
+          merge(target[key], values);
+        }
+      }
+    };
+
+    merge(combined, accesses);
+
+    return combined;
   }
 }
