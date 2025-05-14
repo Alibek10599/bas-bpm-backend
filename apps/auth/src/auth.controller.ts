@@ -13,10 +13,15 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './users/dto/create-user.dto';
 import { Response } from 'express';
 import { JwtAuthGuard } from '@app/common/auth/jwt-auth.guard';
+import { AccessGuard } from '@app/common';
+import { UsersService } from './users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UsersService,
+  ) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -35,9 +40,9 @@ export class AuthController {
     return this.authService.register(dto, response);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AccessGuard(['user.create']))
   @Get('me')
   async me(@Req() req: any) {
-    return req.user;
+    return await this.userService.findOne(req.user.userId);
   }
 }

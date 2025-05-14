@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { AccessesModel } from '../../../types/accesses-model';
+import { AccessesModel } from '@app/common';
 
 @Entity('privileges')
 export class Privilege {

@@ -7,10 +7,12 @@ import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { LoggerModule } from 'nestjs-pino';
-import { DatabaseModule, JwtAuthModule } from '@app/common';
+import { DatabaseModule } from '@app/common';
 import { AuthGrpcController } from './auth.grpc.controller';
 import { RolesModule } from './roles/roles.module';
 import { PrivilegesModule } from './privileges/privileges.module';
+import { AccessRedisModule } from '@app/common/redis/accesses-redis';
+import { JwtAuthModule } from '@app/common/auth';
 
 @Module({
   imports: [
@@ -39,6 +41,7 @@ import { PrivilegesModule } from './privileges/privileges.module';
         synchronize: configService.get('NODE_ENV') !== 'production',
       }),
     }),
+    AccessRedisModule,
     JwtAuthModule,
     UsersModule,
     RolesModule,

@@ -1,6 +1,6 @@
 import { IsString, ValidateNested } from 'class-validator';
-import { AccessesModel } from '../../infrastructure/types/accesses-model';
 import { Type } from 'class-transformer';
+import { AccessesModel } from '@app/common';
 
 export class CreatePrivilegeDto {
   @IsString()

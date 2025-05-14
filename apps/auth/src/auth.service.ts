@@ -11,6 +11,7 @@ import { Response } from 'express';
 import { UsersService } from './users/users.service';
 import { CreateUserDto } from './users/dto/create-user.dto';
 import * as crypto from 'crypto';
+import { AccessRedisService } from '@app/common/redis/accesses-redis';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly userService: UsersService,
+    private readonly accessRedisService: AccessRedisService,
   ) {}
 
   private hashPassword(password: string): string {
