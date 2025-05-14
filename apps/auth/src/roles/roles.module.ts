@@ -19,5 +19,6 @@ import { RolesPostgresRepository } from './infrastructure/database/postgres/role
     },
     RolesService,
   ],
+  exports: [RolesService],
 })
 export class RolesModule {}

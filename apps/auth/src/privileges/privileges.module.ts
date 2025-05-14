@@ -23,5 +23,6 @@ import { PRIVILEGES_REPOSITORY_TOKEN } from './domain/repository/privileges.repo
     },
     PrivilegesService,
   ],
+  exports: [PrivilegesService],
 })
 export class PrivilegesModule {}

@@ -13,6 +13,10 @@ import { RolesModule } from './roles/roles.module';
 import { PrivilegesModule } from './privileges/privileges.module';
 import { AccessRedisModule } from '@app/common/redis/accesses-redis';
 import { JwtAuthModule } from '@app/common/auth';
+import { RoleVersion } from './roles/infrastructure/database/postgres/entities/role-version.entity';
+import { Role } from './roles/infrastructure/database/postgres/entities/role.entity';
+import { Privilege } from './privileges/infrastructure/database/postgres/entities/privilege.entity';
+import { PrivilegeVersion } from './privileges/infrastructure/database/postgres/entities/privilege-version.entity';
 
 @Module({
   imports: [
@@ -37,15 +41,15 @@ import { JwtAuthModule } from '@app/common/auth';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [User],
+        entities: [User, Role, RoleVersion, Privilege, PrivilegeVersion],
         synchronize: configService.get('NODE_ENV') !== 'production',
       }),
     }),
     AccessRedisModule,
     JwtAuthModule,
-    UsersModule,
     RolesModule,
     PrivilegesModule,
+    UsersModule,
     LoggerModule.forRoot(),
     DatabaseModule,
   ],

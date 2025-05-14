@@ -2,10 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { AccessesModel } from '@app/common';
+import { User } from '../../../../../users/user.entity';
 
 @Entity('privileges')
 export class Privilege {
@@ -31,6 +33,9 @@ export class Privilege {
     name: 'tenant_id',
   })
   tenantId?: string;
+
+  @ManyToMany(() => User, (u) => u.privileges, { onDelete: 'CASCADE' })
+  users: User[];
 
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
   createdAt: string;

@@ -17,7 +17,11 @@ export class UsersRepository {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     this.logger.log(`Creating user with email: ${createUserDto.email}`);
-    return this.userRepository.save(createUserDto);
+    return this.userRepository.save({
+      ...createUserDto,
+      role: { id: createUserDto.roleId },
+      privileges: createUserDto.privilegeIds.map((e) => ({ id: e })),
+    });
   }
 
   async findOne(filter: FindOptionsWhere<User>): Promise<User | null> {
@@ -47,7 +51,12 @@ export class UsersRepository {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    await this.userRepository.update(id, updateUserDto);
+    await this.userRepository.save({
+      id,
+      ...updateUserDto,
+      role: { id: updateUserDto.roleId },
+      privileges: updateUserDto.privilegeIds?.map((e) => ({ id: e })),
+    });
     return this.findOneById(id);
   }
 
