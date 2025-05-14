@@ -13,19 +13,18 @@ import { DocumentPermissionsEnum } from '../../../enums/document-permissions.enu
 @Entity('document_permissions')
 export class DocumentPermissions {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @ManyToOne(() => Document, (document) => document.id)
   @JoinColumn({ name: 'document_id' })
   document: Document;
 
   @Column({
-    type: 'varchar',
-    length: 255,
+    type: 'int',
     name: 'user_id',
     default: null,
   })
-  userId: string;
+  userId: number;
 
   @Column({
     type: 'varchar',

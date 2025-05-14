@@ -1,7 +1,6 @@
 import { DataSource } from 'typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DATABASE_PROVIDER_TOKEN } from './database-provider-token.const';
-import { join } from 'path';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { Task } from '../tasks/infrastructure/database/postgres/entities/task';
 import { TaskVersion } from '../tasks-versions/infrastructure/database/postgres/entities/task-version.entity';
@@ -20,6 +19,8 @@ export const databaseProviders = [
         synchronize: true,
         logging: true,
         relationLoadStrategy: 'join',
+        migrations: ['dist/apps/*/src/migrations/*.js'],
+        migrationsRun: true,
         extra: {
           max: 30,
         },

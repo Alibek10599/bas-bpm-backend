@@ -1,4 +1,4 @@
 export class RequestMetadata {
-  userId: string;
+  userId: number;
   tenantId: string;
 }
