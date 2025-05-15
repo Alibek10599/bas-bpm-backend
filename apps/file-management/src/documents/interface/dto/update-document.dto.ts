@@ -1,7 +1,31 @@
-import { CreateDocumentDto } from './create-document.dto';
-import { IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 
-export class UpdateDocumentDto extends CreateDocumentDto {
+export class UpdateDocumentDto {
+  @ApiProperty({
+    description: 'Updated name of the document',
+    example: 'updated-report.docx',
+    required: false,
+  })
   @IsString()
-  documentId: string;
+  @IsOptional()
+  name?: string;
+
+  @ApiProperty({
+    description: 'Updated description of the document',
+    example: 'Updated annual financial report',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @ApiProperty({
+    description: 'Updated document type/category',
+    example: 'financial-reports',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  type?: string;
 }

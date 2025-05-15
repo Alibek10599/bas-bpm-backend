@@ -8,6 +8,7 @@ import { AuthModule } from './auth.module';
 import { grpcCfg } from '@app/common/grpc';
 import { resolve } from 'path';
 import { AUTH_SERVICE_GRPC } from '@app/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
@@ -31,6 +32,29 @@ async function bootstrap() {
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));
+
+  // Setup Swagger documentation
+  const config = new DocumentBuilder()
+    .setTitle('Auth Service API')
+    .setDescription(
+      'Authentication and Authorization service for BAS BPM system',
+    )
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'JWT',
+    )
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
 
   await app.startAllMicroservices();
   await app.listen(configService.get('HTTP_PORT'));
