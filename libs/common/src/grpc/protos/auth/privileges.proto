@@ -3,10 +3,11 @@ syntax = "proto3";
 package privileges;
 
 import "access_model.proto";
+import "request_metadata.proto";
 
 service PrivilegesService {
   rpc CreatePrivilege (CreatePrivilegeWrapper) returns (CreatePrivilegeResult);
-  rpc FindAll (RequestMetadata) returns (PrivilegeList);
+  rpc FindAll (request_metadata.RequestMetadata) returns (PrivilegeList);
   rpc FindOne (FindOnePrivilegeWrapper) returns (Privilege);
   rpc UpdatePrivilege (UpdatePrivilegeWrapper) returns (UpdatePrivilegeResult);
 }
@@ -50,22 +51,18 @@ message FindOnePrivilege {
   string privilegeId = 1;
 }
 
-message RequestMetadata {
-  string tenantId = 1;
-  string userId = 2;
-}
 
 message CreatePrivilegeWrapper {
   CreatePrivilege body = 1;
-  RequestMetadata metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 
 message UpdatePrivilegeWrapper {
   UpdatePrivilege body = 1;
-  RequestMetadata metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 
 message FindOnePrivilegeWrapper {
   FindOnePrivilege body = 1;
-  RequestMetadata metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }

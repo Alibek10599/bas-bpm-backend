@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package tasks;
 
+import "request_metadata.proto";
+
 service TaskService {
   rpc CreateTask (CreateTaskWrapper) returns (CreateTaskResult);
   rpc UpdateTask (UpdateTaskWrapper) returns (UpdateTaskResult);
@@ -119,30 +121,30 @@ message PaginatedTaskList {
 
 message CreateTaskWrapper {
   CreateTask body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 
 message UpdateTaskWrapper {
   UpdateTask body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 
 message CompleteTaskWrapper {
   CompleteTask body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 
 message AssignTaskWrapper {
   AssignTask body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 
 message GetTaskStatusWrapper {
   GetTaskStatus body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 
 message GetTaskByIdWrapper {
   GetTaskById body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }

@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package documents;
 
+import "request_metadata.proto";
+
 service DocumentsService {
   rpc CreateDocument (CreateDocumentWrapper) returns (DocumentResponse);
   rpc UpdateDocument (UpdateDocumentWrapper) returns (DocumentResponse);
@@ -12,7 +14,7 @@ service DocumentsService {
 }
 
 message FindAllDocumentsWrapper {
-  map<string, string> metadata = 1;
+  request_metadata.RequestMetadata metadata = 1;
 }
 
 message CreateDocument {
@@ -34,7 +36,7 @@ message UpdateDocument {
 
 message FindOneDocumentRequestWrapper {
   FindOneDocumentRequest body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 
 message FindOneDocumentRequest {
@@ -92,17 +94,17 @@ message DocumentResponse {
 
 message CreateDocumentWrapper {
   CreateDocument body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 
 message UpdateDocumentWrapper {
   UpdateDocument body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 
 message ChangeDocumentVersionWrapper {
   ChangeDocumentVersion body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 
 message ChangeDocumentVersionResult {

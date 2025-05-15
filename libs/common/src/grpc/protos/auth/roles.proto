@@ -2,10 +2,12 @@ syntax = "proto3";
 
 package roles;
 
+import "request_metadata.proto";
+
 service RolesService {
   rpc CreateRole (CreateRoleWrapper) returns (CreateRoleResult);
-  rpc FindAll (RequestMetadata) returns (RoleList);
-  rpc GetRolesTree (RequestMetadata) returns (RoleTreeResponse);
+  rpc FindAll (request_metadata.RequestMetadata) returns (RoleList);
+  rpc GetRolesTree (request_metadata.RequestMetadata) returns (RoleTreeResponse);
   rpc FindOne (FindOneRoleWrapper) returns (Role);
   rpc UpdateRole (UpdateRoleWrapper) returns (UpdateRoleResult);
 }
@@ -64,22 +66,17 @@ message FindOneRole {
   string roleId = 1;
 }
 
-message RequestMetadata {
-  string tenantId = 1;
-  string userId = 2;
-}
-
 message CreateRoleWrapper {
   CreateRole body = 1;
-  RequestMetadata metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 
 message UpdateRoleWrapper {
   UpdateRole body = 1;
-  RequestMetadata metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 
 message FindOneRoleWrapper {
   FindOneRole body = 1;
-  RequestMetadata metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
