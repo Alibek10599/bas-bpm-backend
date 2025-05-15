@@ -15,6 +15,7 @@ import { DatabaseModule } from './database/database.module';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
+        POSTGRES_URL: Joi.string().required(),
         MONGODB_URI: Joi.string(),
         AUTH_SERVICE_HOST: Joi.string(),
         AUTH_SERVICE_PORT: Joi.number(),

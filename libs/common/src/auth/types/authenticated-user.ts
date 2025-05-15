@@ -1,5 +1,5 @@
 export class AuthenticatedUser {
-  userId: string;
+  userId: number;
   tenantId: string;
   roles: string[];
 }
