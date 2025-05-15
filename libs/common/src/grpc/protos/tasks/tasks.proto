@@ -104,7 +104,7 @@ message Task {
   string assignedTo = 7;
   string delegatedTo = 8;
   map<string, string> metadata = 9;
-  string userId = 10;
+  int64 userId = 10;
   string tenantId = 11;
   string createdAt = 12;
   string updatedAt = 13;

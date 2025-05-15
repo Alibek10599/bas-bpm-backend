@@ -15,11 +15,9 @@ export class Reference {
   @Column({ type: 'varchar' })
   name: string;
 
-  // - `user_id` (UUID, FK -> `users.id`): Пользователь, создавший запись.
-  @Column({ type: 'varchar' })
-  user_id: string;
+  @Column({ type: 'int' })
+  user_id: number;
 
-  // - `tenant_id` (UUID, FK -> `tenants.id`): Идентификатор тенанта.
   @Column({ type: 'varchar' })
   tenant_id: string;
 

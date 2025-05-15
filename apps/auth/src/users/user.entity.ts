@@ -13,8 +13,8 @@ import { Privilege } from '../privileges/infrastructure/database/postgres/entiti
 
 @Entity('users')
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({ type: 'varchar', length: 255 })
   email: string;

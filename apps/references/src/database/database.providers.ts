@@ -18,6 +18,8 @@ export const databaseProviders = [
         entities: [Reference, ReferenceData, ReferenceVersions],
         synchronize: true,
         logging: true,
+        migrations: ['dist/apps/references/src/migrations/*.js'],
+        migrationsRun: true,
       } as PostgresConnectionOptions).initialize();
     },
     inject: [ConfigService],
