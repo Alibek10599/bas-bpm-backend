@@ -6,6 +6,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AccessRedisService } from '@app/common/redis/accesses-redis';
+import { ConfigService } from '@nestjs/config';
+import { Logger } from 'nestjs-pino';
 
 export function AccessGuard(requiredAccesses: string[]) {
   @Injectable()
@@ -13,18 +15,26 @@ export function AccessGuard(requiredAccesses: string[]) {
     constructor(
       readonly reflector: Reflector,
       readonly accessRedisService: AccessRedisService,
+      readonly configService: ConfigService,
+      readonly logger: Logger,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
       const request = context.switchToHttp().getRequest();
       const userId = request.user?.userId;
+      const ignoreAccessCheck =
+        this.configService.get<string>('BYPASS_PERMISSIONS');
+
+      if (ignoreAccessCheck === 'true') {
+        this.logger.warn(
+          'Access control checks are disabled via BYPASS_PERMISSIONS=true. This may expose sensitive data or allow unauthorized actions.',
+        );
+        return true;
+      }
 
       if (!userId) return false;
 
       const accessList = await this.accessRedisService.get(userId);
-
-      console.log('accessList', accessList);
-      console.log('requiredAccesses', requiredAccesses);
 
       return requiredAccesses.every((accessPath) =>
         this.hasAccessRecursive(accessList, accessPath.split('.')),
