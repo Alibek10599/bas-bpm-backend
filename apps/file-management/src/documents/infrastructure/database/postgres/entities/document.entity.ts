@@ -3,7 +3,6 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -42,12 +41,11 @@ export class Document {
   updatedAt: Date;
 
   @Column({
-    type: 'varchar',
-    length: 255,
+    type: 'int',
     name: 'created_by',
     comment: 'ID of the user who uploaded the file',
   })
-  createdBy: string;
+  createdBy: number;
 
   @Column({
     type: 'varchar',

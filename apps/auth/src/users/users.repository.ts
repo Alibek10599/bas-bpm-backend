@@ -42,7 +42,7 @@ export class UsersRepository {
       .then((res) => toPaginated(...res));
   }
 
-  async findOneById(id: string): Promise<User> {
+  async findOneById(id: number): Promise<User> {
     return this.userRepository.findOneBy({ id });
   }
 
@@ -60,7 +60,7 @@ export class UsersRepository {
     return this.findOneById(id);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: number): Promise<void> {
     await this.userRepository.delete(id);
   }
 }

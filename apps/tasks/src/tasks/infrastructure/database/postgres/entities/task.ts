@@ -5,16 +5,21 @@ import {
   Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { TaskStatuses } from '../../../enums/task-statuses.enum';
 import { TaskStatusTransformer } from '../mappers/task-status.transformer';
 import { TaskType } from '../../../enums/task-types.enum';
 import { TaskTypeTransformer } from '../mappers/task-type.transformer';
+import { TaskVersion } from '../../../../../tasks-versions/infrastructure/database/postgres/entities/task-version.entity';
 
 @Entity('tasks')
 export class Task {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @OneToMany(() => TaskVersion, (version: TaskVersion) => version.task)
+  versions: TaskVersion[];
 
   //(UUID, FK -> `workflow_instances.id`, nullable): Идентификатор экземпляра процесса.
   @Column({ default: null, name: 'workflow_instance_id' })
@@ -45,22 +50,22 @@ export class Task {
   })
   type: TaskType;
 
-  //(UUID, FK -> `users.id`, nullable): Назначенный пользователь.
+  //(INT, FK -> `users.id`, nullable): Назначенный пользователь.
   @Index()
   @Column({
-    type: 'varchar',
+    type: 'int',
     default: null,
     name: 'assigned_to',
   })
-  assignedTo?: string;
+  assignedTo?: number;
 
-  //(UUID, FK -> `users.id`, nullable): Пользователь, которому делегирована задача.
+  //(INT, FK -> `users.id`, nullable): Пользователь, которому делегирована задача.
   @Column({
-    type: 'varchar',
+    type: 'int',
     default: null,
     name: 'delegated_to',
   })
-  delegatedTo?: string;
+  delegatedTo?: number;
 
   //(JSON, nullable): Дополнительные данные.
   @Column({
@@ -69,13 +74,13 @@ export class Task {
   })
   metadata: any;
 
-  //(UUID, FK -> `users.id`): Пользователь, создавший задачу.
+  //(INT, FK -> `users.id`): Пользователь, создавший задачу.
   @Column({
-    type: 'varchar',
+    type: 'int',
     default: null,
     name: 'user_id',
   })
-  userId?: string;
+  userId?: number;
 
   //(UUID, FK -> `tenants.id`): Идентификатор тенанта.
   @Column({
