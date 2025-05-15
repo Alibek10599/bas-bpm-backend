@@ -52,9 +52,10 @@ message Document {
   string type = 3;
   int32 size = 4;
   string hashName = 5;
-  string createdAt = 6;
-  string updatedAt = 7;
-  DocumentVersion currentVersion = 8;
+  int64 userId = 6;
+  string createdAt = 7;
+  string updatedAt = 8;
+  DocumentVersion currentVersion = 9;
 }
 
 message DocumentVersion {

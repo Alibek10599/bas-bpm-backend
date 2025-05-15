@@ -17,7 +17,18 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./apps/sleeper/test/jest-e2e.json"
+    "test:e2e": "jest --config ./apps/sleeper/test/jest-e2e.json",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:run:auth": "npm run typeorm -- -d ./apps/auth/src/database/datasource.ts migration:run",
+    "migration:run:tasks": "npm run typeorm -- -d ./apps/tasks/src/database/datasource.ts migration:run",
+    "migration:run:file-management": "npm run typeorm -- -d ./apps/file-management/src/database/datasource.ts migration:run",
+    "migration:run:references": "npm run typeorm -- -d ./apps/references/src/database/datasource.ts migration:run",
+    "migration:run:all": "npm run migration:run:auth && npm run migration:run:tasks && npm run migration:run:file-management && npm run migration:run:references",
+    "db:create:auth": "createdb -U postgres bas_auth || true",
+    "db:create:tasks": "createdb -U postgres bas_tasks || true",
+    "db:create:files": "createdb -U postgres bas_files || true",
+    "db:create:references": "createdb -U postgres bas_references || true",
+    "db:create:all": "npm run db:create:auth && npm run db:create:tasks && npm run db:create:files && npm run db:create:references"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.782.0",
@@ -44,6 +55,7 @@
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.6",
     "docx": "^9.3.0",
+    "dotenv": "^16.5.0",
     "exceljs": "^4.4.0",
     "express": "^4.18.2",
     "ioredis": "^5.6.0",
