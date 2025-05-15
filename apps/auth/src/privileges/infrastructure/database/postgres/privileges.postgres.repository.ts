@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { PrivilegesRepository } from '../../domain/repository/privileges.repository';
-import { CreatePrivilege } from '../../domain/repository/types/create-privilege';
-import { Privilege } from './postgres/entities/privilege.entity';
-import { FindAllPrivilegesFilter } from '../../domain/repository/types/find-all-privileges-filter';
+import { PrivilegesRepository } from '../../../domain/repository/privileges.repository';
+import { CreatePrivilege } from '../../../domain/repository/types/create-privilege';
+import { Privilege } from './entities/privilege.entity';
+import { FindAllPrivilegesFilter } from '../../../domain/repository/types/find-all-privileges-filter';
 import { PaginatedList, toPaginated } from '@app/common/pagination';
-import { UpdatePrivilege } from '../../domain/repository/types/update-privilege';
+import { UpdatePrivilege } from '../../../domain/repository/types/update-privilege';
 import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 

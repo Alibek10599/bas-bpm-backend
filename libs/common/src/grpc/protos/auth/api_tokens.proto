@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package api_tokens;
+
+import "request_metadata.proto";
+
+service ApiTokensService {
+  rpc Create (CreateApiTokenRequest) returns (CreateApiTokenResponse);
+  rpc FindAll (FindAllApiTokensRequest) returns (FindAllApiTokensResponse);
+  rpc FindOne (FindApiTokenByIdRequest) returns (ApiToken);
+  rpc Update (UpdateApiTokenRequest) returns (UpdateApiTokenResponse);
+  rpc Remove (DeleteApiTokenRequest) returns (DeleteApiTokenResponse);
+}
+
+message CreateApiTokenRequest {
+  CreateApiToken body = 1;
+  request_metadata.RequestMetadata metadata = 2;
+}
+
+message CreateApiToken {
+  string name = 1;
+  string accessType = 2;
+  string expiredAt = 3;
+}
+
+message UpdateApiTokenRequest {
+  UpdateApiToken body = 1;
+  request_metadata.RequestMetadata metadata = 2;
+}
+
+message UpdateApiToken {
+  string apiTokenId = 1;
+  string name = 2;
+  string accessType = 3;
+  string expiredAt = 4;
+}
+
+message DeleteApiTokenRequest {
+  ApiTokenIdRequest body = 1;
+  request_metadata.RequestMetadata metadata = 2;
+}
+
+message CreateApiTokenResponse {
+  string apiTokenId = 1;
+  string token = 2;
+  string message = 3;
+}
+
+message UpdateApiTokenResponse {
+  string apiTokenId = 1;
+  string message = 3;
+}
+
+message DeleteApiTokenResponse {
+  string apiTokenId = 1;
+  string message = 3;
+}
+
+message FindApiTokenByIdRequest {
+  ApiTokenIdRequest body = 1;
+  request_metadata.RequestMetadata metadata = 2;
+}
+
+message ApiTokenIdRequest {
+  string apiTokenId = 1;
+}
+
+message ApiToken {
+  string id = 1;
+  string name = 2;
+  string accessType = 3;
+  string expiredAt = 4;
+  string tenantId = 5;
+  string userId = 6;
+}
+
+message FindAllApiTokensRequest {
+  FindAllApiTokensFilter body = 1;
+  request_metadata.RequestMetadata metadata = 2;
+}
+
+message FindAllApiTokensResponse {
+  repeated ApiToken items = 1;
+}
+
+message FindAllApiTokensFilter {
+  string search = 1;
+}

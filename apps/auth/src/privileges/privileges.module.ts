@@ -6,7 +6,7 @@ import { PrivilegesGrpcController } from './interface/grpc/privileges.grpc.contr
 import { DatabaseModule } from '@app/common';
 import { Privilege } from './infrastructure/database/postgres/entities/privilege.entity';
 import { PrivilegeVersion } from './infrastructure/database/postgres/entities/privilege-version.entity';
-import { PrivilegesPostgresRepository } from './infrastructure/database/privileges.postgres.repository';
+import { PrivilegesPostgresRepository } from './infrastructure/database/postgres/privileges.postgres.repository';
 import { PRIVILEGES_REPOSITORY_TOKEN } from './domain/repository/privileges.repository.token';
 
 @Module({

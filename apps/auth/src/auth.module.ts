@@ -17,6 +17,8 @@ import { RoleVersion } from './roles/infrastructure/database/postgres/entities/r
 import { Role } from './roles/infrastructure/database/postgres/entities/role.entity';
 import { Privilege } from './privileges/infrastructure/database/postgres/entities/privilege.entity';
 import { PrivilegeVersion } from './privileges/infrastructure/database/postgres/entities/privilege-version.entity';
+import { ApiTokensModule } from './api-tokens/api-tokens.module';
+import { ApiToken } from './api-tokens/infrastructure/database/postgres/entities/api-token.entity';
 
 @Module({
   imports: [
@@ -41,7 +43,14 @@ import { PrivilegeVersion } from './privileges/infrastructure/database/postgres/
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [User, Role, RoleVersion, Privilege, PrivilegeVersion],
+        entities: [
+          User,
+          Role,
+          RoleVersion,
+          Privilege,
+          PrivilegeVersion,
+          ApiToken,
+        ],
         synchronize: configService.get('NODE_ENV') !== 'production',
       }),
     }),
@@ -52,6 +61,7 @@ import { PrivilegeVersion } from './privileges/infrastructure/database/postgres/
     UsersModule,
     LoggerModule.forRoot(),
     DatabaseModule,
+    ApiTokensModule,
   ],
   controllers: [AuthController, AuthGrpcController],
   providers: [AuthService],
