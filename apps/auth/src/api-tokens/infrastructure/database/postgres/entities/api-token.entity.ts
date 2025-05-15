@@ -25,7 +25,7 @@ export class ApiToken {
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
-  updatedAt: string;
+  updatedAt: Date;
 
   @Column({ type: 'timestamp', name: 'expired_at', default: null })
   expiredAt: Date;
