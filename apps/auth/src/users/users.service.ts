@@ -29,7 +29,7 @@ export class UsersService {
     return this.repository.findAll(filterQuery);
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.repository.findOne({ id });
   }
 
@@ -37,7 +37,7 @@ export class UsersService {
     return this.repository.update(id, updateUserDto);
   }
 
-  remove(id: string) {
+  remove(id: number) {
     return this.repository.remove(id);
   }
 }

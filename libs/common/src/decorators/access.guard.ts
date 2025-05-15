@@ -8,8 +8,12 @@ import { Reflector } from '@nestjs/core';
 import { AccessRedisService } from '@app/common/redis/accesses-redis';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
+import { AccessesModelPaths } from '@app/common/types/access-model-path';
 
-export function AccessGuard(requiredAccesses: string[]) {
+/**
+ * Для работы этого декоратора необходим AccessRedisModule, его добавляем в AppModule
+ * */
+export function AccessGuard(requiredAccesses: AccessesModelPaths[]) {
   @Injectable()
   class AccessGuardMixin implements CanActivate {
     constructor(

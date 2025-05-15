@@ -8,6 +8,9 @@ import { AuthGrpc } from '@app/common/auth/interfaces/auth-grpc';
 import { Request } from 'express';
 import { firstValueFrom } from 'rxjs';
 
+/**
+ * Для работы этого guard необходим JwtAuthModule, его добавляем в AppModule
+ * */
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(

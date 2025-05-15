@@ -204,11 +204,6 @@ export class AuthService {
   }
 
   private combineAccesses(accesses: AccessesModel[]): AccessesModel {
-    // функция должна собирать массив доступов в 1 объект, объекты могут быть не полными
-    if (accesses.length === 0) {
-      throw new Error('Access list is empty');
-    }
-
     const combined = accessModel;
 
     const merge = (target: any, sources: any[]) => {

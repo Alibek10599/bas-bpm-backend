@@ -11,7 +11,7 @@ message Authenticate {
 }
 
 message AuthenticateResult {
-  int64 userId = 1;
+  int32 userId = 1;
   string tenantId = 2;
   repeated string roles = 3;
 }

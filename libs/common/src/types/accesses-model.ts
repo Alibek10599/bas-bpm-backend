@@ -1,6 +1,17 @@
 import { IsBoolean, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
+class AccessesModelApiToken {
+  @IsBoolean()
+  create: boolean;
+
+  @IsBoolean()
+  update: boolean;
+
+  @IsBoolean()
+  delete: boolean;
+}
+
 class AccessesModelUser {
   @IsBoolean()
   create: boolean;
@@ -144,6 +155,10 @@ class AccessesModelCodeExecution {
 }
 
 export class AccessesModel {
+  @ValidateNested()
+  @Type(() => AccessesModelApiToken)
+  apiToken: AccessesModelApiToken;
+
   @ValidateNested()
   @Type(() => AccessesModelUser)
   user: AccessesModelUser;

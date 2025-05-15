@@ -7,17 +7,20 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTokensService } from '../../application/api-tokens.service';
 import { CreateApiTokenDto } from '../dto/create-api-token.dto';
-import { CurrentUser } from '@app/common';
+import { AccessGuard, CurrentUser } from '@app/common';
 import { HttpUpdateApiTokenDto } from './dto/http.update-api-token.dto';
 import { FindAllApiTokenFilterDto } from '../dto/find-all-api-token-filter.dto';
+import { JwtAuthGuard } from '@app/common/auth/jwt-auth.guard';
 
 @Controller('api-tokens')
 export class ApiTokensController {
   constructor(private readonly apiTokensService: ApiTokensService) {}
 
+  @UseGuards(JwtAuthGuard, AccessGuard(['apiToken.create']))
   @Post()
   create(
     @Body() createApiTokenDto: CreateApiTokenDto,
@@ -45,6 +48,7 @@ export class ApiTokensController {
     return this.apiTokensService.findOneByToken(token);
   }
 
+  @UseGuards(JwtAuthGuard, AccessGuard(['apiToken.update']))
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -53,6 +57,7 @@ export class ApiTokensController {
     return this.apiTokensService.update(id, updateApiTokenDto);
   }
 
+  @UseGuards(JwtAuthGuard, AccessGuard(['apiToken.delete']))
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.apiTokensService.remove(id);
