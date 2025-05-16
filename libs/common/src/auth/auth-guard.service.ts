@@ -12,21 +12,21 @@ import { firstValueFrom } from 'rxjs';
  * Для работы этого guard необходим JwtAuthModule, его добавляем в AppModule
  * */
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
   constructor(
     @Inject('AUTH_GRPC_PROVIDER') private readonly authGrpc: AuthGrpc,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const jwt = this.getJwtFromContext(context);
+    const token = this.getTokenFromContext(context);
 
-    if (!jwt) {
+    if (!token) {
       return false;
     }
 
     const result = await firstValueFrom(
       this.authGrpc.Authenticate({
-        token: jwt,
+        token,
       }),
     ).catch((e) => {
       console.log('JwtAuthGuard', e);
@@ -41,7 +41,7 @@ export class JwtAuthGuard implements CanActivate {
     return true;
   }
 
-  private getJwtFromContext(context: ExecutionContext) {
+  private getTokenFromContext(context: ExecutionContext) {
     const type = context.getType<'http' | 'https' | 'ws' | 'wss'>();
 
     if (type === 'http' || type === 'https') {

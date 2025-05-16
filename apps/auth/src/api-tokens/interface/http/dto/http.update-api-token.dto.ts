@@ -1,14 +1,24 @@
-import { IsEnum, IsISO8601, IsOptional, IsString } from 'class-validator';
-import { ApiTokenAccessType } from '../../../domain/enums/api-token-access-type.enum';
+import {
+  IsISO8601,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { AccessesModel } from '@app/common';
 
 export class HttpUpdateApiTokenDto {
   @IsOptional()
   @IsString()
   name: string;
 
-  @IsOptional()
-  @IsEnum(ApiTokenAccessType)
-  accessType: ApiTokenAccessType;
+  @IsNumber()
+  actorId: string;
+
+  @Type(() => AccessesModel)
+  @ValidateNested()
+  accesses: AccessesModel;
 
   @IsOptional()
   @IsISO8601()

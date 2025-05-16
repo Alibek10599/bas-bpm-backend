@@ -14,13 +14,13 @@ import { CreateApiTokenDto } from '../dto/create-api-token.dto';
 import { AccessGuard, CurrentUser } from '@app/common';
 import { HttpUpdateApiTokenDto } from './dto/http.update-api-token.dto';
 import { FindAllApiTokenFilterDto } from '../dto/find-all-api-token-filter.dto';
-import { JwtAuthGuard } from '@app/common/auth/jwt-auth.guard';
+import { AuthGuard } from '@app/common/auth/auth-guard.service';
 
 @Controller('api-tokens')
 export class ApiTokensController {
   constructor(private readonly apiTokensService: ApiTokensService) {}
 
-  @UseGuards(JwtAuthGuard, AccessGuard(['apiToken.create']))
+  @UseGuards(AuthGuard, AccessGuard(['apiToken.create']))
   @Post()
   create(
     @Body() createApiTokenDto: CreateApiTokenDto,
@@ -48,7 +48,7 @@ export class ApiTokensController {
     return this.apiTokensService.findOneByToken(token);
   }
 
-  @UseGuards(JwtAuthGuard, AccessGuard(['apiToken.update']))
+  @UseGuards(AuthGuard, AccessGuard(['apiToken.update']))
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -57,7 +57,7 @@ export class ApiTokensController {
     return this.apiTokensService.update(id, updateApiTokenDto);
   }
 
-  @UseGuards(JwtAuthGuard, AccessGuard(['apiToken.delete']))
+  @UseGuards(AuthGuard, AccessGuard(['apiToken.delete']))
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.apiTokensService.remove(id);

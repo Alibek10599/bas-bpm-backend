@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ApiTokenAccessType } from '../../../../domain/enums/api-token-access-type.enum';
+import { AccessesModel } from '@app/common';
 
 @Entity('api_tokens')
 export class ApiToken {
@@ -15,11 +15,23 @@ export class ApiToken {
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
-  @Column({ type: 'varchar', length: 32, name: 'access_type' })
-  accessType: ApiTokenAccessType;
+  @Column({ type: 'jsonb' })
+  accesses: AccessesModel;
 
   @Column({ type: 'varchar', length: 255, unique: true })
   token: string;
+
+  /**
+   * От лица этого пользователя будут совершаться все действия
+   * */
+  @Column({ type: 'integer', name: 'actor_id', default: null })
+  actorId: number;
+
+  @Column({ type: 'integer', name: 'user_id', default: null })
+  userId: number;
+
+  @Column({ type: 'varchar', length: 255, name: 'tenant_id', default: null })
+  tenantId: string;
 
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
   createdAt: Date;
@@ -29,10 +41,4 @@ export class ApiToken {
 
   @Column({ type: 'timestamp', name: 'expired_at', default: null })
   expiredAt: Date;
-
-  @Column({ type: 'varchar', length: 255, name: 'user_id', default: null })
-  userId: string;
-
-  @Column({ type: 'varchar', length: 255, name: 'tenant_id', default: null })
-  tenantId: string;
 }

@@ -50,7 +50,7 @@ export class UsersRepository {
     return this.userRepository.findOneBy({ email });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     await this.userRepository.save({
       id,
       ...updateUserDto,

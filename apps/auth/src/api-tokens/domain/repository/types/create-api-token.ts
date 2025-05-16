@@ -1,9 +1,10 @@
-import { ApiTokenAccessType } from '../../enums/api-token-access-type.enum';
+import { AccessesModel } from '@app/common';
 
 export class CreateApiToken {
   name: string;
   token: string;
-  accessType: ApiTokenAccessType;
+  actorId: string;
+  accesses: AccessesModel;
   expiredAt: string;
   userId: string;
   tenantId: string;

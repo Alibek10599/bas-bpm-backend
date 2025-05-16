@@ -11,13 +11,13 @@ import { RolesService } from '../../application/roles.service';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { AccessGuard, CurrentUser } from '@app/common';
 import { HttpUpdateRoleDto } from './dto/http-update-role.dto';
-import { JwtAuthGuard } from '@app/common/auth/jwt-auth.guard';
+import { AuthGuard } from '@app/common/auth/auth-guard.service';
 
 @Controller('roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
-  @UseGuards(JwtAuthGuard, AccessGuard(['roles.create']))
+  @UseGuards(AuthGuard, AccessGuard(['roles.create']))
   @Post()
   create(@CurrentUser() user: any, @Body() createRoleDto: CreateRoleDto) {
     return this.rolesService.create({
@@ -27,25 +27,25 @@ export class RolesController {
     });
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.rolesService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard, AccessGuard(['roles.seeTree']))
+  @UseGuards(AuthGuard, AccessGuard(['roles.seeTree']))
   @Get('tree')
   findAllTree() {
     return this.rolesService.findAllTree();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.rolesService.findOne(id);
   }
 
-  @UseGuards(JwtAuthGuard, AccessGuard(['roles.update']))
+  @UseGuards(AuthGuard, AccessGuard(['roles.update']))
   @Patch(':id')
   update(
     @Param('id') id: string,

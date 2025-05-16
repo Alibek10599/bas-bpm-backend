@@ -1,12 +1,23 @@
-import { IsEnum, IsISO8601, IsOptional, IsString } from 'class-validator';
-import { ApiTokenAccessType } from '../../domain/enums/api-token-access-type.enum';
+import {
+  IsISO8601,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { AccessesModel } from '@app/common';
+import { Type } from 'class-transformer';
 
 export class CreateApiTokenDto {
   @IsString()
   name: string;
 
-  @IsEnum(ApiTokenAccessType)
-  accessType: ApiTokenAccessType;
+  @IsNumber()
+  actorId: number;
+
+  @Type(() => AccessesModel)
+  @ValidateNested()
+  accesses: AccessesModel;
 
   @IsOptional()
   @IsISO8601()

@@ -9,6 +9,7 @@ import { AccessRedisService } from '@app/common/redis/accesses-redis';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
 import { AccessesModelPaths } from '@app/common/types/access-model-path';
+import { AccessesModel } from '@app/common/types/accesses-model';
 
 /**
  * Для работы этого декоратора необходим AccessRedisModule, его добавляем в AppModule
@@ -25,7 +26,9 @@ export function AccessGuard(requiredAccesses: AccessesModelPaths[]) {
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
       const request = context.switchToHttp().getRequest();
+      const type = request.user?.type;
       const userId = request.user?.userId;
+      const tokenId = request.user?.tokenId;
       const ignoreAccessCheck =
         this.configService.get<string>('BYPASS_PERMISSIONS');
 
@@ -36,9 +39,17 @@ export function AccessGuard(requiredAccesses: AccessesModelPaths[]) {
         return true;
       }
 
-      if (!userId) return false;
+      let accessList: AccessesModel;
 
-      const accessList = await this.accessRedisService.get(userId);
+      if (type === 'user' && userId) {
+        accessList = await this.accessRedisService.getUserAccesses(userId);
+      }
+      if (type === 'api' && tokenId) {
+        accessList = await this.accessRedisService.getApiAccesses(userId);
+      }
+      if (accessList === null) {
+        return false;
+      }
 
       return requiredAccesses.every((accessPath) =>
         this.hasAccessRecursive(accessList, accessPath.split('.')),

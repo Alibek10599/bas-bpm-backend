@@ -22,5 +22,6 @@ import { ApiToken } from './infrastructure/database/postgres/entities/api-token.
     },
     ApiTokensService,
   ],
+  exports: [ApiTokensService],
 })
 export class ApiTokensModule {}

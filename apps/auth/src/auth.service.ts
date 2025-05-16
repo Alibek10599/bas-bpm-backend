@@ -14,6 +14,8 @@ import * as crypto from 'crypto';
 import { AccessRedisService } from '@app/common/redis/accesses-redis';
 import { AccessesModel } from '@app/common';
 import { accessModel } from '@app/common/constants/access-model';
+import { ApiTokensService } from './api-tokens/application/api-tokens.service';
+import { TokenPayload } from '@app/common/types/token-payload';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +24,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userService: UsersService,
     private readonly accessRedisService: AccessRedisService,
+    private readonly apiTokensService: ApiTokensService,
   ) {}
 
   async login(loginDto: CreateUserDto, response?: Response) {
@@ -39,7 +42,7 @@ export class AuthService {
 
       const accesses = user.privileges.map((e) => e.accesses);
       const access = this.combineAccesses(accesses);
-      await this.accessRedisService.set(user.id, access);
+      await this.accessRedisService.setUserAccesses(user.id, access);
 
       // Verify password with simple hash
       const hashedPassword = this.hashPassword(loginDto.password);
@@ -192,8 +195,24 @@ export class AuthService {
     return result;
   }
 
-  async verifyToken(token: string) {
-    return this.jwtService.verify(token);
+  async verifyToken(token: string): Promise<TokenPayload> {
+    if (token.split('.').length === 3) {
+      return {
+        ...this.jwtService.verify(token),
+        type: 'user',
+      };
+    }
+    const apiToken = await this.apiTokensService.findOneByToken(token);
+    await this.accessRedisService.setApiAccesses(
+      apiToken.id,
+      apiToken.accesses,
+    );
+    return {
+      type: 'api',
+      tokenId: apiToken.id,
+      userId: apiToken.actorId,
+      tenantId: apiToken.tenantId,
+    };
   }
 
   private hashPassword(password: string): string {

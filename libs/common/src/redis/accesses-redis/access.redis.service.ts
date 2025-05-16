@@ -6,11 +6,19 @@ import { RedisService } from '@app/common/redis';
 export class AccessRedisService {
   constructor(private readonly redisService: RedisService) {}
 
-  get(userId: number): Promise<AccessesModel> {
+  getUserAccesses(userId: number): Promise<AccessesModel> {
     return this.redisService.get(`user:${userId}:accesses`);
   }
 
-  set(userId: number, accesses: AccessesModel) {
+  setUserAccesses(userId: number, accesses: AccessesModel) {
     return this.redisService.set(`user:${userId}:accesses`, accesses);
+  }
+
+  setApiAccesses(apiTokenId: string, accesses: AccessesModel) {
+    return this.redisService.set(`api-token:${apiTokenId}:accesses`, accesses);
+  }
+
+  getApiAccesses(apiTokenId: string): Promise<AccessesModel> {
+    return this.redisService.get(`api-token:${apiTokenId}:accesses`);
   }
 }
