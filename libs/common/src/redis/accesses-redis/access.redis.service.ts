@@ -15,7 +15,11 @@ export class AccessRedisService {
   }
 
   setApiAccesses(apiTokenId: string, accesses: AccessesModel) {
-    return this.redisService.set(`api-token:${apiTokenId}:accesses`, accesses);
+    return this.redisService.set(
+      `api-token:${apiTokenId}:accesses`,
+      accesses,
+      300,
+    );
   }
 
   getApiAccesses(apiTokenId: string): Promise<AccessesModel> {
