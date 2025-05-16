@@ -202,7 +202,16 @@ export class AuthService {
         type: 'user',
       };
     }
+    return await this.verifyApiToken(token);
+  }
+
+  private async verifyApiToken(token: string): Promise<TokenPayload> {
     const apiToken = await this.apiTokensService.findOneByToken(token);
+
+    if (apiToken === null) {
+      throw new Error('Undefined api token');
+    }
+
     await this.accessRedisService.setApiAccesses(
       apiToken.id,
       apiToken.accesses,

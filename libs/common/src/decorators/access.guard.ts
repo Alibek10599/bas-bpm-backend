@@ -45,9 +45,10 @@ export function AccessGuard(requiredAccesses: AccessesModelPaths[]) {
         accessList = await this.accessRedisService.getUserAccesses(userId);
       }
       if (type === 'api' && tokenId) {
-        accessList = await this.accessRedisService.getApiAccesses(userId);
+        accessList = await this.accessRedisService.getApiAccesses(tokenId);
       }
-      if (accessList === null) {
+
+      if (!accessList) {
         return false;
       }
 
