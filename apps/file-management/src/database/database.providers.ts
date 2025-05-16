@@ -19,6 +19,8 @@ export const databaseProviders = [
         entities: [File, Document, DocumentPermissions, DocumentVersions],
         synchronize: true,
         logging: true,
+        migrations: ['dist/apps/file-management/src/migrations/*.js'],
+        migrationsRun: true,
       } as PostgresConnectionOptions).initialize();
     },
     inject: [ConfigService],

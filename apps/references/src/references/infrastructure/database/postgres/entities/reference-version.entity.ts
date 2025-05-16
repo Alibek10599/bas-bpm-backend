@@ -24,9 +24,8 @@ export class ReferenceVersions {
   @Column({ type: 'json' })
   data: any;
 
-  // - `user_id` (UUID, FK -> `users.id`): Пользователь, создавший запись.
-  @Column({ type: 'varchar' })
-  user_id: string;
+  @Column({ type: 'int' })
+  user_id: number;
 
   @CreateDateColumn()
   created_at: Date;

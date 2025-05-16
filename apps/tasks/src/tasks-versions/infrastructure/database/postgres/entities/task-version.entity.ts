@@ -30,7 +30,7 @@ export class TaskVersion {
   @CreateDateColumn({ type: 'timestamp' })
   created_at: string;
 
-  //(UUID, FK -> `users.id`): Пользователь, внесший изменения.
-  @Column({ type: 'varchar', default: null })
-  user_id: string;
+  //(INT, FK -> `users.id`): Пользователь, внесший изменения.
+  @Column({ type: 'int', default: null })
+  user_id: number;
 }
