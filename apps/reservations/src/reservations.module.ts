@@ -17,10 +17,14 @@ import { AUTH_SERVICE } from '@app/common/constants/services';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        MONGODB_URI: Joi.string(),
-        AUTH_SERVICE_HOST: Joi.string(),
-        AUTH_SERVICE_PORT: Joi.number(),
-        HTTP_PORT: Joi.number(),
+        POSTGRES_URL: Joi.string().exist(),
+        RABBITMQ_URLS: Joi.string().exist(),
+        RABBITMQ_QUEUE: Joi.string().exist(),
+        HTTP_PORT: Joi.number().exist(),
+        GRPC_URL: Joi.string().exist(),
+        LOGGER_LEVEL: Joi.string(),
+        LOGGER_PRETTY: Joi.boolean(),
+        BYPASS_PERMISSIONS: Joi.boolean(),
       }),
     }),
     ClientsModule.registerAsync([
