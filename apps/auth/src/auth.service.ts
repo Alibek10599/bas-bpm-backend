@@ -11,6 +11,11 @@ import { Response } from 'express';
 import { UsersService } from './users/users.service';
 import { CreateUserDto } from './users/dto/create-user.dto';
 import * as crypto from 'crypto';
+import { AccessRedisService } from '@app/common/redis/accesses-redis';
+import { AccessesModel } from '@app/common';
+import { accessModel } from '@app/common/constants/access-model';
+import { ApiTokensService } from './api-tokens/application/api-tokens.service';
+import { TokenPayload } from '@app/common/types/token-payload';
 
 @Injectable()
 export class AuthService {
@@ -18,14 +23,9 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly userService: UsersService,
+    private readonly accessRedisService: AccessRedisService,
+    private readonly apiTokensService: ApiTokensService,
   ) {}
-
-  private hashPassword(password: string): string {
-    return crypto
-      .createHash('sha256')
-      .update(password + this.configService.get('JWT_SECRET')) // use JWT_SECRET as salt
-      .digest('hex');
-  }
 
   async login(loginDto: CreateUserDto, response?: Response) {
     try {
@@ -39,6 +39,10 @@ export class AuthService {
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
+
+      const accesses = user.privileges.map((e) => e.accesses);
+      const access = this.combineAccesses(accesses);
+      await this.accessRedisService.setUserAccesses(user.id, access);
 
       // Verify password with simple hash
       const hashedPassword = this.hashPassword(loginDto.password);
@@ -191,7 +195,61 @@ export class AuthService {
     return result;
   }
 
-  async verifyToken(token: string) {
-    return this.jwtService.verify(token);
+  async verifyToken(token: string): Promise<TokenPayload> {
+    if (token.split('.').length === 3) {
+      return {
+        ...this.jwtService.verify(token),
+        type: 'user',
+      };
+    }
+    return await this.verifyApiToken(token);
+  }
+
+  private async verifyApiToken(token: string): Promise<TokenPayload> {
+    const apiToken = await this.apiTokensService.findOneByToken(token);
+
+    if (apiToken === null) {
+      throw new Error('Undefined api token');
+    }
+
+    await this.accessRedisService.setApiAccesses(
+      apiToken.id,
+      apiToken.accesses,
+    );
+    return {
+      type: 'api',
+      tokenId: apiToken.id,
+      userId: apiToken.actorId,
+      tenantId: apiToken.tenantId,
+    };
+  }
+
+  private hashPassword(password: string): string {
+    return crypto
+      .createHash('sha256')
+      .update(password + this.configService.get('JWT_SECRET')) // use JWT_SECRET as salt
+      .digest('hex');
+  }
+
+  private combineAccesses(accesses: AccessesModel[]): AccessesModel {
+    const combined = accessModel;
+
+    const merge = (target: any, sources: any[]) => {
+      for (const key of Object.keys(target)) {
+        const values = sources
+          .map((s) => s?.[key])
+          .filter((v) => v !== undefined);
+
+        if (typeof target[key] === 'boolean') {
+          target[key] = values.some((v) => v === true);
+        } else if (typeof target[key] === 'object' && target[key] !== null) {
+          merge(target[key], values);
+        }
+      }
+    };
+
+    merge(combined, accesses);
+
+    return combined;
   }
 }

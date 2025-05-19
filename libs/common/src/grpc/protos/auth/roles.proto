@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package roles;
+
+import "request_metadata.proto";
+
+service RolesService {
+  rpc CreateRole (CreateRoleWrapper) returns (CreateRoleResult);
+  rpc FindAll (request_metadata.RequestMetadata) returns (RoleList);
+  rpc GetRolesTree (request_metadata.RequestMetadata) returns (RoleTreeResponse);
+  rpc FindOne (FindOneRoleWrapper) returns (Role);
+  rpc UpdateRole (UpdateRoleWrapper) returns (UpdateRoleResult);
+}
+
+message Role {
+  string id = 1;
+  string name = 2;
+  string tenantId = 3;
+  string userId = 4;
+  string parent = 5;
+  repeated Role children = 6;
+  string createdAt = 7;
+  string updatedAt = 8;
+}
+
+message RoleList {
+  repeated Role items = 1;
+}
+
+message CreateRoleResult {
+  string message = 1;
+  string roleId = 2;
+
+}
+
+message UpdateRoleResult {
+  string message = 1;
+  string roleId = 2;
+}
+
+message RoleTree {
+  string id = 1;
+  string name = 2;
+  repeated RoleTree children = 3;
+  Role parent = 4;
+  string createdAt = 5;
+  string updatedAt = 6;
+}
+
+message RoleTreeResponse {
+  repeated RoleTree items = 1;
+}
+
+message CreateRole {
+  string name = 1;
+  string parent = 2;
+}
+
+message UpdateRole {
+  string roleId = 1;
+  string name = 2;
+  string parent = 3;
+}
+
+message FindOneRole {
+  string roleId = 1;
+}
+
+message CreateRoleWrapper {
+  CreateRole body = 1;
+  request_metadata.RequestMetadata metadata = 2;
+}
+
+message UpdateRoleWrapper {
+  UpdateRole body = 1;
+  request_metadata.RequestMetadata metadata = 2;
+}
+
+message FindOneRoleWrapper {
+  FindOneRole body = 1;
+  request_metadata.RequestMetadata metadata = 2;
+}

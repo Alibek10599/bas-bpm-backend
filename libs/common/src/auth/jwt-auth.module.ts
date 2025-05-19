@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { authGrpcProvider } from './auth-grpc.provider';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { AuthGuard } from './auth-guard.service';
 import { resolve } from 'path';
 import { GrpcModule } from '@app/common/grpc';
 import { AUTH_SERVICE_GRPC } from '@app/common/constants';
 
+@Global()
 @Module({
   imports: [
     GrpcModule.forFeature(
@@ -13,7 +14,7 @@ import { AUTH_SERVICE_GRPC } from '@app/common/constants';
       AUTH_SERVICE_GRPC.protoFile.map((e) => resolve(__dirname, e)),
     ),
   ],
-  providers: [authGrpcProvider, JwtAuthGuard],
-  exports: [authGrpcProvider, JwtAuthGuard],
+  providers: [authGrpcProvider, AuthGuard],
+  exports: [authGrpcProvider, AuthGuard],
 })
 export class JwtAuthModule {}

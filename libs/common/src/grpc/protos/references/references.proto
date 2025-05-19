@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package references;
 
+import "request_metadata.proto";
+
 service ReferencesService {
   rpc CreateReference (CreateReferenceWrapper) returns (CreateReferenceResult);
   rpc UpdateReference (UpdateReferenceWrapper) returns (UpdateReferenceResult);
@@ -20,7 +22,7 @@ message CreateReferenceData {
 }
 message CreateReferenceWrapper {
   CreateReference body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 message CreateReferenceResult {
   string referenceId = 1;
@@ -34,7 +36,7 @@ message UpdateReference {
 }
 message UpdateReferenceWrapper {
   UpdateReference body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 message UpdateReferenceResult {
   string referenceId = 1;
@@ -46,7 +48,7 @@ message GetReferencesListFilter {
 }
 message GetReferencesListFilterWrapper {
   GetReferencesListFilter body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 message ReferenceList {
   repeated Reference items = 1;
@@ -57,7 +59,7 @@ message GetReferencesById {
 }
 message GetReferencesByIdWrapper {
   GetReferencesById body = 1;
-  map<string, string> metadata = 2;
+  request_metadata.RequestMetadata metadata = 2;
 }
 message Reference {
   string id = 1;
