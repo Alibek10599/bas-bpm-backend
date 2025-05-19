@@ -28,8 +28,7 @@ export class AuthGuard implements CanActivate {
       this.authGrpc.Authenticate({
         token,
       }),
-    ).catch((e) => {
-      console.log('JwtAuthGuard', e);
+    ).catch(() => {
       return null;
     });
 

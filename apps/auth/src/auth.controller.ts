@@ -14,13 +14,17 @@ import { CreateUserDto } from './users/dto/create-user.dto';
 import { Response } from 'express';
 import { AuthGuard } from '@app/common/auth/auth-guard.service';
 import { UsersService } from './users/users.service';
+import { PinoLogger } from 'nestjs-pino';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UsersService,
-  ) {}
+    private readonly logger: PinoLogger,
+  ) {
+    this.logger.setContext(AuthController.name);
+  }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
