@@ -1,5 +1,7 @@
+import { TokenPayloadUserTypes } from './token-payload-user-types.enum';
+
 export class TokenPayload {
-  type: 'user' | 'api';
+  type: TokenPayloadUserTypes;
   userId: number;
   tenantId?: string;
   tokenId?: string;
