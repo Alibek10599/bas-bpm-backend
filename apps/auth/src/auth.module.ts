@@ -27,6 +27,7 @@ import * as Joi from 'joi';
         JWT_SECRET: Joi.string().exist(),
         JWT_EXPIRATION_TIME: Joi.number(),
         POSTGRES_URL: Joi.string().exist(),
+        REDIS_URL: Joi.string().exist(),
         RABBITMQ_URLS: Joi.string().exist(),
         RABBITMQ_QUEUE: Joi.string().exist(),
         HTTP_PORT: Joi.number().exist(),

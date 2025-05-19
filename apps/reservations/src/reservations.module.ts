@@ -18,6 +18,7 @@ import { AUTH_SERVICE } from '@app/common/constants/services';
       isGlobal: true,
       validationSchema: Joi.object({
         POSTGRES_URL: Joi.string().exist(),
+        REDIS_URL: Joi.string().exist(),
         RABBITMQ_URLS: Joi.string().exist(),
         RABBITMQ_QUEUE: Joi.string().exist(),
         HTTP_PORT: Joi.number().exist(),
