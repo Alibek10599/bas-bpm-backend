@@ -1,60 +1,43 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
-import { FilterQuery } from 'mongoose';
 import { UpdateUserDto } from './dto/update-user.dto';
-import * as bcrypt from 'bcryptjs';
-import { UserDocument } from './models/user.schema';
+import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly repository: UsersRepository) {}
 
   async create(createUserDto: CreateUserDto) {
-    await this.validateCreateUserDto(createUserDto);
-    return this.repository.create({
-      ...createUserDto,
-      password: await bcrypt.hash(createUserDto.password, 10),
-    });
+    // No need to validate here, we're doing that in AuthService
+    return this.repository.create(createUserDto);
   }
 
-  private async validateCreateUserDto(createUserDto: CreateUserDto) {
-    try {
-      await this.repository.findOne({ email: createUserDto.email });
-    } catch (err) {
-      return;
+  async findByEmail(email: string): Promise<User | null> {
+    return this.repository.findOne({ email });
+  }
+
+  async validateCreateUserDto(email: string) {
+    const existingUser = await this.repository.findOneByEmail(email);
+    if (existingUser) {
+      throw new UnprocessableEntityException('Email already exists.');
     }
-    throw new UnprocessableEntityException('Email already exists.');
+    return true;
   }
 
-  async verifyUser(email: string, password: string): Promise<UserDocument> {
-    const user = await this.repository.findOne({ email });
-
-    const passwordIsValid = await bcrypt.compare(password, user.password);
-    if (!passwordIsValid) {
-      throw new UnauthorizedException('Credentials are not valid');
-    }
-
-    return user;
+  findAll(filterQuery: any) {
+    return this.repository.findAll(filterQuery);
   }
 
-  findAll(filterQuery: FilterQuery<any>) {
-    return this.repository.find(filterQuery);
+  findOne(id: number) {
+    return this.repository.findOne({ id });
   }
 
-  findOne(_id: string) {
-    return this.repository.findOne({ _id });
+  update(id: number, updateUserDto: UpdateUserDto) {
+    return this.repository.update(id, updateUserDto);
   }
 
-  update(_id: string, updateUserDto: UpdateUserDto) {
-    return this.repository.findOneAndUpdate({ _id }, { $set: updateUserDto });
-  }
-
-  remove(_id: string) {
-    return this.repository.findOneAndDelete({ _id });
+  remove(id: number) {
+    return this.repository.remove(id);
   }
 }

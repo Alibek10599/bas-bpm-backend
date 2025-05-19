@@ -25,7 +25,7 @@ message CreateReservationResponse {
 
   string endDate = 4; // Format: 2025-03-18T14:30:00Z
 
-  string userId = 5;
+  int64 userId = 5;
 
   string placeId = 6;
 

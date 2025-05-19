@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package request_metadata;
+
+message RequestMetadata {
+  string tenantId = 1;
+  string userId = 2;
+}

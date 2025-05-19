@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package privileges;
+
+import "access_model.proto";
+import "request_metadata.proto";
+
+service PrivilegesService {
+  rpc CreatePrivilege (CreatePrivilegeWrapper) returns (CreatePrivilegeResult);
+  rpc FindAll (request_metadata.RequestMetadata) returns (PrivilegeList);
+  rpc FindOne (FindOnePrivilegeWrapper) returns (Privilege);
+  rpc UpdatePrivilege (UpdatePrivilegeWrapper) returns (UpdatePrivilegeResult);
+}
+
+message Privilege {
+  string id = 1;
+  string name = 2;
+  access_model.AccessesModel accesses = 3;
+  string tenantId = 4;
+  string userId = 5;
+  string createdAt = 6;
+  string updatedAt = 7;
+}
+
+message CreatePrivilegeResult {
+  string message = 1;
+  string privilegeId = 2;
+}
+
+message UpdatePrivilegeResult {
+  string message = 1;
+  string privilegeId = 2;
+}
+
+message PrivilegeList {
+  repeated Privilege items = 1;
+}
+
+message CreatePrivilege {
+  string name = 1;
+  access_model.AccessesModel accesses = 3;
+}
+
+message UpdatePrivilege {
+  string privilegeId = 1;
+  string name = 2;
+  access_model.AccessesModel accesses = 3;
+}
+
+message FindOnePrivilege {
+  string privilegeId = 1;
+}
+
+
+message CreatePrivilegeWrapper {
+  CreatePrivilege body = 1;
+  request_metadata.RequestMetadata metadata = 2;
+}
+
+message UpdatePrivilegeWrapper {
+  UpdatePrivilege body = 1;
+  request_metadata.RequestMetadata metadata = 2;
+}
+
+message FindOnePrivilegeWrapper {
+  FindOnePrivilege body = 1;
+  request_metadata.RequestMetadata metadata = 2;
+}

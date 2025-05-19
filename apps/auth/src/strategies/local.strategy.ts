@@ -9,9 +9,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super({ usernameField: 'email' });
   }
 
-  async validate(email: string, password: string) {
+  async validate(email: string) {
     try {
-      return this.userService.verifyUser(email, password);
+      return this.userService.validateCreateUserDto(email);
     } catch (err) {
       throw new UnauthorizedException(err);
     }

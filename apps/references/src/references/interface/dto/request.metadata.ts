@@ -1,8 +1,9 @@
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class RequestMetadata {
-  @IsString()
-  userId: string;
+  @IsNumber()
+  userId: number;
+
   @IsString()
   tenantId: string;
 }

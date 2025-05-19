@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package access_model;
+
+message AccessesModelUser {
+  bool create = 1;
+  bool update = 2;
+  bool delete = 3;
+  bool invite = 4;
+  bool updateRole = 5;
+  bool updatePrivilege = 6;
+}
+
+message AccessesModelRoles {
+  bool create = 1;
+  bool update = 2;
+  bool delete = 3;
+  bool seeTree = 4;
+}
+
+message AccessesModelPrivileges {
+  bool create = 1;
+  bool update = 2;
+  bool delete = 3;
+  bool seeList = 4;
+}
+
+message AccessesModelReferences {
+  bool create = 1;
+  bool update = 2;
+  bool delete = 3;
+}
+
+message AccessesModelReservations {
+  bool create = 1;
+  bool update = 2;
+  bool delete = 3;
+}
+
+message AccessesModelTasks {
+  bool create = 1;
+  bool update = 2;
+  bool delete = 3;
+  bool delegate = 4;
+  bool performOther = 5;
+}
+
+message AccessesModelFilesFile {
+  bool upload = 1;
+  bool createEmpty = 2;
+  bool getContent = 3;
+}
+
+message AccessesModelFilesDocument {
+  bool seeAll = 1;
+  bool upload = 2;
+  bool createEmpty = 3;
+  bool getContent = 4;
+  bool update = 5;
+  bool delete = 6;
+}
+
+message AccessesModelFiles {
+  AccessesModelFilesFile file = 1;
+  AccessesModelFilesDocument document = 2;
+}
+
+message AccessesModelCodeExecutionScripts {
+  bool create = 1;
+  bool update = 2;
+  bool delete = 3;
+}
+
+message AccessesModelCodeExecutionExecutions {
+  bool execute = 1;
+  bool seeExecutionHistory = 2;
+}
+
+message AccessesModelCodeExecution {
+  AccessesModelCodeExecutionScripts scripts = 1;
+  AccessesModelCodeExecutionExecutions execution = 2;
+}
+
+message AccessesModel {
+  AccessesModelUser user = 1;
+  AccessesModelRoles roles = 2;
+  AccessesModelPrivileges privileges = 3;
+  AccessesModelReferences references = 4;
+  AccessesModelReservations reservations = 5;
+  AccessesModelTasks tasks = 6;
+  AccessesModelFiles files = 7;
+  AccessesModelCodeExecution codeExecution = 8;
+}
