@@ -13,7 +13,10 @@ import { NotificationsModule } from './notifications/notifications.module';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        REDIS_URL: Joi.string().exist(),
+        REDIS_HOST: Joi.string().exist(),
+        REDIS_PORT: Joi.number(),
+        REDIS_USER: Joi.string(),
+        REDIS_PASSWORD: Joi.string(),
         RABBITMQ_URLS: Joi.string().exist(),
         RABBITMQ_QUEUE: Joi.string().exist(),
         HTTP_PORT: Joi.number().exist(),
