@@ -19,8 +19,8 @@ export class UsersRepository {
     this.logger.log(`Creating user with email: ${createUserDto.email}`);
     return this.userRepository.save({
       ...createUserDto,
-      role: { id: createUserDto.roleId },
-      privileges: createUserDto.privilegeIds.map((e) => ({ id: e })),
+      role: createUserDto.roleId ? { id: createUserDto.roleId } : undefined,
+      privileges: createUserDto.privilegeIds?.map((e) => ({ id: e })),
     });
   }
 

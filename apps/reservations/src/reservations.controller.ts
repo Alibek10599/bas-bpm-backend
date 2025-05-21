@@ -13,15 +13,15 @@ import { ReservationsService } from './reservations.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { FilterQuery } from 'mongoose';
-import { CurrentUser, JwtAuthGuard, UserDto } from '@app/common';
-import { GrpcMethod, Payload } from '@nestjs/microservices';
+import { CurrentUser, UserDto } from '@app/common';
+import { AuthGuard } from '@app/common/auth/auth-guard.service';
 
 @Controller('reservations')
 export class ReservationsController {
   constructor(private readonly service: ReservationsService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   create(
     @Body() createReservationDto: CreateReservationDto,
     @CurrentUser() user: UserDto,
@@ -30,7 +30,7 @@ export class ReservationsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   findAll(
     @Query() filterQuery: FilterQuery<any>,
     @CurrentUser() user: UserDto,
@@ -39,13 +39,13 @@ export class ReservationsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   findOne(@Param('id') id: string) {
     return this.service.findOne(id);
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   update(
     @Param('id') id: string,
     @Body() updateReservationDto: UpdateReservationDto,
@@ -54,15 +54,8 @@ export class ReservationsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   remove(@Param('id') id: string) {
     return this.service.remove(id);
-  }
-
-  @GrpcMethod('ReservationsService', 'CreateReservation')
-  createReservationByGrpc(
-    @Payload() createReservationDto: CreateReservationDto,
-  ) {
-    console.log('smth', createReservationDto);
   }
 }
