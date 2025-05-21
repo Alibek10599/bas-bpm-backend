@@ -6,18 +6,21 @@ import {
   Patch,
   Param,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { TasksService } from '../../application/tasks.service';
 import { CreateTaskDto } from '../dto/create-task.dto';
 import { UpdateTaskHttpDto } from './dto/update-task-http.dto';
 import { FindAllTasksFilter } from '../../domain/repository/types/find-all-tasks-filter';
-import { CurrentUser } from '@app/common';
+import { AccessGuard, CurrentUser } from '@app/common';
 import { AssignTaskHttpDto } from './dto/assign-task-http.dto';
+import { AuthGuard } from '@app/common/auth/auth-guard.service';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
+  @UseGuards(AuthGuard, AccessGuard(['tasks.create']))
   @Post()
   create(@CurrentUser() user: any, @Body() createTaskDto: CreateTaskDto) {
     return this.tasksService.create({
@@ -27,26 +30,31 @@ export class TasksController {
     });
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   findAllPaginated(query: FindAllTasksFilter) {
     return this.tasksService.findAllPaginated(query);
   }
 
+  @UseGuards(AuthGuard)
   @Get('/list')
   findAll(@Query() query: FindAllTasksFilter) {
     return this.tasksService.findAll(query);
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tasksService.findOne(id);
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id/status')
   findOneTaskStatus(@Param('id') id: string) {
     return this.tasksService.findOneTaskStatus(id);
   }
 
+  @UseGuards(AuthGuard, AccessGuard(['tasks.delegate']))
   @Patch(':id/assign')
   assignTask(
     @CurrentUser() user: any,
@@ -60,11 +68,13 @@ export class TasksController {
     );
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id/complete')
   completeTask(@CurrentUser() user: any, @Param('id') id: string) {
     return this.tasksService.completeTask(id, user.userId);
   }
 
+  @UseGuards(AuthGuard, AccessGuard(['tasks.update']))
   @Patch(':id')
   update(
     @CurrentUser() user: any,
