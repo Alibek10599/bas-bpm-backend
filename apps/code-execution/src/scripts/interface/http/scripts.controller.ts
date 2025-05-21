@@ -6,17 +6,20 @@ import {
   Patch,
   Param,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ScriptsService } from '../../application/scripts.service';
 import { CreateScriptDto } from '../dto/create-script.dto';
 import { FindAllScriptsFilterDto } from '../dto/find-all-scripts-filter.dto';
-import { CurrentUser } from '@app/common';
+import { AccessGuard, CurrentUser } from '@app/common';
 import { HttpUpdateScriptDto } from './dto/http.update-script.dto';
+import { AuthGuard } from '@app/common/auth/auth-guard.service';
 
 @Controller('scripts')
 export class ScriptsController {
   constructor(private readonly scriptsService: ScriptsService) {}
 
+  @UseGuards(AuthGuard, AccessGuard(['codeExecution.scripts.create']))
   @Post()
   create(@CurrentUser() user: any, @Body() createScriptDto: CreateScriptDto) {
     return this.scriptsService.create({
@@ -28,16 +31,19 @@ export class ScriptsController {
     });
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   findAll(@Query() filter: FindAllScriptsFilterDto) {
     return this.scriptsService.findAll(filter);
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.scriptsService.findOne(id);
   }
 
+  @UseGuards(AuthGuard, AccessGuard(['codeExecution.scripts.update']))
   @Patch(':id')
   update(
     @Param('id') id: string,
