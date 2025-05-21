@@ -8,12 +8,16 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AUTH_SERVICE } from '@app/common/constants/services';
+import { AccessRedisModule } from '@app/common/redis/accesses-redis';
+import { JwtAuthModule } from '@app/common/auth';
 
 @Module({
   imports: [
     DatabaseModule,
     DatabaseModule.forFeature([ReservationDocument]),
     LoggerModule,
+    AccessRedisModule,
+    JwtAuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({

@@ -6,6 +6,8 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AUTH_SERVICE } from '@app/common/constants/services';
 import { TemplatesModule } from './templates/templates.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { AccessRedisModule } from '@app/common/redis/accesses-redis';
+import { JwtAuthModule } from '@app/common/auth';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { NotificationsModule } from './notifications/notifications.module';
         inject: [ConfigService],
       },
     ]),
+    AccessRedisModule,
+    JwtAuthModule,
     TemplatesModule,
     NotificationsModule,
   ],

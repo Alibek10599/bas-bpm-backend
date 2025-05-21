@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ReferencesModule } from './references/references.module';
 import * as Joi from 'joi';
 import { DatabaseModule } from './database/database.module';
+import { AccessRedisModule } from '@app/common/redis/accesses-redis';
+import { JwtAuthModule } from '@app/common/auth';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { DatabaseModule } from './database/database.module';
         HTTP_PORT: Joi.number(),
       }),
     }),
+    AccessRedisModule,
+    JwtAuthModule,
     DatabaseModule,
     ReferencesModule,
   ],

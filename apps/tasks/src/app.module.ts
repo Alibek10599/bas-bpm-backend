@@ -8,6 +8,8 @@ import { TasksModule } from './tasks/tasks.module';
 import { TasksVersionsModule } from './tasks-versions/tasks-versions.module';
 import { TasksDelegationsModule } from './tasks-delegations/tasks-delegations.module';
 import { DatabaseModule } from './database/database.module';
+import { AccessRedisModule } from '@app/common/redis/accesses-redis';
+import { JwtAuthModule } from '@app/common/auth';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { DatabaseModule } from './database/database.module';
         inject: [ConfigService],
       },
     ]),
+    AccessRedisModule,
+    JwtAuthModule,
     DatabaseModule,
     TasksModule,
     TasksVersionsModule,

@@ -18,7 +18,14 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/sleeper/test/jest-e2e.json",
-    "typeorm": "typeorm-ts-node-commonjs",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+
+    "migration:create:auth": "npm run typeorm -- migration:create ./apps/auth/src/migrations/migration",
+    "migration:create:tasks": "npm run typeorm --  migration:create ./apps/tasks/src/migrations/migration",
+    "migration:create:file-management": "npm run typeorm -- migration:create ./apps/file-management/src/migrations/migration",
+    "migration:create:references": "npm run typeorm -- migration:create ./apps/references/src/migrations/migration",
+    "migration:create:all": "npm run migration:create:auth && npm run migration:create:tasks && npm run migration:create:file-management && npm run migration:create:references",
+
     "migration:run:auth": "npm run typeorm -- -d ./apps/auth/src/database/datasource.ts migration:run",
     "migration:run:tasks": "npm run typeorm -- -d ./apps/tasks/src/database/datasource.ts migration:run",
     "migration:run:file-management": "npm run typeorm -- -d ./apps/file-management/src/database/datasource.ts migration:run",

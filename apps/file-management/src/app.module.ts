@@ -7,11 +7,15 @@ import { FilesModule } from './files/files.module';
 import { OnlyOfficeApiModule } from '@app/common/api/only-office';
 import { TestDocumentProvider } from './utils/test-document.provider';
 import { DatabaseModule } from './database/database.module';
+import { AccessRedisModule } from '@app/common/redis/accesses-redis';
+import { JwtAuthModule } from '@app/common/auth';
 
 @Module({
   imports: [
     LoggerModule,
     DatabaseModule,
+    AccessRedisModule,
+    JwtAuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({

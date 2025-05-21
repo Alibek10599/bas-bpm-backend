@@ -218,7 +218,7 @@ services:
       - bas-bpm
 
   postgres:
-    image: postgres:14
+    image: postgres:16-alpine
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -228,6 +228,13 @@ services:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bas-bpm
 
   onlyoffice-documentserver:
     image: onlyoffice/documentserver
