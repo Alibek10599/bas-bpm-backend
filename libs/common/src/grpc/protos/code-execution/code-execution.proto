@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package code_execution;
+
+import "google/protobuf/struct.proto";
+
+service CodeExecutionService {
+  rpc Execute (ExecuteScriptWrapper) returns (ExecuteScriptResponse);
+  rpc GetHistory (CodeExecutionHistoryWrapper) returns (CodeExecutionHistoryList);
+}
+
+message ExecuteScript {
+  string scriptId = 1;
+  map<string, string> context = 2;
+  string tenantId = 3;
+  string userId = 4;
+}
+
+message CodeExecutionHistoryFilter {
+  string scriptId = 1;
+  string userId = 2;
+  string tenantId = 3;
+}
+
+message CodeExecutionHistory {
+  string id = 1;
+  string scriptId = 2;
+  string userId = 3;
+  string tenantId = 4;
+  string executedAt = 5;
+}
+
+message ExecuteScriptResponse {
+  string message = 1;
+  string scriptId = 2;
+  int32 executionTime = 3;
+  repeated string logs = 4;
+}
+
+message CodeExecutionHistoryList {
+  repeated CodeExecutionHistory items = 1;
+}
+
+message ExecuteScriptWrapper {
+  ExecuteScript body = 1;
+  map<string, string> metadata = 2;
+}
+
+message CodeExecutionHistoryWrapper {
+  CodeExecutionHistoryFilter body = 1;
+  map<string, string> metadata = 2;
+}

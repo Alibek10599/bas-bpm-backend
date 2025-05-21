@@ -72,6 +72,15 @@
         "tsConfigPath": "apps/file-management/tsconfig.app.json"
       }
     },
+    "code-execution": {
+      "type": "application",
+      "root": "apps/code-execution",
+      "entryFile": "main",
+      "sourceRoot": "apps/code-execution/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/code-execution/tsconfig.app.json"
+      }
+    },
     "auth": {
       "type": "application",
       "root": "apps/auth",
