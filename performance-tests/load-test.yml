@@ -1,0 +1,361 @@
+config:
+  # Artillery configuration for BAS BPM Backend stress testing
+  target: 'http://localhost:3003' # Update this with your API Gateway URL
+  processor: './processor.js'
+
+  # Load testing phases to simulate different traffic patterns
+  phases:
+    - name: Warm up
+      duration: 60
+      arrivalRate: 5
+      # Start with a low rate to warm up the system
+
+    - name: Ramp up load
+      duration: 120
+      arrivalRate: 5
+      rampTo: 50
+      # Gradually increase load to test system scaling behavior
+
+    - name: Sustained load
+      duration: 300
+      arrivalRate: 50
+      # Maintain constant load to test system stability over time
+
+    - name: Spike test
+      duration: 60
+      arrivalRate: 100
+      # Sudden spike to test how system handles traffic surges
+
+    - name: Scale down
+      duration: 60
+      arrivalRate: 5
+      # Gradually reduce load to observe recovery behavior
+
+  # Default headers for all requests
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+      Accept: 'application/json'
+
+  # Enable detailed statistics collection
+  ensure:
+    maxErrorRate: 5
+    max: 95
+
+  # Plugin for response time expectations
+  plugins:
+    expect: {}
+    metrics-by-endpoint: {}
+
+  # Set detailed reporting for metrics analysis
+  reporting:
+    formats:
+      - json
+      - text
+    options:
+      json:
+        outputPath: './performance-tests/reports/report.json'
+      text:
+        outputPath: './performance-tests/reports/report.txt'
+
+  # Global variables for scenarios
+  variables:
+    token: ''
+    userId: ''
+    # Test credentials - update these with valid credentials for your system
+    testPassword: 'test123!@#'
+    testEmail: 'loadtest@example.com'
+
+# Define test scenarios for each service
+scenarios:
+  # Auth Service Tests - authentication flows, user management
+  - name: 'Auth Service Tests'
+    weight: 20 # 20% of test traffic
+    flow:
+      # Authentication - obtain token for subsequent requests
+      - post:
+          url: '/auth/login'
+          json:
+            password: '{{ testPassword }}'
+            email: '{{ testEmail }}'
+          capture:
+            - json: '$.access_token'
+              as: 'token'
+          expect:
+            - statusCode: 200
+            - contentType: 'application/json'
+            - hasProperty: 'access_token'
+
+      # Get current user profile
+      - get:
+          url: '/auth/me'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          capture:
+            - json: '$.id'
+              as: 'userId'
+          expect:
+            - statusCode: 200
+            - contentType: 'application/json'
+
+  # Users Management Tests - create, update users
+  - name: 'Users Management Tests'
+    weight: 10 # 10% of test traffic
+    flow:
+      # Login first
+      - post:
+          url: '/auth/login'
+          json:
+            password: '{{ testPassword }}'
+            email: '{{ testEmail }}'
+          capture:
+            - json: '$.access_token'
+              as: 'token'
+
+      # List all users
+      - get:
+          url: '/users'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          expect:
+            - statusCode: 200
+            - contentType: 'application/json'
+
+      # Create random username for test
+      - function: 'setRandomUsername'
+
+      # Create a new user (if permissions allow)
+      - post:
+          url: '/users'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          json:
+            password: 'Test12345!'
+            email: '{{ randomUsername }}@example.com'
+          expect:
+            - statusCode: 201
+
+  # Tasks Service Tests - task management workflows
+  - name: 'Tasks Service Tests'
+    weight: 25 # 25% of test traffic
+    flow:
+      # Login first
+      - post:
+          url: '/auth/login'
+          json:
+            password: '{{ testPassword }}'
+            email: '{{ testEmail }}'
+          capture:
+            - json: '$.access_token'
+              as: 'token'
+
+      # List all tasks
+      - get:
+          url: '/tasks'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          expect:
+            - statusCode: 200
+
+      # Create a new task
+      - post:
+          url: '/tasks'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          json:
+            title: 'Performance Test Task {{ $randomString(10) }}'
+            description: 'Task created during load testing at {{ $timestamp }}'
+          capture:
+            - json: '$.id'
+              as: 'taskId'
+          expect:
+            - statusCode: 201
+
+      # Get task by ID
+      - get:
+          url: '/tasks/{{ taskId }}'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          expect:
+            - statusCode: 200
+
+      # Update the task
+      - patch:
+          url: '/tasks/{{ taskId }}'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          json:
+            title: 'Updated Task {{ $randomString(5) }}'
+          expect:
+            - statusCode: 200
+
+      # Get task status
+      - get:
+          url: '/tasks/{{ taskId }}/status'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          expect:
+            - statusCode: 200
+
+      # Complete the task
+      - patch:
+          url: '/tasks/{{ taskId }}/complete'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          expect:
+            - statusCode: 200
+
+  # Reservations Service Tests - resource reservation workflows
+  - name: 'Reservations Service Tests'
+    weight: 15 # 15% of test traffic
+    flow:
+      # Login first
+      - post:
+          url: '/auth/login'
+          json:
+            password: '{{ testPassword }}'
+            email: '{{ testEmail }}'
+          capture:
+            - json: '$.access_token'
+              as: 'token'
+
+      # List all reservations
+      - get:
+          url: '/reservations'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          expect:
+            - statusCode: 200
+
+      # Create a timestamp for reservation times
+      - function: 'setReservationTimes'
+
+      # Create a new reservation
+      - post:
+          url: '/reservations'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          json:
+            resourceId: 'test-resource-{{ $randomNumber(1, 100) }}'
+            startTime: '{{ startTime }}'
+            endTime: '{{ endTime }}'
+          capture:
+            - json: '$.id'
+              as: 'reservationId'
+          expect:
+            - statusCode: 201
+
+      # Get reservation by ID
+      - get:
+          url: '/reservations/{{ reservationId }}'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          expect:
+            - statusCode: 200
+
+      # Update the reservation
+      - patch:
+          url: '/reservations/{{ reservationId }}'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          json:
+            startTime: '{{ updatedStartTime }}'
+            endTime: '{{ updatedEndTime }}'
+          expect:
+            - statusCode: 200
+
+      # Delete the reservation
+      - delete:
+          url: '/reservations/{{ reservationId }}'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          expect:
+            - statusCode: 200
+
+  # File Management Tests - file upload and retrieval
+  - name: 'File Management Tests'
+    weight: 15 # 15% of test traffic
+    flow:
+      # Login first
+      - post:
+          url: '/auth/login'
+          json:
+            password: '{{ testPassword }}'
+            email: '{{ testEmail }}'
+          capture:
+            - json: '$.access_token'
+              as: 'token'
+
+      # List all files
+      - get:
+          url: '/files'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          expect:
+            - statusCode: 200
+
+      # Create an empty file
+      - post:
+          url: '/files/create-empty'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          json:
+            name: 'test-file-{{ $randomString(8) }}.txt'
+            type: 'text/plain'
+          capture:
+            - json: '$.id'
+              as: 'fileId'
+          expect:
+            - statusCode: 201
+
+      # Get file by ID
+      - get:
+          url: '/files/{{ fileId }}'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          expect:
+            - statusCode: 200
+
+  # References Service Tests - reference data operations
+  - name: 'References Service Tests'
+    weight: 10 # 10% of test traffic
+    flow:
+      # Login first
+      - post:
+          url: '/auth/login'
+          json:
+            password: '{{ testPassword }}'
+            email: '{{ testEmail }}'
+          capture:
+            - json: '$.access_token'
+              as: 'token'
+
+      # List all references
+      - get:
+          url: '/references'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          expect:
+            - statusCode: 200
+
+  # Notifications Service Tests - notification operations
+  - name: 'Notifications Service Tests'
+    weight: 5 # 5% of test traffic
+    flow:
+      # Login first
+      - post:
+          url: '/auth/login'
+          json:
+            password: '{{ testPassword }}'
+            email: '{{ testEmail }}'
+          capture:
+            - json: '$.access_token'
+              as: 'token'
+
+      # List all notifications (assuming endpoint)
+      - get:
+          url: '/notifications'
+          headers:
+            Authorization: 'Bearer {{ token }}'
+          expect:
+            - statusCode: 200

@@ -11,6 +11,16 @@ services:
       - '3000:3000'
     volumes:
       - .:/usr/src/app
+    networks:
+      - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
   auth:
     build:
       context: .
@@ -23,6 +33,16 @@ services:
       - '3001:3001'
     volumes:
       - .:/usr/src/app
+    networks:
+      - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
   notifications:
     build:
       context: .
@@ -35,8 +55,20 @@ services:
       - '3002:3002'
     volumes:
       - .:/usr/src/app
+    networks:
+      - bas-bpm
+    depends_on:
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
   mongo:
     image: mongo
+    networks:
+      - bas-bpm
+    container_name: bas-mongodb
+
   minio:
     image: minio/minio:latest
     container_name: minio
@@ -58,8 +90,8 @@ services:
     ports:
       - '5672:5672' # AMQP
       - '15672:15672' # Management UI
-    # networks:
-    #   - bas-bpm
+    networks:
+      - bas-bpm
     healthcheck:
       test: ['CMD-SHELL', 'rabbitmqctl status']
       interval: 10s
@@ -90,8 +122,18 @@ services:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bas-bpm
 
 volumes:
   minio_data:
   redis_data:
   postgres_data:
+
+networks:
+  bas-bpm:

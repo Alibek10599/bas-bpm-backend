@@ -28,7 +28,9 @@
     "db:create:tasks": "createdb -U postgres bas_tasks || true",
     "db:create:files": "createdb -U postgres bas_files || true",
     "db:create:references": "createdb -U postgres bas_references || true",
-    "db:create:all": "npm run db:create:auth && npm run db:create:tasks && npm run db:create:files && npm run db:create:references"
+    "db:create:all": "npm run db:create:auth && npm run db:create:tasks && npm run db:create:files && npm run db:create:references",
+    "test:performance:setup": "ts-node performance-tests/setup.ts",
+    "test:performance": "pnpm run test:performance:setup && artillery run performance-tests/load-test.yml"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.782.0",
@@ -92,6 +94,7 @@
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.59.11",
     "@typescript-eslint/parser": "^5.59.11",
+    "artillery": "^2.0.23",
     "copy-webpack-plugin": "^13.0.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
