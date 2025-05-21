@@ -6,15 +6,16 @@ COPY package.json ./
 COPY pnpm-lock.yaml ./
 COPY tsconfig.json tsconfig.json
 COPY nest-cli.json nest-cli.json
+COPY webpack.config.js webpack.config.js
 
 RUN npm install -g pnpm
 
-COPY apps/notifications apps/notifications
+COPY apps/tasks apps/tasks
 COPY libs libs
 
 RUN pnpm install -r
 
-RUN pnpm run build notifications
+RUN pnpm run build tasks
 
 FROM node:alpine as production
 
@@ -32,4 +33,4 @@ RUN pnpm install --prod
 
 COPY --from=development /usr/src/app/dist ./dist
 
-CMD ["node", "dist/apps/notifications/main"]
+CMD ["node", "dist/apps/tasks/main"]

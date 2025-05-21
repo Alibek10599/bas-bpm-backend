@@ -1,4 +1,28 @@
+# .env.docker за место .env так как при запуске через pnpm run start:debug {service}
+# используются .env из директории сервиса так же в .env.docker указываются env с учетом того что все сервисы
+# находятся в одной сети "bas-bpm" таким образом для обращeния к postgres используется не localhost, а postgres
+# тк localhost не работает
+
 services:
+  ws-gateway:
+    build:
+      context: .
+      dockerfile: ./apps/ws-gateway/Dockerfile
+      target: development
+    command: pnpm run start:dev ws-gateway
+    env_file:
+      - ./apps/ws-gateway/.env.docker
+    ports:
+      - '8080:8080'
+      - '50080:50080'
+    networks:
+      - bas-bpm
+    depends_on:
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
   reservations:
     build:
       context: .
@@ -6,11 +30,20 @@ services:
       target: development
     command: pnpm run start:dev reservations
     env_file:
-      - ./apps/reservations/.env
+      - ./apps/reservations/.env.docker
     ports:
       - '3000:3000'
-    volumes:
-      - .:/usr/src/app
+      - '50050:50050'
+    networks:
+      - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
   auth:
     build:
       context: .
@@ -18,11 +51,20 @@ services:
       target: development
     command: pnpm run start:dev auth
     env_file:
-      - ./apps/auth/.env
+      - ./apps/auth/.env.docker
     ports:
       - '3001:3001'
-    volumes:
-      - .:/usr/src/app
+      - '50051:50051'
+    networks:
+      - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
   notifications:
     build:
       context: .
@@ -30,13 +72,104 @@ services:
       target: development
     command: pnpm run start:dev notifications
     env_file:
-      - ./apps/notifications/.env
+      - ./apps/notifications/.env.docker
     ports:
       - '3002:3002'
-    volumes:
-      - .:/usr/src/app
-  mongo:
-    image: mongo
+      - '50052:50052'
+    networks:
+      - bas-bpm
+    depends_on:
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
+  file-management:
+    build:
+      context: .
+      dockerfile: ./apps/file-management/Dockerfile
+      target: development
+    command: pnpm run start:dev file-management
+    env_file:
+      - ./apps/file-management/.env.docker
+    ports:
+      - '3003:3003'
+      - '50053:50053'
+    networks:
+      - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      minio:
+        condition: service_started
+
+  tasks:
+    build:
+      context: .
+      dockerfile: ./apps/tasks/Dockerfile
+      target: development
+    command: pnpm run start:dev tasks
+    env_file:
+      - ./apps/tasks/.env.docker
+    ports:
+      - '3004:3004'
+      - '50054:50054'
+    networks:
+      - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
+  references:
+    build:
+      context: .
+      dockerfile: ./apps/references/Dockerfile
+      target: development
+    command: pnpm run start:dev references
+    env_file:
+      - ./apps/references/.env.docker
+    ports:
+      - '3005:3005'
+      - '50055:50055'
+    networks:
+      - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
+  code-execution:
+    build:
+      context: .
+      dockerfile: ./apps/code-execution/Dockerfile
+      target: development
+    command: pnpm run start:dev code-execution
+    env_file:
+      - ./apps/code-execution/.env.docker
+    ports:
+      - '3006:3006'
+      - '50056:50056'
+    networks:
+      - bas-bpm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
   minio:
     image: minio/minio:latest
     container_name: minio
@@ -47,8 +180,11 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin123
     command: server /data --console-address ":9001"
+    networks:
+      - bas-bpm
     volumes:
       - minio_data:/data
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: bas-rabbitmq
@@ -58,8 +194,8 @@ services:
     ports:
       - '5672:5672' # AMQP
       - '15672:15672' # Management UI
-    # networks:
-    #   - bas-bpm
+    networks:
+       - bas-bpm
     healthcheck:
       test: ['CMD-SHELL', 'rabbitmqctl status']
       interval: 10s
@@ -78,6 +214,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    networks:
+      - bas-bpm
 
   postgres:
     image: postgres:14
@@ -91,7 +229,21 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  onlyoffice-documentserver:
+    image: onlyoffice/documentserver
+    container_name: onlyoffice-documentserver
+    ports:
+      - "8081:80"
+    restart: always
+    environment:
+      - JWT_SECRET=my_jwt_secret
+    networks:
+      - bas-bpm
+
 volumes:
   minio_data:
   redis_data:
   postgres_data:
+
+networks:
+  bas-bpm:

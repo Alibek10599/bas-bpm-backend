@@ -12,10 +12,10 @@ import { UsersService } from './users/users.service';
 import { CreateUserDto } from './users/dto/create-user.dto';
 import * as crypto from 'crypto';
 import { AccessRedisService } from '@app/common/redis/accesses-redis';
-import { AccessesModel } from '@app/common';
+import { AccessesModel, TokenPayloadUserTypes } from '@app/common';
 import { accessModel } from '@app/common/constants/access-model';
 import { ApiTokensService } from './api-tokens/application/api-tokens.service';
-import { TokenPayload } from '@app/common/types/token-payload';
+import { TokenPayload } from '@app/common';
 
 @Injectable()
 export class AuthService {
@@ -199,7 +199,7 @@ export class AuthService {
     if (token.split('.').length === 3) {
       return {
         ...this.jwtService.verify(token),
-        type: 'user',
+        type: TokenPayloadUserTypes.User,
       };
     }
     return await this.verifyApiToken(token);
@@ -217,7 +217,7 @@ export class AuthService {
       apiToken.accesses,
     );
     return {
-      type: 'api',
+      type: TokenPayloadUserTypes.Api,
       tokenId: apiToken.id,
       userId: apiToken.actorId,
       tenantId: apiToken.tenantId,

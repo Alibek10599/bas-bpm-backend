@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
 import { AccessesModelPaths } from '@app/common/types/access-model-path';
 import { AccessesModel } from '@app/common/types/accesses-model';
+import { TokenPayloadUserTypes } from '@app/common/types';
 
 /**
  * Для работы этого декоратора необходим AccessRedisModule, его добавляем в AppModule
@@ -40,10 +41,10 @@ export function AccessGuard(requiredAccesses: AccessesModelPaths[]) {
 
       let accessList: AccessesModel;
 
-      if (type === 'user' && userId) {
+      if (type === TokenPayloadUserTypes.User && userId) {
         accessList = await this.accessRedisService.getUserAccesses(userId);
       }
-      if (type === 'api' && tokenId) {
+      if (type === TokenPayloadUserTypes.Api && tokenId) {
         accessList = await this.accessRedisService.getApiAccesses(tokenId);
       }
 

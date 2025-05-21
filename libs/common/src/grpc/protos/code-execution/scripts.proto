@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package scripts;
+
+service ScriptsService {
+  rpc CreateScript (CreateScriptWrapper) returns (CreateScriptResponse);
+  rpc FindAllScripts (FindAllScriptsWrapper) returns (ScriptList);
+  rpc FindOneScript (ScriptIdWrapper) returns (Script);
+  rpc UpdateScript (UpdateScriptWrapper) returns (UpdateScriptResponse);
+}
+
+enum ProgrammingLanguage {
+  NULL = 0;
+  JS = 1;
+  TS = 2;
+  Python = 3;
+}
+
+message CreateScript {
+  string name = 1;
+  string script = 2;
+  ProgrammingLanguage language = 3;
+}
+
+message CreateScriptResponse {
+  string scriptId = 1;
+  string message = 2;
+}
+
+message UpdateScript {
+  string scriptId = 1;
+  string name = 2;
+  string script = 3;
+  ProgrammingLanguage language = 4;
+}
+
+
+message UpdateScriptResponse {
+  string scriptId = 1;
+  string message = 2;
+}
+
+
+message ScriptId {
+  string scriptId = 1;
+}
+
+message ScriptIdWrapper {
+  ScriptId body = 1;
+  map<string, string> metadata = 2;
+}
+
+message Script {
+  string id = 1;
+  string name = 2;
+  string script = 3;
+  string language = 4;
+  string createdAt = 5;
+  string updatedAt = 6;
+}
+
+message ScriptList {
+  repeated Script items = 1;
+}
+
+message ScriptResponse {
+  string message = 1;
+  Script script = 2;
+}
+
+message CreateScriptWrapper {
+  CreateScript body = 1;
+  map<string, string> metadata = 2;
+}
+
+message FindAllScriptsFilter {
+  string name = 1;
+}
+
+message FindAllScriptsWrapper {
+  FindAllScriptsFilter body = 1;
+  map<string, string> metadata = 2;
+}
+
+message UpdateScriptWrapper {
+  UpdateScript body = 1;
+  map<string, string> metadata = 2;
+}

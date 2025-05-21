@@ -1,0 +1,6 @@
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - isolated-vm
+  - nestjs-pino
+  - protobufjs
+  - es5-ext
