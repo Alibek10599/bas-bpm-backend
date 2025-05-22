@@ -18,12 +18,16 @@ import {
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './users/dto/create-user.dto';
 import { Response } from 'express';
-import { JwtAuthGuard } from '@app/common/auth/jwt-auth.guard';
+import { AuthGuard } from '@app/common/auth/auth-guard.service';
+import { UsersService } from './users/users.service';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UsersService,
+  ) {}
 
   @ApiOperation({ summary: 'Register new user' })
   @ApiResponse({
