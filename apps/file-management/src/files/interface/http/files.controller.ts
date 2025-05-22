@@ -13,11 +13,44 @@ import { Response } from 'express';
 import { AccessGuard, CurrentUser } from '@app/common';
 import { CreateEmptyFileDto } from '../dto/create-empty-file.dto';
 import { AuthGuard } from '@app/common/auth/auth-guard.service';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiHeader,
+  ApiBody,
+  ApiConsumes,
+  ApiParam,
+} from '@nestjs/swagger';
+import { CreateFileDto } from '../dto/create-file.dto';
 
+@ApiTags('Files')
+@ApiBearerAuth('JWT')
 @Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
+  @ApiOperation({ summary: 'Upload a file' })
+  @ApiConsumes('application/octet-stream')
+  @ApiHeader({
+    name: 'x-file-name',
+    description: 'Name of the file to upload',
+    required: true,
+  })
+  @ApiHeader({
+    name: 'content-type',
+    description: 'MIME type of the file',
+    required: true,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'File uploaded successfully',
+    type: CreateFileDto,
+  })
+  @ApiBody({
+    description: 'Binary file content',
+  })
   @UseGuards(AuthGuard, AccessGuard(['files.file.upload']))
   @Post('upload')
   upload(
@@ -32,9 +65,15 @@ export class FilesController {
       buffer: buffer,
       userId: user.userId,
       tenantId: user.tenantId,
+      documentType: contentType.split('/')[1] || 'unknown',
     });
   }
 
+  @ApiOperation({ summary: 'Create an empty file' })
+  @ApiResponse({
+    status: 201,
+    description: 'Empty file created successfully',
+  })
   @UseGuards(AuthGuard, AccessGuard(['files.file.createEmpty']))
   @Post('create-empty')
   createEmpty(
@@ -48,18 +87,53 @@ export class FilesController {
     });
   }
 
+  @ApiOperation({ summary: 'Get all files' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns list of all files',
+    type: [CreateFileDto],
+  })
   @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.filesService.findAll({});
   }
 
+  @ApiOperation({ summary: 'Get file by ID' })
+  @ApiParam({
+    name: 'id',
+    description: 'File ID',
+    example: '507f1f77bcf86cd799439011',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the file metadata',
+    type: CreateFileDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'File not found',
+  })
   @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.filesService.findOne(id);
   }
 
+  @ApiOperation({ summary: 'Get file content by ID' })
+  @ApiParam({
+    name: 'id',
+    description: 'File ID',
+    example: '507f1f77bcf86cd799439011',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the file content as a stream',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'File not found',
+  })
   @UseGuards(AuthGuard, AccessGuard(['files.file.getContent']))
   @Get(':id/content')
   async findOneContent(@Res() res: Response, @Param('id') id: string) {

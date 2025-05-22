@@ -8,11 +8,7 @@ import * as path from 'path';
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get('POSTGRES_HOST'),
-        port: parseInt(configService.get('POSTGRES_PORT'), 10),
-        username: configService.get('POSTGRES_USER'),
-        password: configService.get('POSTGRES_PASSWORD'),
-        database: configService.get('POSTGRES_DB'),
+        url: configService.get<string>('POSTGRES_URL'),
         entities: [path.join(__dirname, '..', '**', '*.entity{.ts,.js}')],
         logging: configService.get('NODE_ENV') !== 'production',
         autoLoadEntities: true,

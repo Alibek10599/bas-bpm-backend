@@ -6,8 +6,7 @@ import { AuthService } from './auth.service';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
 import { JwtModule } from '@nestjs/jwt';
-import { LoggerModule } from 'nestjs-pino';
-import { DatabaseModule } from '@app/common';
+import { LoggerModule } from '@app/common';
 import { AuthGrpcController } from './auth.grpc.controller';
 import { RolesModule } from './roles/roles.module';
 import { PrivilegesModule } from './privileges/privileges.module';
@@ -19,30 +18,42 @@ import { Privilege } from './privileges/infrastructure/database/postgres/entitie
 import { PrivilegeVersion } from './privileges/infrastructure/database/postgres/entities/privilege-version.entity';
 import { ApiTokensModule } from './api-tokens/api-tokens.module';
 import { ApiToken } from './api-tokens/infrastructure/database/postgres/entities/api-token.entity';
+import * as Joi from 'joi';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      validationSchema: Joi.object({
+        JWT_SECRET: Joi.string().exist(),
+        JWT_EXPIRATION_TIME: Joi.number(),
+        POSTGRES_URL: Joi.string().exist(),
+        REDIS_HOST: Joi.string().exist(),
+        REDIS_PORT: Joi.number(),
+        REDIS_USER: Joi.string(),
+        REDIS_PASSWORD: Joi.string(),
+        RABBITMQ_URLS: Joi.string().exist(),
+        RABBITMQ_QUEUE: Joi.string().exist(),
+        HTTP_PORT: Joi.number().exist(),
+        GRPC_URL: Joi.string().exist(),
+        LOGGER_LEVEL: Joi.string(),
+        LOGGER_PRETTY: Joi.boolean(),
+        BYPASS_PERMISSIONS: Joi.boolean(),
+      }),
       isGlobal: true,
       envFilePath: './apps/auth/.env',
     }),
+    LoggerModule,
     JwtModule.registerAsync({
-      useFactory: (cfg: ConfigService) => {
-        return {
-          secret: cfg.get<string>('JWT_SECRET'),
-        };
-      },
+      useFactory: (cfg: ConfigService) => ({
+        secret: cfg.get<string>('JWT_SECRET'),
+      }),
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get('POSTGRES_HOST'),
-        port: configService.get('POSTGRES_PORT'),
-        username: configService.get('POSTGRES_USER'),
-        password: configService.get('POSTGRES_PASSWORD'),
-        database: configService.get('POSTGRES_DB'),
+        url: configService.get<string>('POSTGRES_URL'),
         entities: [
           User,
           Role,
@@ -51,7 +62,6 @@ import { ApiToken } from './api-tokens/infrastructure/database/postgres/entities
           PrivilegeVersion,
           ApiToken,
         ],
-        //synchronize: configService.get('NODE_ENV') !== 'production',
         synchronize: true,
         migrations: ['dist/apps/auth/src/migrations/*.js'],
         migrationsRun: true,
@@ -62,8 +72,6 @@ import { ApiToken } from './api-tokens/infrastructure/database/postgres/entities
     RolesModule,
     PrivilegesModule,
     UsersModule,
-    LoggerModule.forRoot(),
-    DatabaseModule,
     ApiTokensModule,
   ],
   controllers: [AuthController, AuthGrpcController],

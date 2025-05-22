@@ -13,8 +13,7 @@ import { ReservationsService } from './reservations.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { FilterQuery } from 'mongoose';
-import { AccessGuard, CurrentUser, UserDto } from '@app/common';
-import { GrpcMethod, Payload } from '@nestjs/microservices';
+import { AccessGuard, UserDto, CurrentUser } from '@app/common';
 import { AuthGuard } from '@app/common/auth/auth-guard.service';
 
 @Controller('reservations')
@@ -58,12 +57,5 @@ export class ReservationsController {
   @UseGuards(AuthGuard, AccessGuard(['references.delete']))
   remove(@Param('id') id: string) {
     return this.service.remove(id);
-  }
-
-  @GrpcMethod('ReservationsService', 'CreateReservation')
-  createReservationByGrpc(
-    @Payload() createReservationDto: CreateReservationDto,
-  ) {
-    console.log('smth', createReservationDto);
   }
 }

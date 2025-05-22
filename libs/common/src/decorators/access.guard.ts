@@ -30,10 +30,9 @@ export function AccessGuard(requiredAccesses: AccessesModelPaths[]) {
       const type = request.user?.type;
       const userId = request.user?.userId;
       const tokenId = request.user?.tokenId;
-      const ignoreAccessCheck =
-        this.configService.get<string>('BYPASS_PERMISSIONS');
+      const ignoreAccessCheck = this.configService.get('BYPASS_PERMISSIONS');
 
-      if (ignoreAccessCheck === 'true') {
+      if (ignoreAccessCheck) {
         this.logger.warn(
           'Access control checks are disabled via BYPASS_PERMISSIONS=true. This may expose sensitive data or allow unauthorized actions.',
         );
