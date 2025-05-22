@@ -1,7 +1,5 @@
 # bas-bpm
 
-
-
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
@@ -43,6 +41,132 @@ Use the built-in continuous integration in GitLab.
 - [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
 
 ***
+
+## API Documentation (Swagger)
+
+### Документация API (Swagger)
+
+Каждый микросервис в проекте имеет свою документацию Swagger, доступную по следующим адресам:
+
+#### Доступ к документации Swagger
+
+- Auth Service (Сервис аутентификации): `http://localhost:3003/docs`
+- File Management Service (Сервис управления файлами): `http://localhost:3004/docs`
+- Tasks Service (Сервис задач): `http://localhost:3005/docs`
+- References Service (Сервис справочников): `http://localhost:3006/docs`
+- Notifications Service (Сервис уведомлений): `http://localhost:3007/docs`
+
+#### Как использовать Swagger UI
+
+1. **Авторизация**:
+   - В правом верхнем углу интерфейса Swagger нажмите кнопку "Authorize"
+   - Введите JWT токен в формате: `Bearer ваш_токен`
+   - Нажмите "Authorize" для сохранения
+
+2. **Просмотр эндпоинтов**:
+   - Эндпоинты сгруппированы по категориям
+   - Нажмите на категорию для просмотра доступных методов
+   - Зеленым цветом отмечены GET запросы
+   - Синим - POST запросы
+   - Желтым - PUT запросы
+   - Красным - DELETE запросы
+
+3. **Тестирование API**:
+   - Выберите нужный эндпоинт
+   - Нажмите "Try it out"
+   - Заполните необходимые параметры
+   - Нажмите "Execute" для отправки запроса
+
+4. **Загрузка файлов**:
+   - Для эндпоинтов загрузки файлов используйте секцию "Request body"
+   - Выберите файл через интерфейс или укажите бинарные данные
+   - Не забудьте указать необходимые заголовки (Content-Type, x-file-name и т.д.)
+
+5. **Просмотр моделей данных**:
+   - В нижней части страницы находится секция "Schemas"
+   - Здесь описаны все модели данных и DTO, используемые в API
+
+#### Примечания
+
+- Для работы с защищенными эндпоинтами необходимо сначала получить JWT токен через сервис аутентификации
+- Некоторые эндпоинты могут требовать дополнительных заголовков или параметров
+- В случае ошибок, API возвращает стандартизированный формат ответа с описанием проблемы
+
+***
+
+## Быстрый старт
+
+### Запуск сервисов
+
+1. **Установка зависимостей**:
+   ```bash
+   pnpm install
+   ```
+
+2. **Запуск базы данных и RabbitMQ**:
+   ```bash
+   docker-compose up -d postgres rabbitmq redis
+   ```
+
+3. **Запуск микросервисов**:
+   ```bash
+   # Запуск Auth Service (порт 3003)
+   pnpm run start:dev auth
+
+   # Запуск File Management Service (порт 3004)
+   pnpm run start:dev file-management
+
+   # Запуск Tasks Service (порт 3005)
+   pnpm run start:dev tasks
+
+   # Запуск References Service (порт 3006)
+   pnpm run start:dev references
+
+   # Запуск Notifications Service (порт 3007)
+   pnpm run start:dev notifications
+
+   # Запуск WebSocket Gateway (порт 3008)
+   pnpm run start:dev ws-gateway
+   ```
+
+### Тестирование API через Swagger
+
+1. **Получение токена**:
+   - Откройте Swagger UI Auth Service: `http://localhost:3003/docs`
+   - Выполните POST запрос к `/auth/login` с учетными данными
+   - Скопируйте полученный JWT токен
+
+2. **Использование токена в других сервисах**:
+   - Откройте Swagger UI нужного сервиса
+   - Нажмите кнопку "Authorize" в правом верхнем углу
+   - Вставьте токен в формате: `Bearer ваш_токен`
+   - Нажмите "Authorize"
+
+3. **Тестирование WebSocket**:
+   - Используйте предоставленные примеры кода из документации WebSocket Gateway
+   - Документация доступна по адресу: `http://localhost:3008/docs`
+
+### Порты сервисов
+
+| Сервис | Порт | Swagger UI |
+|--------|------|------------|
+| Auth | 3003 | /docs |
+| File Management | 3004 | /docs |
+| Tasks | 3005 | /docs |
+| References | 3006 | /docs |
+| Notifications | 3007 | /docs |
+| WebSocket Gateway | 3008 | /docs |
+
+### Дополнительная документация
+
+Каждый микросервис содержит собственный файл SWAGGER.md с подробной документацией по API:
+
+- [Auth Service Documentation](apps/auth/SWAGGER.md)
+- [File Management Documentation](apps/file-management/SWAGGER.md)
+- [Tasks Documentation](apps/tasks/SWAGGER.md)
+- [References Documentation](apps/references/SWAGGER.md)
+- [Notifications Documentation](apps/notifications/SWAGGER.md)
+- [WebSocket Gateway Documentation](apps/ws-gateway/SWAGGER.md)
 
 # Editing this README
 

@@ -8,6 +8,7 @@ import { GrpcOptions, RmqOptions } from '@nestjs/microservices';
 import { rabbitmqCfg } from '@app/common/rmq';
 import { grpcCfg } from '@app/common/grpc';
 import { join } from 'path';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -33,6 +34,27 @@ async function bootstrap() {
   app.connectMicroservice<GrpcOptions>(
     grpcCfg(grpcUrl, ['documents'], [join(__dirname, './documents.proto')]),
   );
+
+  // Setup Swagger documentation
+  const config = new DocumentBuilder()
+    .setTitle('File Management Service API')
+    .setDescription('Document and file management service for BAS BPM system')
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'JWT',
+    )
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
 
   await app.startAllMicroservices();
   await app.listen(configService.get('HTTP_PORT'));

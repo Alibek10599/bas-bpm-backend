@@ -16,11 +16,24 @@ import { Response } from 'express';
 import { ChangeDocumentVersionDto } from '../dto/change-document-version.dto';
 import { CreateEmptyFileDto } from '../dto/create-empty-file.dto';
 import { DocumentContentQueryDto } from '../dto/document-content-query.dto';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 
+@ApiTags('Documents')
+@ApiBearerAuth('JWT')
 @Controller('documents')
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 
+  @ApiOperation({ summary: 'Save file and create document' })
+  @ApiResponse({
+    status: 201,
+    description: 'File saved and document created successfully',
+  })
   @Post('upload')
   upload(
     @Headers('x-file-name') fileName: string,
@@ -39,6 +52,11 @@ export class DocumentsController {
     });
   }
 
+  @ApiOperation({ summary: 'Create a new document' })
+  @ApiResponse({
+    status: 201,
+    description: 'Document successfully created',
+  })
   @Post('create')
   create(
     @Body() createEmptyFileDto: CreateEmptyFileDto,
@@ -51,21 +69,53 @@ export class DocumentsController {
     });
   }
 
+  @ApiOperation({ summary: 'Get all documents' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of all documents',
+  })
   @Get()
   findAll() {
     return this.documentsService.findAll();
   }
 
+  @ApiOperation({ summary: 'Get document by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the document',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Document not found',
+  })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.documentsService.findOne(id);
   }
 
+  @ApiOperation({ summary: 'Get document versions by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns document versions',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Document not found',
+  })
   @Get(':id/versions')
   findDocumentVersionsById(@Param('id') id: string) {
     return this.documentsService.findDocumentVersionsById(id);
   }
 
+  @ApiOperation({ summary: 'Change document version' })
+  @ApiResponse({
+    status: 200,
+    description: 'Document version changed successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Document not found',
+  })
   @Patch(':id/versions')
   changeDocumentVersion(
     @Param('id') id: string,
@@ -74,6 +124,15 @@ export class DocumentsController {
     return this.documentsService.changeDocumentVersion(id, versionId);
   }
 
+  @ApiOperation({ summary: 'Get document content' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns document content',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Document not found',
+  })
   @Get(':id/content')
   async findOneContent(
     @Res() res: Response,
@@ -86,6 +145,15 @@ export class DocumentsController {
     res.send(data.buffer);
   }
 
+  @ApiOperation({ summary: 'Update file and document' })
+  @ApiResponse({
+    status: 200,
+    description: 'File and document updated successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Document not found',
+  })
   @Put(':id')
   update(
     @Param('id') id: string,
