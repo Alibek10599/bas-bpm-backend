@@ -1,6 +1,11 @@
 import { AccessesModel } from '@app/common';
 
 export const accessModel: AccessesModel = {
+  apiToken: {
+    create: false,
+    update: false,
+    delete: false,
+  },
   user: {
     create: false,
     update: false,

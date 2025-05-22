@@ -1,13 +1,15 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ExecuteScriptDto } from '../dto/execute-script.dto';
 import { CodeExecutionService } from '../../application/code-execution.service';
-import { CurrentUser } from '@app/common';
+import { AccessGuard, CurrentUser } from '@app/common';
 import { CodeExecutionHistoryFilterDto } from '../dto/code-execution-history-filter.dto';
+import { AuthGuard } from '@app/common/auth/auth-guard.service';
 
 @Controller('code-execution')
 export class CodeExecutionController {
   constructor(private readonly codeExecutionService: CodeExecutionService) {}
 
+  @UseGuards(AuthGuard, AccessGuard(['codeExecution.execution.execute']))
   @Post('/execute')
   async executeScript(
     @CurrentUser() user: any,
@@ -20,6 +22,10 @@ export class CodeExecutionController {
     });
   }
 
+  @UseGuards(
+    AuthGuard,
+    AccessGuard(['codeExecution.execution.seeExecutionHistory']),
+  )
   @Get('/history')
   async getCodeExecutionHistory(
     @CurrentUser() user: any,

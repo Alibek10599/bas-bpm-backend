@@ -6,11 +6,13 @@ import {
   Param,
   Headers,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { FilesService } from '../../application/files.service';
 import { Response } from 'express';
-import { CurrentUser } from '@app/common';
+import { AccessGuard, CurrentUser } from '@app/common';
 import { CreateEmptyFileDto } from '../dto/create-empty-file.dto';
+import { AuthGuard } from '@app/common/auth/auth-guard.service';
 import {
   ApiBearerAuth,
   ApiTags,
@@ -49,6 +51,7 @@ export class FilesController {
   @ApiBody({
     description: 'Binary file content',
   })
+  @UseGuards(AuthGuard, AccessGuard(['files.file.upload']))
   @Post('upload')
   upload(
     @Headers('x-file-name') fileName: string,
@@ -71,6 +74,7 @@ export class FilesController {
     status: 201,
     description: 'Empty file created successfully',
   })
+  @UseGuards(AuthGuard, AccessGuard(['files.file.createEmpty']))
   @Post('create-empty')
   createEmpty(
     @Body() createEmptyFileDto: CreateEmptyFileDto,
@@ -89,6 +93,7 @@ export class FilesController {
     description: 'Returns list of all files',
     type: [CreateFileDto],
   })
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.filesService.findAll({});
@@ -109,6 +114,7 @@ export class FilesController {
     status: 404,
     description: 'File not found',
   })
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.filesService.findOne(id);
@@ -128,6 +134,7 @@ export class FilesController {
     status: 404,
     description: 'File not found',
   })
+  @UseGuards(AuthGuard, AccessGuard(['files.file.getContent']))
   @Get(':id/content')
   async findOneContent(@Res() res: Response, @Param('id') id: string) {
     const file = await this.filesService.findOneContent(id);

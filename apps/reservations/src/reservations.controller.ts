@@ -13,7 +13,7 @@ import { ReservationsService } from './reservations.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { FilterQuery } from 'mongoose';
-import { CurrentUser, UserDto } from '@app/common';
+import { AccessGuard, UserDto, CurrentUser } from '@app/common';
 import { AuthGuard } from '@app/common/auth/auth-guard.service';
 
 @Controller('reservations')
@@ -21,7 +21,7 @@ export class ReservationsController {
   constructor(private readonly service: ReservationsService) {}
 
   @Post()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AccessGuard(['references.create']))
   create(
     @Body() createReservationDto: CreateReservationDto,
     @CurrentUser() user: UserDto,
@@ -45,7 +45,7 @@ export class ReservationsController {
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AccessGuard(['references.update']))
   update(
     @Param('id') id: string,
     @Body() updateReservationDto: UpdateReservationDto,
@@ -54,7 +54,7 @@ export class ReservationsController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AccessGuard(['references.delete']))
   remove(@Param('id') id: string) {
     return this.service.remove(id);
   }

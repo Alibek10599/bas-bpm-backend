@@ -9,9 +9,10 @@ import {
   Res,
   Patch,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { DocumentsService } from '../../application/documents.service';
-import { CurrentUser } from '@app/common';
+import { AccessGuard, CurrentUser } from '@app/common';
 import { Response } from 'express';
 import { ChangeDocumentVersionDto } from '../dto/change-document-version.dto';
 import { CreateEmptyFileDto } from '../dto/create-empty-file.dto';
@@ -22,6 +23,7 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@app/common/auth/auth-guard.service';
 
 @ApiTags('Documents')
 @ApiBearerAuth('JWT')
@@ -34,6 +36,7 @@ export class DocumentsController {
     status: 201,
     description: 'File saved and document created successfully',
   })
+  @UseGuards(AuthGuard, AccessGuard(['files.document.upload']))
   @Post('upload')
   upload(
     @Headers('x-file-name') fileName: string,
@@ -57,6 +60,7 @@ export class DocumentsController {
     status: 201,
     description: 'Document successfully created',
   })
+  @UseGuards(AuthGuard, AccessGuard(['files.document.createEmpty']))
   @Post('create')
   create(
     @Body() createEmptyFileDto: CreateEmptyFileDto,
@@ -74,6 +78,7 @@ export class DocumentsController {
     status: 200,
     description: 'Returns a list of all documents',
   })
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.documentsService.findAll();
@@ -88,6 +93,7 @@ export class DocumentsController {
     status: 404,
     description: 'Document not found',
   })
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.documentsService.findOne(id);
@@ -102,6 +108,7 @@ export class DocumentsController {
     status: 404,
     description: 'Document not found',
   })
+  @UseGuards(AuthGuard)
   @Get(':id/versions')
   findDocumentVersionsById(@Param('id') id: string) {
     return this.documentsService.findDocumentVersionsById(id);
@@ -116,6 +123,7 @@ export class DocumentsController {
     status: 404,
     description: 'Document not found',
   })
+  @UseGuards(AuthGuard)
   @Patch(':id/versions')
   changeDocumentVersion(
     @Param('id') id: string,
@@ -133,13 +141,13 @@ export class DocumentsController {
     status: 404,
     description: 'Document not found',
   })
+  @UseGuards(AuthGuard)
   @Get(':id/content')
   async findOneContent(
     @Res() res: Response,
     @Param('id') id: string,
     @Query() query: DocumentContentQueryDto,
   ) {
-    console.log(query);
     const data = await this.documentsService.findOneContent(id, +query.version);
     res.header('Content-Type', data.type);
     res.send(data.buffer);
@@ -154,6 +162,7 @@ export class DocumentsController {
     status: 404,
     description: 'Document not found',
   })
+  @UseGuards(AuthGuard, AccessGuard(['files.document.upload']))
   @Put(':id')
   update(
     @Param('id') id: string,
