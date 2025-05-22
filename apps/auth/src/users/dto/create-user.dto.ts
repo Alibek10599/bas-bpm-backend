@@ -5,9 +5,8 @@ import {
   IsUUID,
   MinLength,
 } from 'class-validator';
-import { UserDocument } from '../models/user.schema';
 
-export class CreateUserDto extends UserDocument {
+export class CreateUserDto {
   @IsString()
   @IsEmail()
   email: string;

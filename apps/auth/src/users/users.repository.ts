@@ -20,7 +20,7 @@ export class UsersRepository {
     return this.userRepository.save({
       ...createUserDto,
       role: { id: createUserDto.roleId },
-      privileges: createUserDto.privilegeIds.map((e) => ({ id: e })),
+      privileges: (createUserDto.privilegeIds || []).map((e) => ({ id: e })),
     });
   }
 
@@ -55,7 +55,7 @@ export class UsersRepository {
       id,
       ...updateUserDto,
       role: updateUserDto.roleId ? { id: updateUserDto.roleId } : undefined,
-      privileges: updateUserDto.privilegeIds?.map((e) => ({ id: e })),
+      privileges: (updateUserDto.privilegeIds || []).map((e) => ({ id: e })),
     });
     return this.findOneById(id);
   }

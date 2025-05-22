@@ -63,7 +63,6 @@ import { ApiToken } from './api-tokens/infrastructure/database/postgres/entities
     PrivilegesModule,
     UsersModule,
     LoggerModule.forRoot(),
-    DatabaseModule,
     ApiTokensModule,
   ],
   controllers: [AuthController, AuthGrpcController],

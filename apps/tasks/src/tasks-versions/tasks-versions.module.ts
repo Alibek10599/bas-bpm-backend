@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from '../database/database.module';
 import { TaskVersion } from './infrastructure/database/postgres/entities/task-version.entity';
-import { Task } from '../tasks/infrastructure/database/postgres/entities/task';
 import { DATABASE_PROVIDER_TOKEN } from '../database/database-provider-token.const';
 
 @Module({
